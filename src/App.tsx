@@ -17,6 +17,7 @@ import { BriefsPage } from "@/features/briefs/BriefsPage";
 import { SavedComparisonsPage } from "@/features/saved/SavedComparisonsPage";
 import { ReportSharePage } from "@/features/homeowner/ReportSharePage";
 
+
 function RequireAuth() {
   const { user, ready } = useAuth();
 
