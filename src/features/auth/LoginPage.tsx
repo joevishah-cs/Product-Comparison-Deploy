@@ -58,7 +58,9 @@ export function LoginPage() {
         />
 
         <div className="relative z-10 flex items-center gap-3">
-          <img src="/brand/daikin-logo.png" alt="Daikin" className="h-6 w-auto brightness-0 invert" />
+          <span className="inline-flex items-center rounded-lg bg-white px-3 py-2 shadow-sm">
+            <img src="/brand/daikin-logo.png" alt="Daikin" className="h-6 w-auto" />
+          </span>
         </div>
 
         <div className="relative z-10 max-w-md">

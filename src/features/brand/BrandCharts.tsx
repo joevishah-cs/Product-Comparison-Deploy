@@ -97,6 +97,12 @@ function ChartTooltip({ active, payload, unit }: any) {
   );
 }
 
+/** Rough advance width of a 12px label. Bold digits/caps run wider than the
+ *  regular axis face, so the two callers pass different per-character costs. */
+function labelWidth(text: string, perChar: number): number {
+  return Math.ceil(text.length * perChar);
+}
+
 /** Horizontal ranked bars + a table toggle. The default form for magnitude. */
 export function RankedBars({
   series,
@@ -112,15 +118,30 @@ export function RankedBars({
       [...series.points]
         .sort((a, b) => (series.direction === "lower" ? b.value - a.value : a.value - b.value))
         .map((p) => ({
-          name: BRAND_BY_KEY[p.brand].name.replace("Mitsubishi Electric", "Mitsubishi"),
+          name: BRAND_BY_KEY[p.brand].name
+            .replace("Mitsubishi Electric", "Mitsubishi")
+            .replace("Bosch/Buderus", "Bosch"),
           fullName: `${BRAND_BY_KEY[p.brand].name} (${BRAND_BY_KEY[p.brand].product})`,
           value: p.value,
+          // Pre-formatted so LabelList can render it straight from the row.
+          label: fmt(p.value, series.unit),
           raw: p.raw,
           color: BRAND_BY_KEY[p.brand].color,
           isDaikin: BRAND_BY_KEY[p.brand].isDaikin,
         })),
     [series],
   );
+
+  /* Reserve room for the widest tick and the widest value label rather than a
+   * fixed gutter -- units like "EUR m" and "months" overflow a fixed one. */
+  const { axisWidth, labelGutter } = React.useMemo(() => {
+    const widestName = Math.max(...data.map((d) => labelWidth(d.name, 7.6)));
+    const widestValue = Math.max(...data.map((d) => labelWidth(d.label, 7.6)));
+    return {
+      axisWidth: Math.min(140, Math.max(76, widestName + 12)),
+      labelGutter: Math.min(120, Math.max(44, widestValue + 14)),
+    };
+  }, [data]);
 
   return (
     <div>
@@ -145,13 +166,20 @@ export function RankedBars({
       ) : (
         <div style={{ width: "100%", height }}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} layout="vertical" margin={{ top: 4, right: 56, bottom: 4, left: 4 }}>
+            <BarChart
+              data={data}
+              layout="vertical"
+              margin={{ top: 4, right: labelGutter, bottom: 4, left: 4 }}
+            >
               <CartesianGrid horizontal={false} stroke={GRID_COLOR} />
               <XAxis type="number" hide domain={[0, "dataMax"]} />
               <YAxis
                 type="category"
                 dataKey="name"
-                width={96}
+                width={axisWidth}
+                /* Without this Recharts thins the ticks out and the top brand
+                 * silently loses its name. Every bar must stay labelled. */
+                interval={0}
                 tickLine={false}
                 axisLine={false}
                 tick={{ fill: AXIS_COLOR, fontSize: 12 }}
@@ -166,9 +194,8 @@ export function RankedBars({
                 ))}
                 {/* Direct labels double as the secondary encoding the palette needs. */}
                 <LabelList
-                  dataKey="value"
+                  dataKey="label"
                   position="right"
-                  formatter={(v: number) => fmt(v, series.unit)}
                   style={{ fill: AXIS_COLOR, fontSize: 12, fontWeight: 700 }}
                 />
               </Bar>
