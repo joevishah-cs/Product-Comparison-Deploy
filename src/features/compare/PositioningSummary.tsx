@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ShieldCheck, TriangleAlert, CircleSlash, Copy, Check } from "lucide-react";
+import { ShieldCheck, TriangleAlert, CircleSlash, Copy, Check, Layers } from "lucide-react";
 import { copyText } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/toast";
@@ -53,7 +53,7 @@ export function PositioningSummary({ result }: { result: ComparisonResult }) {
       )}
 
       {/* Verified edges */}
-      <div>
+      <div id="verified-daikin-edges" className="scroll-mt-24">
         <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold text-navy-900">
           <ShieldCheck className="size-5 text-verified-600" aria-hidden />
           Verified Daikin edges
@@ -141,7 +141,7 @@ export function PositioningSummary({ result }: { result: ComparisonResult }) {
       </div>
 
       {/* Gaps */}
-      <div>
+      <div id="improvement-opportunities" className="scroll-mt-24">
         <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold text-navy-900">
           <TriangleAlert className="size-5 text-caution-600" aria-hidden />
           Improvement opportunities
@@ -206,6 +206,57 @@ export function PositioningSummary({ result }: { result: ComparisonResult }) {
               );
             })}
           </ul>
+        )}
+      </div>
+
+      {/* Attributes compared */}
+      <div id="attributes-compared" className="scroll-mt-24">
+        <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold text-navy-900">
+          <Layers className="size-5 text-navy-500" aria-hidden />
+          Attributes compared
+          <Badge variant="neutral" size="sm">
+            {result.attributesCompared}
+          </Badge>
+        </h3>
+
+        {result.comparedAttributes.length === 0 ? (
+          <p className="rounded-2xl border border-dashed border-edge bg-white p-8 text-center text-base text-navy-500">
+            No attribute in this selection carries a verified source value yet.
+          </p>
+        ) : (
+          Object.entries(
+            result.comparedAttributes.reduce<Record<string, typeof result.comparedAttributes>>(
+              (groups, attr) => {
+                (groups[attr.group] ??= []).push(attr);
+                return groups;
+              },
+              {},
+            ),
+          ).map(([group, attrs]) => (
+            <div key={group} className="mb-4 last:mb-0">
+              <h4 className="mb-2 text-sm font-bold uppercase tracking-wider text-navy-500">{group}</h4>
+              <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                {attrs.map((attr) => (
+                  <li key={attr.attributeKey} className="rounded-2xl border border-edge bg-white p-4 shadow-card">
+                    <h5 className="text-base font-semibold text-navy-900">{attr.attributeLabel}</h5>
+                    <dl className="mt-2.5 space-y-1.5 text-sm">
+                      {attr.verifiedProducts.map(({ product, value }) => (
+                        <div key={product.id} className="flex justify-between gap-2">
+                          <dt className="text-navy-500">{product.displayName}</dt>
+                          <dd className="font-semibold text-navy-800">{value.display}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                    {attr.unverifiedProducts.length > 0 && (
+                      <p className="mt-2 border-t border-edge pt-2 text-xs text-caution-700">
+                        No verified value: {attr.unverifiedProducts.map((p) => p.displayName).join(", ")}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
         )}
       </div>
 

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { History, Trophy, DatabaseZap, ArrowRight, ShieldCheck, FileSpreadsheet, FileText } from "lucide-react";
+import { History, Bookmark, DatabaseZap, ArrowRight, ShieldCheck, FileSpreadsheet, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ProductSearch } from "@/features/selection/ProductSearch";
@@ -15,18 +15,36 @@ import {
   coverageFor,
   EXCLUDED_CELLS,
 } from "@/data/catalog";
-import { buildComparison } from "@/features/compare/engine";
+import { useAuth } from "@/features/auth/AuthProvider";
+import { listRows, type SavedComparison } from "@/lib/store";
 import { formatDate } from "@/lib/utils";
 
 export function DashboardPage() {
   const { selected, recentComparisons, replaceAll, recordComparison } = useSelection();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
-  const differentiators = React.useMemo(() => {
-    const daikin = PRODUCTS.filter((p) => p.isDaikin && p.equipmentType === "ducted_split_hp");
-    const comps = PRODUCTS.filter((p) => !p.isDaikin && p.equipmentType === "ducted_split_hp");
-    return buildComparison([...daikin, ...comps]).edges.slice(0, 4);
-  }, []);
+  const [saved, setSaved] = React.useState<SavedComparison[]>([]);
+  const [savedLoading, setSavedLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    let active = true;
+    if (!user) {
+      setSaved([]);
+      setSavedLoading(false);
+      return;
+    }
+    setSavedLoading(true);
+    void listRows<SavedComparison>("saved_comparisons", user.email).then((rows) => {
+      // Guard against a resolved fetch landing after the user changed.
+      if (!active) return;
+      setSaved(rows);
+      setSavedLoading(false);
+    });
+    return () => {
+      active = false;
+    };
+  }, [user]);
 
   const coverage = React.useMemo(() => {
     const totals = PRODUCTS.map((p) => coverageFor(p));
@@ -108,36 +126,72 @@ export function DashboardPage() {
           )}
         </article>
 
-        {/* Strongest differentiators */}
+        {/* Saved comparisons */}
         <article className="rounded-2xl border border-edge bg-white p-6 shadow-card">
           <header className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center rounded-xl bg-verified-50 text-verified-600">
-              <Trophy className="size-[18px]" aria-hidden />
+            <span className="grid size-9 place-items-center rounded-xl bg-daikin-50 text-daikin-700">
+              <Bookmark className="size-[18px]" aria-hidden />
             </span>
-            <h2 className="text-lg font-semibold text-navy-900">Strongest differentiators</h2>
+            <h2 className="text-lg font-semibold text-navy-900">Saved comparisons</h2>
           </header>
-          <p className="mt-2 text-sm text-navy-500">
-            Calculated across every Daikin FIT model and all 19 competitor models in the battlecard.
-          </p>
-          <ul className="mt-4 space-y-2.5">
-            {differentiators.map((edge) => (
-              <li key={edge.id} className="rounded-xl border border-verified-500/20 bg-verified-50/60 p-3">
-                <p className="text-sm font-bold text-verified-700">{edge.attributeLabel}</p>
-                <p className="mt-0.5 text-sm leading-relaxed text-navy-700">
-                  {edge.marginLabel
-                    ? `${edge.daikinValue.display} — ${edge.marginLabel} than the closest competitor.`
-                    : "Listed on Daikin FIT; not listed on competitors with a recorded value."}
-                </p>
-              </li>
-            ))}
-          </ul>
-          <Link
-            to="/compare"
-            className="mt-4 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-semibold text-daikin-700 hover:text-daikin-800"
-          >
-            See the full positioning summary
-            <ArrowRight className="size-4" aria-hidden />
-          </Link>
+
+          {savedLoading ? (
+            <p className="mt-4 rounded-xl border border-dashed border-edge bg-navy-50/50 p-5 text-center text-sm text-navy-500">
+              Loading your saved comparisons…
+            </p>
+          ) : saved.length === 0 ? (
+            <p className="mt-4 rounded-xl border border-dashed border-edge bg-navy-50/50 p-5 text-center text-sm text-navy-500">
+              Save a comparison from the compare page and it will appear here, with its exact product
+              selection and unit sizes intact.
+            </p>
+          ) : (
+            <>
+              <ul className="mt-4 space-y-2">
+                {saved.slice(0, 5).map((item) => {
+                  const products = item.product_ids.map((id) => PRODUCT_BY_ID[id]).filter(Boolean);
+                  return (
+                    <li key={item.id}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          replaceAll(item.product_ids, item.unit_selections);
+                          recordComparison();
+                          navigate("/compare");
+                        }}
+                        className="flex w-full items-center gap-3 rounded-xl border border-edge p-3 text-left transition-colors hover:border-daikin-300 hover:bg-daikin-50/50"
+                      >
+                        <div className="flex -space-x-2">
+                          {products.slice(0, 3).map((p) => (
+                            <img
+                              key={p.id}
+                              src={p.image}
+                              alt=""
+                              className="size-9 rounded-lg border-2 border-white object-cover"
+                            />
+                          ))}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-semibold text-navy-900">{item.name}</p>
+                          <p className="truncate text-xs text-navy-400">
+                            {products.map((p) => p.model).join(" vs ") || "No products recorded"}
+                          </p>
+                          <p className="text-xs text-navy-400">{formatDate(item.updated_at)}</p>
+                        </div>
+                        <ArrowRight className="size-4 shrink-0 text-navy-400" aria-hidden />
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+              <Link
+                to="/saved"
+                className="mt-4 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-semibold text-daikin-700 hover:text-daikin-800"
+              >
+                {saved.length > 5 ? `See all ${saved.length} saved comparisons` : "Manage saved comparisons"}
+                <ArrowRight className="size-4" aria-hidden />
+              </Link>
+            </>
+          )}
         </article>
 
         {/* Product data coverage */}

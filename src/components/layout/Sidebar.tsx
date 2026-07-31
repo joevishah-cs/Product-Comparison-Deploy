@@ -5,6 +5,7 @@ import {
   GitCompareArrows,
   Boxes,
   Microscope,
+  Globe2,
   Newspaper,
   MessagesSquare,
   FileText,
@@ -33,6 +34,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
   {
     title: "Intelligence",
     items: [
+      { to: "/brand", label: "Brand Intelligence", icon: Globe2 },
       { to: "/analyst", label: "Analyst Coverage", icon: Microscope },
       { to: "/press", label: "Press & Media", icon: Newspaper },
       { to: "/reviews", label: "User Reviews", icon: MessagesSquare },

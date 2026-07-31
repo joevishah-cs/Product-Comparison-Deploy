@@ -15,6 +15,7 @@ import { useSelection } from "@/features/selection/SelectionProvider";
 import { deleteRow, insertRow, listRows, type ReviewSignal, type Sentiment } from "@/lib/store";
 import { DAIKIN_FILL } from "@/components/charts/palette";
 import { ImportedReviewsSection } from "./ImportedReviewsSection";
+import { CompetitorReviewsSection } from "./CompetitorReviewsSection";
 import { loadReviewSource } from "./useReviewSource";
 import type { ReviewRecord } from "@/data/review-types";
 
@@ -247,6 +248,10 @@ export function ReviewsPage() {
       </header>
 
       <ImportedReviewsSection />
+
+      <div className="border-t border-edge pt-8">
+        <CompetitorReviewsSection />
+      </div>
 
       <header className="flex flex-wrap items-end justify-between gap-4 border-t border-edge pt-8">
         <div>

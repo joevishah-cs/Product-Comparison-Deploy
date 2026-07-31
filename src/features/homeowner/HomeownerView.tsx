@@ -80,13 +80,14 @@ export function HomeownerView({
   onViewTechnical: () => void;
   onViewReviews: () => void;
 }) {
-  const { config, update, toggleSection, generated, markGenerated, presenting, setPresenting } =
+  const { config, update, toggleSection, generated, markGenerated, presenting, setPresenting, setView } =
     useHomeowner();
   const { notify } = useToast();
 
   const [setupOpen, setSetupOpen] = React.useState(false);
   const [controlsOpen, setControlsOpen] = React.useState(false);
   const [shareOpen, setShareOpen] = React.useState(false);
+  const reportRef = React.useRef<HTMLDivElement>(null);
 
   const daikinProducts = result.daikinProducts;
   const competitorProducts = result.competitorProducts;
@@ -409,7 +410,7 @@ export function HomeownerView({
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-10" ref={reportRef}>
       {/* Action bar */}
       <div className="no-print flex flex-wrap items-center gap-2 rounded-2xl border border-edge bg-white p-4 shadow-card">
         <Button onClick={() => setSetupOpen(true)}>
@@ -475,7 +476,12 @@ export function HomeownerView({
         onGenerate={() => {
           markGenerated();
           setSetupOpen(false);
-          notify("Homeowner report generated.");
+          setView("homeowner");
+          notify("Homeowner report updated", "success");
+          // Auto-scroll to report after a brief delay to let dialog close
+          setTimeout(() => {
+            reportRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 300);
         }}
       />
 

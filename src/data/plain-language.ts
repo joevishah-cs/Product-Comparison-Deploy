@@ -81,47 +81,86 @@ export const PLAIN_LANGUAGE: Record<string, string> = {
   warranty:
     "How long the manufacturer covers parts, and what happens if a major component fails. A replacement warranty means the unit is replaced rather than repaired.",
 
-  /* Air-to-water attributes */
+  /* Air-to-water (A2WHP) attributes */
   max_lwt:
     "The hottest water the heat pump can send out to your radiators or floor loops, in °F. Higher means it can drive older high-temperature radiators.",
   min_lwt:
-    "The water temperature the unit can still produce when it is at its coldest permitted outdoor condition.",
-  delta_lwt:
-    "The ratio of minimum to maximum leaving water temperature -- how much of its output temperature the unit holds onto in the cold. Closer to 1.0 means it holds up better.",
-  lowest_ambient_lwt:
-    "The coldest outdoor temperature at which the unit is rated to keep producing hot water. Lower is better in a cold climate.",
+    "The water temperature the unit can still produce when it is at its coldest permitted outdoor condition. Lower is better in a cold climate.",
   emitter_high_temp:
     "The water temperature available for high-temperature emitters -- traditional baseboard and cast-iron radiators, which need hot water to work.",
-  emitter_medium_temp:
-    "The water temperature available for medium-temperature emitters such as heat-pump convectors, fan coils and air handlers.",
-  emitter_low_temp:
-    "The water temperature available for low-temperature emitters, mainly radiant floor loops.",
-  cold_climate_op: "The coldest outdoor temperature the source records for cold-climate operation.",
-  max_heat_cap_131:
-    "Peak heating output measured while producing 131°F water, in BTU per hour. Higher is more heat.",
-  min_heat_cap:
-    "Heating output remaining at the coldest permitted outdoor temperature. Higher means less backup heat needed.",
-  delta_heat_cap:
-    "The gap between peak heating output and cold-weather output. A smaller gap means output falls off less as it gets cold.",
-  lowest_ambient_heat:
-    "The coldest outdoor temperature at which the unit is rated to deliver heat. Lower is better in a cold climate.",
-  single_fan: "Whether the unit uses a single fan.",
-  no_glycol:
-    "Whether the system can run without glycol antifreeze in the water loop. Glycol costs money, reduces heat transfer and needs periodic service.",
-  warranty_hydronic: "The warranty term recorded for this air-to-water unit.",
-  boiler_replacement:
-    "The water temperature recorded against boiler-replacement suitability -- how well the unit can stand in for an existing boiler.",
-  max_cool_cap: "Peak cooling output, in BTU per hour.",
-  min_cool_cap: "Cooling output remaining at the hottest permitted outdoor temperature.",
-  delta_cool_cap: "The gap between peak and hot-weather cooling output.",
-  highest_ambient: "The hottest outdoor temperature the unit is rated to operate in.",
-  oem_heat_pump: "Whether the heat pump is the manufacturer's own equipment.",
-  hydro_split:
-    "A hydro-split design keeps the water side outdoors, so no refrigerant piping has to be run into the house.",
-  low_gwp:
-    "Whether the refrigerant has a low global warming potential -- how much it would contribute to warming if released.",
-  sound_level_hy: "How loud the unit is, in decibels. Lower is quieter.",
-  total_amps: "The total electrical current draw, which sets the size of the breaker required.",
+
+  heat_cap_a446w158:
+    "Heating output in kBtu/h at 44.6°F outdoor air while producing 158°F leaving water -- a demanding, high-temperature-radiator condition. Higher is more heat.",
+  heat_cap_a446w131:
+    "Heating output in kBtu/h at 44.6°F outdoor air while producing 131°F leaving water. Higher is more heat.",
+  heat_cap_a446w110:
+    "Heating output in kBtu/h at 44.6°F outdoor air while producing 110°F leaving water -- a low-temperature-emitter condition. Higher is more heat.",
+  heat_cap_a446w95:
+    "Heating output in kBtu/h at 44.6°F outdoor air while producing 95°F leaving water, the mildest condition recorded. Higher is more heat.",
+  heat_cap_a5w158:
+    "Heating output in kBtu/h at 5°F outdoor air while producing 158°F leaving water -- how much heat the unit still delivers on a genuinely cold day at a demanding water temperature. Higher is more heat.",
+  heat_cap_a5w131:
+    "Heating output in kBtu/h at 5°F outdoor air while producing 131°F leaving water. Higher is more heat.",
+  heat_cap_a5w110:
+    "Heating output in kBtu/h at 5°F outdoor air while producing 110°F leaving water. Higher is more heat.",
+  heat_cap_a5w95:
+    "Heating output in kBtu/h at 5°F outdoor air while producing 95°F leaving water. Higher is more heat.",
+
+  cop_a446w158:
+    "Coefficient of performance at 44.6°F outdoor air producing 158°F water. A COP of 2.0 means the system moves two units of heat for every one unit of electricity. Higher is better.",
+  cop_a446w131:
+    "Coefficient of performance at 44.6°F outdoor air producing 131°F water. Higher is better.",
+  cop_a446w110:
+    "Coefficient of performance at 44.6°F outdoor air producing 110°F water. Higher is better.",
+  cop_a446w95:
+    "Coefficient of performance at 44.6°F outdoor air producing 95°F water. Higher is better.",
+  cop_a5w158:
+    "Coefficient of performance at 5°F outdoor air producing 158°F water -- efficiency at a demanding water temperature on a genuinely cold day. Higher is better.",
+  cop_a5w131:
+    "Coefficient of performance at 5°F outdoor air producing 131°F water. Higher is better.",
   cop_a5w110:
     "Coefficient of performance at 5°F outdoor air producing 110°F water. Higher means more heat delivered per unit of electricity in cold weather.",
+  cop_a5w95:
+    "Coefficient of performance at 5°F outdoor air producing 95°F water, the mildest water temperature recorded at this cold-weather condition. Higher is better.",
+
+  cool_cap_a95w716:
+    "Cooling output in kBtu/h at 95°F outdoor air producing 71.6°F chilled water. Higher is more cooling.",
+  cool_cap_a95w644:
+    "Cooling output in kBtu/h at 95°F outdoor air producing 64.4°F chilled water. Higher is more cooling.",
+  cool_cap_a95w446:
+    "Cooling output in kBtu/h at 95°F outdoor air producing 44.6°F chilled water. Higher is more cooling.",
+  eer_a95w716:
+    "Cooling efficiency (Btu per watt-hour) at 95°F outdoor air producing 71.6°F chilled water. Higher is better.",
+  eer_a95w644:
+    "Cooling efficiency (Btu per watt-hour) at 95°F outdoor air producing 64.4°F chilled water. Higher is better.",
+  eer_a95w446:
+    "Cooling efficiency (Btu per watt-hour) at 95°F outdoor air producing 44.6°F chilled water. Higher is better.",
+
+  outdoor_sound:
+    "How loud the outdoor unit is, in decibels (dBA). Lower is quieter. A 10 dBA drop sounds roughly half as loud.",
+  indoor_sound:
+    "How loud the indoor hydronic unit is, in decibels (dBA). Lower is quieter.",
+
+  outdoor_weight: "The weight of the outdoor unit, in pounds. Heavier units need a sturdier pad and more installers to set.",
+  outdoor_height: "The height of the outdoor unit, in inches.",
+  outdoor_width: "The width of the outdoor unit, in inches.",
+  outdoor_depth: "The depth of the outdoor unit, in inches.",
+  indoor_weight: "The weight of the indoor hydronic unit, in pounds.",
+  indoor_height: "The height of the indoor hydronic unit, in inches.",
+  indoor_width: "The width of the indoor hydronic unit, in inches.",
+  indoor_depth: "The depth of the indoor hydronic unit, in inches.",
+
+  backup_heater_cap:
+    "The output of the electric backup heater built into the hydronic system, in kW. This is what covers the gap when the heat pump alone cannot meet the load.",
+  backup_heater_phase: "The electrical phase (single or three) the backup heater requires.",
+  backup_heater_freq: "The electrical frequency the backup heater is rated for, in Hz.",
+  backup_heater_voltage: "The voltage the backup heater requires.",
+  backup_heater_mop: "Maximum overcurrent protection for the backup heater circuit, in amps -- sets the breaker size.",
+  backup_heater_mca: "Minimum circuit ampacity for the backup heater -- the minimum wire and breaker rating the installer must provide.",
+
+  outdoor_power_amps: "The outdoor unit's rated current draw, in amps -- used to size the electrical circuit.",
+  outdoor_voltage: "The voltage the outdoor unit requires.",
+  outdoor_mop: "Maximum overcurrent protection for the outdoor unit circuit, in amps -- sets the breaker size.",
+  outdoor_mca: "Minimum circuit ampacity for the outdoor unit -- the minimum wire and breaker rating the installer must provide.",
+  indoor_power_amps: "The indoor hydronic unit's rated current draw, in amps.",
 };

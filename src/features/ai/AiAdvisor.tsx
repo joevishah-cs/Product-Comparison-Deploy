@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Sparkles, X, Send, Copy, Check, ShieldCheck, Calculator, Brain, Megaphone, AlertTriangle, CircleSlash, ServerCog, MessagesSquare, Home, Handshake, ExternalLink } from "lucide-react";
+import { Sparkles, X, Send, Copy, Check, ShieldCheck, Calculator, Brain, Megaphone, AlertTriangle, CircleSlash, MessagesSquare, Home, Handshake, ExternalLink } from "lucide-react";
 import { cn, copyText, uid } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,9 +18,9 @@ import { useHomeowner } from "@/features/homeowner/HomeownerProvider";
 import type { ReviewSource } from "@/data/review-types";
 import { PRIORITY_BY_KEY } from "@/features/homeowner/homeownerEngine";
 import { AiTag } from "@/components/common/AiTag";
-import { AI_FUNCTION_URL, SUPABASE_ANON_KEY_FOR_FUNCTION, isSupabaseConfigured } from "@/lib/supabase";
 import { insertRow, type ChatMessageRecord } from "@/lib/store";
 import { useAuth } from "@/features/auth/AuthProvider";
+import { askLlm, isLlmConfigured } from "./llmClient";
 
 interface ChatTurn {
   id: string;
@@ -49,41 +49,22 @@ async function askAdvisor(
 ): Promise<AdvisorAnswer> {
   const grounding = answerLocally(question, products, reviewSource, view);
 
-  if (!isSupabaseConfigured || !AI_FUNCTION_URL) return grounding;
+  if (!isLlmConfigured) return grounding;
 
-  try {
-    const res = await fetch(AI_FUNCTION_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${SUPABASE_ANON_KEY_FOR_FUNCTION}`,
-      },
-      body: JSON.stringify({
-        question,
-        // Only source-backed records leave the browser. The AI provider key stays
-        // in the Edge Function's server-side secrets.
-        products: products.map((p) => ({
-          id: p.id,
-          name: p.displayName,
-          isDaikin: p.isDaikin,
-          equipmentType: p.equipmentType,
-          attributes: Object.fromEntries(
-            Object.entries(p.attributes).map(([k, v]) => [
-              k,
-              { value: v.status === "verified" ? v.display : null, citation: v.source.citation },
-            ]),
-          ),
-        })),
-        view,
-        grounding,
-      }),
-    });
-    if (!res.ok) return grounding;
-    const data = (await res.json()) as { sections?: AdvisorAnswer["sections"] };
-    return data.sections?.length ? { sections: data.sections } : grounding;
-  } catch {
-    return grounding;
-  }
+  const llmProducts = products.map((p) => ({
+    id: p.id,
+    name: p.displayName,
+    isDaikin: p.isDaikin,
+    equipmentType: p.equipmentType,
+    attributes: Object.fromEntries(
+      Object.entries(p.attributes).map(([k, v]) => [
+        k,
+        { value: v.status === "verified" ? v.display : null, citation: v.source.citation },
+      ]),
+    ),
+  }));
+
+  return askLlm(question, llmProducts, grounding, view);
 }
 
 function AnswerBlock({ answer }: { answer: AdvisorAnswer }) {
@@ -387,12 +368,6 @@ export function AiAdvisor() {
                 <Send aria-hidden />
               </Button>
             </div>
-            <p className="mt-2 flex items-center gap-1.5 text-xs text-navy-400">
-              <ServerCog className="size-3.5 shrink-0" aria-hidden />
-              {isSupabaseConfigured
-                ? "Live answers run through a server-side Supabase Edge Function — no API key is present in the browser."
-                : "Running deterministic source-backed answers. Configure the Edge Function for live AI; no API key is ever exposed here."}
-            </p>
           </form>
         </div>
       )}

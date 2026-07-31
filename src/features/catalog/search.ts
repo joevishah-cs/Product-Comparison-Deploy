@@ -46,7 +46,7 @@ function buildIndex(): IndexedProduct[] {
       }
     }
 
-    const sound = product.attributes.sound_level ?? product.attributes.sound_level_hy;
+    const sound = product.attributes.sound_level ?? product.attributes.outdoor_sound;
     if (sound?.status === "verified" && sound.numeric !== null) {
       tokens.push({ label: "Sound", value: `${sound.numeric} dBA` });
     }
@@ -90,9 +90,9 @@ export interface SearchHit {
 function headlineMetric(product: Product): { metricLabel: string; metricValue: string } {
   const seer = product.attributes.seer2;
   if (seer?.status === "verified") return { metricLabel: "SEER2", metricValue: seer.display };
-  const cop = product.attributes.cop_a5w110 ?? product.attributes.cop_5f;
+  const cop = product.attributes.cop_5f ?? product.attributes.cop_a446w158;
   if (cop?.status === "verified") return { metricLabel: "COP", metricValue: cop.display };
-  const sound = product.attributes.sound_level ?? product.attributes.sound_level_hy;
+  const sound = product.attributes.sound_level ?? product.attributes.outdoor_sound;
   if (sound?.status === "verified") return { metricLabel: "Sound", metricValue: sound.display };
   const lwt = product.attributes.max_lwt;
   if (lwt?.status === "verified") return { metricLabel: "Max LWT", metricValue: `${lwt.display}°F` };
@@ -102,11 +102,12 @@ function headlineMetric(product: Product): { metricLabel: string; metricValue: s
 export interface SearchFilters {
   brands?: string[];
   families?: string[];
+  equipmentType?: string | null;
 }
 
 export function searchProducts(query: string, filters: SearchFilters = {}, limit = 40): SearchHit[] {
   const q = normalizeSearch(query);
-  const { brands = [], families = [] } = filters;
+  const { brands = [], families = [], equipmentType = null } = filters;
 
   const results: SearchHit[] = [];
 
@@ -114,6 +115,7 @@ export function searchProducts(query: string, filters: SearchFilters = {}, limit
     const { product } = entry;
     if (brands.length && !brands.includes(product.brand)) continue;
     if (families.length && !families.includes(product.family)) continue;
+    if (equipmentType && product.equipmentType !== equipmentType) continue;
 
     let score = 0;
     if (!q) {

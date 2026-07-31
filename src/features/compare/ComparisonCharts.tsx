@@ -8,6 +8,7 @@ import {
   FeatureMatrix,
   FitScoreChart,
   OperatingRangeChart,
+  RefrigerantComparisonTable,
   TonnageAvailabilityChart,
 } from "@/components/charts/SpecialCharts";
 import { ATTRIBUTE_BY_KEY, SOURCE_DOCUMENTS } from "@/data/catalog";
@@ -158,24 +159,30 @@ export function ComparisonCharts({
   const hasDucted = products.some((p) => p.equipmentType === "ducted_split_hp");
   const hasHydronic = products.some((p) => p.equipmentType === "air_to_water_hp");
 
-  const refrigerantSlices = React.useMemo(() => {
-    const counts = new Map<string, number>();
-    let unknown = 0;
+  const modelsByRefrigerant = React.useMemo(() => {
+    const map: Record<string, string[]> = {};
     for (const p of products) {
       const v = p.attributes.refrigerant;
-      if (v?.status === "verified") counts.set(v.display, (counts.get(v.display) ?? 0) + 1);
-      else unknown += 1;
+      if (v?.status !== "verified") continue;
+      (map[v.display] ??= []).push(p.model);
     }
-    const palette = [DAIKIN_FILL, "#94a3b8", "#64748b", "#cbd5e1"];
-    const slices = Array.from(counts.entries()).map(([name, value], i) => ({
-      name,
-      value,
-      color: palette[i % palette.length],
-      note: "Recorded refrigerant only — no ranking between refrigerants is implied.",
-    }));
-    if (unknown) slices.push({ name: UNAVAILABLE, value: unknown, color: "#e2e8f0", note: "Source cell blank." });
-    return slices;
+    return map;
   }, [products]);
+
+  const refrigerantSlices = React.useMemo(() => {
+    const palette = [DAIKIN_FILL, "#94a3b8", "#64748b", "#cbd5e1"];
+    const unknownCount = products.filter((p) => p.attributes.refrigerant?.status !== "verified").length;
+    const slices = Object.entries(modelsByRefrigerant).map(([name, models], i) => ({
+      name,
+      value: models.length,
+      color: palette[i % palette.length],
+      note: `Model${models.length === 1 ? "" : "s"}: ${models.join(", ")}`,
+    }));
+    if (unknownCount) {
+      slices.push({ name: UNAVAILABLE, value: unknownCount, color: "#e2e8f0", note: "Source cell blank." });
+    }
+    return slices;
+  }, [products, modelsByRefrigerant]);
 
   const edgeSlices = React.useMemo(() => {
     const byGroup = new Map<string, number>();
@@ -310,47 +317,50 @@ export function ComparisonCharts({
           </ChartCard>
         )}
 
-        <ChartCard
-          title="Maximum capacity at 47°F"
-          subtitle="Heating output in BTU/h at the standard mild-weather rating point"
-          direction="higher"
-          glossaryTerm="Capacity at 47°F"
-          glossary={ATTRIBUTE_BY_KEY.cap_47f?.plainLanguage}
-          meaning={
-            <>
-              47°F is the standard mild-weather rating point, so this is the closest thing to a like-for-like
-              heating output figure across brands. Compare it with the 5°F chart: the gap between the two
-              tells you how much output a system gives up as the weather turns.
-            </>
-          }
-          sources={sourcesFor(products, "cap_47f")}
-          unavailableNote={missingNote(products, "cap_47f")}
-        >
-          <AttributeBarChart products={products} attributeKey="cap_47f" />
-        </ChartCard>
+        {hasDucted && (
+          <ChartCard
+            title="Maximum capacity at 47°F"
+            subtitle="Heating output in BTU/h at the standard mild-weather rating point"
+            direction="higher"
+            glossaryTerm="Capacity at 47°F"
+            glossary={ATTRIBUTE_BY_KEY.cap_47f?.plainLanguage}
+            meaning={
+              <>
+                47°F is the standard mild-weather rating point, so this is the closest thing to a
+                like-for-like heating output figure across brands. Compare it with the 5°F chart: the gap
+                between the two tells you how much output a system gives up as the weather turns.
+              </>
+            }
+            sources={sourcesFor(products, "cap_47f")}
+            unavailableNote={missingNote(products, "cap_47f")}
+          >
+            <AttributeBarChart products={products} attributeKey="cap_47f" />
+          </ChartCard>
+        )}
+
+        {hasDucted && (
+          <ChartCard
+            title="Maximum capacity at 95°F"
+            subtitle="Cooling output in BTU/h at the standard hot-weather rating point"
+            direction="higher"
+            glossaryTerm="Capacity at 95°F"
+            glossary={ATTRIBUTE_BY_KEY.cap_95f?.plainLanguage}
+            meaning={
+              <>
+                The standard cooling rating point. This is the number a load calculation is usually sized
+                against, so it is the fairest single comparison of cooling output between models.
+              </>
+            }
+            sources={sourcesFor(products, "cap_95f")}
+            unavailableNote={missingNote(products, "cap_95f")}
+          >
+            <AttributeBarChart products={products} attributeKey="cap_95f" />
+          </ChartCard>
+        )}
 
         <ChartCard
-          title="Maximum capacity at 95°F"
-          subtitle="Cooling output in BTU/h at the standard hot-weather rating point"
-          direction="higher"
-          glossaryTerm="Capacity at 95°F"
-          glossary={ATTRIBUTE_BY_KEY.cap_95f?.plainLanguage}
-          meaning={
-            <>
-              The standard cooling rating point. This is the number a load calculation is usually sized
-              against, so it is the fairest single comparison of cooling output between models.
-            </>
-          }
-          sources={sourcesFor(products, "cap_95f")}
-          unavailableNote={missingNote(products, "cap_95f")}
-        >
-          <AttributeBarChart products={products} attributeKey="cap_95f" />
-        </ChartCard>
-
-        <ChartCard
-          title="Refrigerant distribution"
+          title="Refrigerant reference"
           subtitle="Refrigerant recorded for each selected product"
-          direction="none"
           glossaryTerm="Refrigerant"
           glossary={ATTRIBUTE_BY_KEY.refrigerant?.plainLanguage}
           meaning={
@@ -369,6 +379,9 @@ export function ComparisonCharts({
             centerValue={String(products.length)}
             centerLabel="products"
           />
+          <div className="mt-5">
+            <RefrigerantComparisonTable modelsByRefrigerant={modelsByRefrigerant} />
+          </div>
         </ChartCard>
 
         <ChartCard
@@ -494,11 +507,11 @@ export function ComparisonCharts({
             </ChartCard>
 
             <ChartCard
-              title="Heating capacity at 131°F LWT"
-              subtitle="Peak heating output in BTU/h while producing 131°F water"
+              title="Heating capacity at 46°F / 158°F LWT"
+              subtitle="Peak heating output in BTU/h while producing 158°F water at 46°F outdoor air"
               direction="higher"
               glossaryTerm="Heating capacity"
-              glossary={ATTRIBUTE_BY_KEY.max_heat_cap_131?.plainLanguage}
+              glossary={ATTRIBUTE_BY_KEY.heat_cap_a446w158?.plainLanguage}
               meaning={
                 <>
                   Peak heat output measured at a demanding water temperature. Read it next to the
@@ -506,10 +519,10 @@ export function ComparisonCharts({
                   less the system leans on a backup boiler when it gets cold.
                 </>
               }
-              sources={sourcesFor(products, "max_heat_cap_131")}
-              unavailableNote={missingNote(products, "max_heat_cap_131")}
+              sources={sourcesFor(products, "heat_cap_a446w158")}
+              unavailableNote={missingNote(products, "heat_cap_a446w158")}
             >
-              <AttributeBarChart products={products} attributeKey="max_heat_cap_131" />
+              <AttributeBarChart products={products} attributeKey="heat_cap_a446w158" />
             </ChartCard>
           </>
         )}

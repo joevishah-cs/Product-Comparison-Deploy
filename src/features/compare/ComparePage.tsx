@@ -317,7 +317,7 @@ export function ComparePage() {
       <section aria-label="Selected product summary">
         <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {selected.map((p) => {
-            const sound = p.attributes.sound_level ?? p.attributes.sound_level_hy;
+            const sound = p.attributes.sound_level ?? p.attributes.outdoor_sound;
             return (
               <li
                 key={p.id}
@@ -392,6 +392,7 @@ export function ComparePage() {
           value={String(result.edges.length)}
           label="Verified Daikin edges"
           detail="Attributes where a Daikin value beats every selected competitor that has a recorded value."
+          targetId="verified-daikin-edges"
         />
         <MetricCard
           icon={TriangleAlert}
@@ -399,6 +400,7 @@ export function ComparePage() {
           value={String(result.gaps.length)}
           label="Improvement gaps"
           detail="Attributes where a selected competitor leads the strongest selected Daikin product."
+          targetId="improvement-opportunities"
         />
         <MetricCard
           icon={Layers}
@@ -406,6 +408,7 @@ export function ComparePage() {
           value={String(result.attributesCompared)}
           label="Attributes compared"
           detail="Attributes with at least one verified source value across the current selection."
+          targetId="attributes-compared"
         />
         <MetricCard
           icon={Gauge}
@@ -424,6 +427,8 @@ export function ComparePage() {
       />
 
       <PositioningSummary result={result} />
+
+      <FeatureTable products={selected} result={result} />
 
       {/* Scorecards */}
       <section aria-label="Key advantage scorecards" className="space-y-4">
@@ -501,8 +506,6 @@ export function ComparePage() {
           />
         </>
       )}
-
-      <FeatureTable products={selected} result={result} />
 
       <MarketingTakeaways products={selected} result={result} />
 
@@ -583,12 +586,14 @@ function MetricCard({
   label,
   detail,
   tone,
+  targetId,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   value: string;
   label: string;
   detail: string;
   tone: "verified" | "caution" | "neutral" | "daikin";
+  targetId?: string;
 }) {
   const toneClass = {
     verified: "border-verified-500/25 bg-verified-50/70 text-verified-700",
@@ -597,14 +602,33 @@ function MetricCard({
     daikin: "border-daikin-200 bg-daikin-50/70 text-daikin-800",
   }[tone];
 
-  return (
-    <div className={cn("rounded-2xl border p-5 shadow-card", toneClass)}>
+  const content = (
+    <>
       <div className="flex items-center gap-2">
         <Icon className="size-5" aria-hidden />
         <p className="text-sm font-bold uppercase tracking-wider">{label}</p>
       </div>
       <p className="mt-3 text-4xl font-bold text-navy-900">{value}</p>
       <p className="mt-1.5 text-sm leading-relaxed text-navy-500">{detail}</p>
-    </div>
+    </>
+  );
+
+  if (!targetId) {
+    return <div className={cn("rounded-2xl border p-5 shadow-card", toneClass)}>{content}</div>;
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }}
+      className={cn(
+        "rounded-2xl border p-5 text-left shadow-card transition-shadow hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-daikin-500/50",
+        toneClass,
+      )}
+    >
+      {content}
+    </button>
   );
 }

@@ -11,6 +11,7 @@ import { DashboardPage } from "@/features/dashboard/DashboardPage";
 import { ProductExplorerPage } from "@/features/explorer/ProductExplorerPage";
 import { ComparePage } from "@/features/compare/ComparePage";
 import { ReviewsPage } from "@/features/reviews/ReviewsPage";
+import { BrandIntelligencePage } from "@/features/brand/BrandIntelligencePage";
 import { AnalystPage } from "@/features/analyst/AnalystPage";
 import { PressPage } from "@/features/press/PressPage";
 import { BriefsPage } from "@/features/briefs/BriefsPage";
@@ -54,6 +55,7 @@ export function App() {
                       <Route path="/dashboard" element={<DashboardPage />} />
                       <Route path="/compare" element={<ComparePage />} />
                       <Route path="/explorer" element={<ProductExplorerPage />} />
+                      <Route path="/brand" element={<BrandIntelligencePage />} />
                       <Route path="/analyst" element={<AnalystPage />} />
                       <Route path="/press" element={<PressPage />} />
                       <Route path="/reviews" element={<ReviewsPage />} />

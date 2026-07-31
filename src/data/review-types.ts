@@ -43,11 +43,15 @@ export interface ReviewRecord {
   hasPositiveLanguage: boolean;
   hasCriticalLanguage: boolean;
   sourceRow: number;
+  /** True only for the illustrative competitor dataset — never present on real imported reviews. */
+  synthetic?: boolean;
 }
 
 export interface ReviewSource {
-  sourceFile: string;
-  sourceSheet: string;
+  /** True only for the illustrative competitor dataset — never present on real imported reviews. */
+  synthetic?: boolean;
+  sourceFile: string | null;
+  sourceSheet: string | null;
   importedAt: string;
   totalReviews: number;
   dateRange: { from: string; to: string };

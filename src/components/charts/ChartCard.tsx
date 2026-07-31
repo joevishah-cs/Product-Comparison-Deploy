@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ArrowUpRight, ArrowDownRight, Minus, Lightbulb, CircleSlash } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Minus, Lightbulb, CircleSlash, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { InfoTip } from "@/components/ui/tooltip";
@@ -39,7 +39,8 @@ export function ChartCard({
 }: {
   title: string;
   subtitle?: string;
-  direction: BetterDirection;
+  /** Omit to show no direction badge at all -- for cards where "better" doesn't apply. */
+  direction?: BetterDirection;
   glossaryTerm?: string;
   glossary?: string;
   meaning: React.ReactNode;
@@ -50,6 +51,7 @@ export function ChartCard({
   actions?: React.ReactNode;
 }) {
   const uniqueSources = Array.from(new Set(sources));
+  const [expanded, setExpanded] = React.useState(false);
 
   return (
     <section
@@ -66,7 +68,7 @@ export function ChartCard({
         </div>
         <div className="flex shrink-0 items-center gap-2">
           {actions}
-          <DirectionBadge direction={direction} />
+          {direction && <DirectionBadge direction={direction} />}
         </div>
       </header>
 
@@ -79,14 +81,31 @@ export function ChartCard({
         </p>
       )}
 
-      <div className="mt-5 rounded-xl bg-daikin-50/60 p-4">
+      <button
+        type="button"
+        onClick={() => setExpanded(!expanded)}
+        className={cn(
+          "mt-5 flex w-full items-center justify-between rounded-xl p-4 text-left transition-all",
+          expanded ? "rounded-b-none bg-daikin-50/80" : "hover:bg-daikin-50/40 bg-daikin-50/60",
+        )}
+        aria-expanded={expanded}
+      >
         <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-daikin-800">
           <Lightbulb className="size-4" aria-hidden />
           What this means
           <AiTag kind="generated" />
         </p>
-        <p className="mt-1.5 text-[0.9375rem] leading-relaxed text-navy-700">{meaning}</p>
-      </div>
+        <ChevronDown
+          className={cn("size-4 shrink-0 text-daikin-700 transition-transform", expanded && "rotate-180")}
+          aria-hidden
+        />
+      </button>
+
+      {expanded && (
+        <div className="rounded-b-xl border-t border-daikin-200/50 bg-daikin-50/80 px-4 pb-4 pt-3">
+          <p className="text-[0.9375rem] leading-relaxed text-navy-700">{meaning}</p>
+        </div>
+      )}
 
       <footer className="mt-3 space-y-1">
         {uniqueSources.map((s) => (

@@ -49,6 +49,17 @@ export interface ValidationRequirement {
   products: Product[];
 }
 
+export interface ComparedAttribute {
+  attributeKey: string;
+  attributeLabel: string;
+  group: string;
+  unit: string;
+  /** Products with a verified source value for this attribute, in selection order. */
+  verifiedProducts: { product: Product; value: AttributeValue }[];
+  /** Selected products with no verified value for this attribute. */
+  unverifiedProducts: Product[];
+}
+
 export interface ComparisonResult {
   daikinProducts: Product[];
   competitorProducts: Product[];
@@ -58,6 +69,7 @@ export interface ComparisonResult {
   gaps: CompetitiveGap[];
   validations: ValidationRequirement[];
   attributesCompared: number;
+  comparedAttributes: ComparedAttribute[];
   dataConfidence: number;
   comparableAttributeKeys: string[];
 }
@@ -85,11 +97,12 @@ const MEASURE_EDGE_KEYS = [
   "elevation",
   "max_lwt",
   "min_lwt",
-  "max_heat_cap_131",
   "min_heat_cap",
-  "lowest_ambient_heat",
-  "cop_a5w110",
   "emitter_high_temp",
+  "cop_a446w158",
+  "cop_a5w95",
+  "heat_cap_a446w158",
+  "outdoor_sound",
 ] as const;
 
 /** Source values such as "12y parts & 12y Repl." end in a period; drop it so the
@@ -356,9 +369,26 @@ export function buildComparison(products: Product[]): ComparisonResult {
   const totalCells = coverages.reduce((sum, c) => sum + c.total, 0);
   const dataConfidence = totalCells ? Math.round((verifiedCells / totalCells) * 100) : 0;
 
-  const attributesCompared = comparableAttributeKeys.filter((key) =>
-    products.some((p) => p.attributes[key]?.status === "verified"),
-  ).length;
+  const comparedAttributes: ComparedAttribute[] = comparableAttributeKeys
+    .map((key) => {
+      const verifiedProducts = products
+        .filter((p) => p.attributes[key]?.status === "verified")
+        .map((p) => ({ product: p, value: p.attributes[key] }));
+      if (!verifiedProducts.length) return null;
+      const unverifiedProducts = products.filter((p) => p.attributes[key]?.status !== "verified");
+      const def = ATTRIBUTE_BY_KEY[key];
+      return {
+        attributeKey: key,
+        attributeLabel: def?.label ?? key,
+        group: def?.group ?? "Other",
+        unit: def?.unit ?? "",
+        verifiedProducts,
+        unverifiedProducts,
+      };
+    })
+    .filter((a): a is ComparedAttribute => a !== null);
+
+  const attributesCompared = comparedAttributes.length;
 
   return {
     daikinProducts,
@@ -369,6 +399,7 @@ export function buildComparison(products: Product[]): ComparisonResult {
     gaps: dedupe(gaps),
     validations: dedupe(validations),
     attributesCompared,
+    comparedAttributes,
     dataConfidence,
     comparableAttributeKeys,
   };
@@ -387,8 +418,11 @@ function gapAction(key: string, leader: Product, daikin: Product): string {
     case "hspf2":
       return `Pair the heating-efficiency answer with cold-weather capacity and COP at 5°F, where the seasonal number alone understates real cold-climate behaviour. Validate against ${leader.displayName} before quoting.`;
     case "cop_5f":
+    case "cop_a446w158":
+    case "cop_a5w95":
       return `Lead with delivered heating capacity at low ambient and backup-heat avoidance rather than the COP figure alone. Flag to product marketing for review against ${leader.displayName}.`;
     case "sound_level":
+    case "outdoor_sound":
       return `Confirm the measurement condition before conceding — the source notes quiet-mode ratings are not included. Escalate to product marketing if ${leader.displayName} is being quoted on sound in your territory.`;
     case "warranty":
       return `Verify the remedy type, not only the term: compare parts coverage, compressor coverage and whether the remedy is repair or replacement against ${leader.displayName}.`;
@@ -431,8 +465,13 @@ function leaderFor(products: Product[], key: string): { product: Product; value:
 
 export function buildScorecards(products: Product[], result: ComparisonResult): Scorecard[] {
   const cards: Scorecard[] = [];
+  const hasDucted = products.some((p) => p.equipmentType === "ducted_split_hp");
+  const hasHydronic = products.some((p) => p.equipmentType === "air_to_water_hp");
+  /** True when every selected product is hydronic, so ducted-only concepts
+   *  (warranty column, install-diagnostics features) do not exist to compare. */
+  const a2wOnly = hasHydronic && !hasDucted;
 
-  const efficiency = leaderFor(products, "seer2") ?? leaderFor(products, "cop_a5w110");
+  const efficiency = leaderFor(products, "seer2") ?? leaderFor(products, "cop_a446w158");
   cards.push(
     efficiency
       ? {
@@ -448,7 +487,7 @@ export function buildScorecards(products: Product[], result: ComparisonResult): 
       : emptyCard("efficiency", "Efficiency leader"),
   );
 
-  const quiet = leaderFor(products, "sound_level") ?? leaderFor(products, "sound_level_hy");
+  const quiet = leaderFor(products, "sound_level") ?? leaderFor(products, "outdoor_sound");
   cards.push(
     quiet
       ? {
@@ -464,23 +503,41 @@ export function buildScorecards(products: Product[], result: ComparisonResult): 
       : emptyCard("quietest", "Quietest product"),
   );
 
-  const warranty = leaderFor(products, "warranty");
-  cards.push(
-    warranty
-      ? {
-          id: "warranty",
-          title: "Best warranty",
-          attributeKey: "warranty",
-          winner: warranty.product,
-          value: warranty.value.display,
-          detail: "Longest verified parts term; a replacement remedy breaks ties above a compressor-only remedy.",
-          citation: warranty.value.source.citation,
-          isDaikin: warranty.product.isDaikin,
-        }
-      : emptyCard("warranty", "Best warranty"),
-  );
+  if (a2wOnly) {
+    const cooling = leaderFor(products, "eer_a95w716");
+    cards.push(
+      cooling
+        ? {
+            id: "warranty",
+            title: "Best cooling efficiency (EER)",
+            attributeKey: "eer_a95w716",
+            winner: cooling.product,
+            value: cooling.value.display,
+            detail: "Highest verified EER at A95°F/W71.6°F in this selection. The A2W source does not record a warranty column.",
+            citation: cooling.value.source.citation,
+            isDaikin: cooling.product.isDaikin,
+          }
+        : emptyCard("warranty", "Best cooling efficiency (EER)"),
+    );
+  } else {
+    const warranty = leaderFor(products, "warranty");
+    cards.push(
+      warranty
+        ? {
+            id: "warranty",
+            title: "Best warranty",
+            attributeKey: "warranty",
+            winner: warranty.product,
+            value: warranty.value.display,
+            detail: "Longest verified parts term; a replacement remedy breaks ties above a compressor-only remedy.",
+            citation: warranty.value.source.citation,
+            isDaikin: warranty.product.isDaikin,
+          }
+        : emptyCard("warranty", "Best warranty"),
+    );
+  }
 
-  const cold = leaderFor(products, "heating_range") ?? leaderFor(products, "lowest_ambient_heat");
+  const cold = leaderFor(products, "heating_range") ?? leaderFor(products, "min_lwt");
   const coldLeader = coldClimateLeader(products);
   cards.push(
     coldLeader
@@ -499,21 +556,39 @@ export function buildScorecards(products: Product[], result: ComparisonResult): 
         : emptyCard("cold", "Best cold-climate range"),
   );
 
-  const install = installFlexibilityLeader(products);
-  cards.push(
-    install
-      ? {
-          id: "install",
-          title: "Best installation flexibility",
-          attributeKey: null,
-          winner: install.product,
-          value: `${install.count} of ${install.total} capabilities listed`,
-          detail: install.detail,
-          citation: install.citation,
-          isDaikin: install.product.isDaikin,
-        }
-      : emptyCard("install", "Best installation flexibility"),
-  );
+  if (a2wOnly) {
+    const lwt = leaderFor(products, "max_lwt");
+    cards.push(
+      lwt
+        ? {
+            id: "install",
+            title: "Widest leaving-water-temp range",
+            attributeKey: "max_lwt",
+            winner: lwt.product,
+            value: lwt.value.display,
+            detail: "Highest verified maximum leaving water temperature — the simplest retrofit onto existing high-temperature emitters.",
+            citation: lwt.value.source.citation,
+            isDaikin: lwt.product.isDaikin,
+          }
+        : emptyCard("install", "Widest leaving-water-temp range"),
+    );
+  } else {
+    const install = installFlexibilityLeader(products);
+    cards.push(
+      install
+        ? {
+            id: "install",
+            title: "Best installation flexibility",
+            attributeKey: null,
+            winner: install.product,
+            value: `${install.count} of ${install.total} capabilities listed`,
+            detail: install.detail,
+            citation: install.citation,
+            isDaikin: install.product.isDaikin,
+          }
+        : emptyCard("install", "Best installation flexibility"),
+    );
+  }
 
   const lead = result.edges[0] ?? null;
   cards.push(
@@ -552,7 +627,7 @@ function emptyCard(id: string, title: string): Scorecard {
 function coldClimateLeader(products: Product[]): { product: Product; value: AttributeValue } | null {
   const scored = products
     .map((p) => {
-      const v = p.attributes.heating_range ?? p.attributes.lowest_ambient_heat;
+      const v = p.attributes.heating_range ?? p.attributes.min_lwt;
       return v && v.status === "verified" && v.numeric !== null ? { product: p, value: v, score: v.numeric } : null;
     })
     .filter(Boolean) as { product: Product; value: AttributeValue; score: number }[];

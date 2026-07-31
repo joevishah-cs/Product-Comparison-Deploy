@@ -126,13 +126,13 @@ export function answerLocally(
   if (isQuiet) {
     const scored = products
       .map((p) => {
-        const v = p.attributes.sound_level ?? p.attributes.sound_level_hy;
+        const v = p.attributes.sound_level ?? p.attributes.outdoor_sound;
         return v?.status === "verified" && v.numeric !== null ? { p, v, n: v.numeric } : null;
       })
       .filter(Boolean) as { p: Product; v: NonNullable<Product["attributes"][string]>; n: number }[];
 
     const missing = products.filter(
-      (p) => !(p.attributes.sound_level ?? p.attributes.sound_level_hy)?.numeric,
+      (p) => !(p.attributes.sound_level ?? p.attributes.outdoor_sound)?.numeric,
     );
 
     if (!scored.length) {
@@ -192,13 +192,11 @@ export function answerLocally(
   if (isWarranty) {
     const scored = products
       .map((p) => {
-        const v = p.attributes.warranty ?? p.attributes.warranty_hydronic;
+        const v = p.attributes.warranty;
         return v?.status === "verified" ? { p, v } : null;
       })
       .filter(Boolean) as { p: Product; v: NonNullable<Product["attributes"][string]> }[];
-    const missing = products.filter(
-      (p) => (p.attributes.warranty ?? p.attributes.warranty_hydronic)?.status !== "verified",
-    );
+    const missing = products.filter((p) => p.attributes.warranty?.status !== "verified");
 
     if (scored.length) {
       sections.push({

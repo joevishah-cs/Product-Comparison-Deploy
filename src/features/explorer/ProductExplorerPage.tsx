@@ -1,5 +1,5 @@
 import * as React from "react";
-import { LayoutGrid, List, Search, Plus, Check, SlidersHorizontal, X } from "lucide-react";
+import { LayoutGrid, List, Search, Plus, Check, SlidersHorizontal, X, FileText } from "lucide-react";
 import { cn, UNAVAILABLE, normalizeSearch } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,8 +9,10 @@ import { ProductVisual } from "@/components/common/ProductVisual";
 import { Citation, ValueText } from "@/components/common/Provenance";
 import { useToast } from "@/components/ui/toast";
 import { useSelection } from "@/features/selection/SelectionProvider";
-import { BRANDS, FAMILIES, PRODUCTS, REFRIGERANTS, coverageFor, isColdClimate, isQuiet } from "@/data/catalog";
-import type { Product } from "@/data/types";
+import { EQUIPMENT_TYPE_LABEL, PRODUCTS, coverageFor, isColdClimate, isQuiet } from "@/data/catalog";
+import { documentsForProduct } from "@/data/documents";
+import { DocumentsDialog } from "./DocumentsDialog";
+import type { EquipmentType, Product } from "@/data/types";
 
 type SortKey = "model" | "brand" | "seer2" | "sound" | "warranty";
 
@@ -29,7 +31,7 @@ function sortValue(p: Product, key: SortKey): number | string {
     case "seer2":
       return -(p.attributes.seer2?.numeric ?? -Infinity);
     case "sound": {
-      const s = p.attributes.sound_level ?? p.attributes.sound_level_hy;
+      const s = p.attributes.sound_level ?? p.attributes.outdoor_sound;
       return s?.status === "verified" && s.numeric !== null ? s.numeric : Infinity;
     }
     case "warranty":
@@ -68,11 +70,18 @@ function CheckRow({
   );
 }
 
+const EQUIPMENT_TABS: { key: EquipmentType | "all"; label: string }[] = [
+  { key: "all", label: "All equipment" },
+  { key: "ducted_split_hp", label: "Air-to-Air (ducted split)" },
+  { key: "air_to_water_hp", label: "Air-to-Water (hydronic)" },
+];
+
 export function ProductExplorerPage() {
   const { toggle, isSelected } = useSelection();
   const { notify } = useToast();
 
   const [query, setQuery] = React.useState("");
+  const [equipmentType, setEquipmentType] = React.useState<EquipmentType | "all">("all");
   const [brands, setBrands] = React.useState<string[]>([]);
   const [families, setFamilies] = React.useState<string[]>([]);
   const [refrigerants, setRefrigerants] = React.useState<string[]>([]);
@@ -83,9 +92,42 @@ export function ProductExplorerPage() {
   const [sort, setSort] = React.useState<SortKey>("model");
   const [filtersOpen, setFiltersOpen] = React.useState(false);
 
+  const scopedProducts = React.useMemo(
+    () => (equipmentType === "all" ? PRODUCTS : PRODUCTS.filter((p) => p.equipmentType === equipmentType)),
+    [equipmentType],
+  );
+
+  const scopedBrands = React.useMemo(
+    () => Array.from(new Set(scopedProducts.map((p) => p.brand))).sort((a, b) => a.localeCompare(b)),
+    [scopedProducts],
+  );
+  const scopedFamilies = React.useMemo(
+    () => Array.from(new Set(scopedProducts.map((p) => p.family))).sort((a, b) => a.localeCompare(b)),
+    [scopedProducts],
+  );
+  const scopedRefrigerants = React.useMemo(
+    () =>
+      Array.from(
+        new Set(
+          scopedProducts
+            .map((p) => p.attributes.refrigerant)
+            .filter((r): r is NonNullable<typeof r> => r?.status === "verified")
+            .map((r) => r.display),
+        ),
+      ).sort((a, b) => a.localeCompare(b)),
+    [scopedProducts],
+  );
+
+  function setEquipmentTypeAndReset(next: EquipmentType | "all") {
+    setEquipmentType(next);
+    setBrands([]);
+    setFamilies([]);
+    setRefrigerants([]);
+  }
+
   const filtered = React.useMemo(() => {
     const q = normalizeSearch(query);
-    return PRODUCTS.filter((p) => {
+    return scopedProducts.filter((p) => {
       if (q) {
         const hay = normalizeSearch(
           `${p.displayName} ${p.family} ${p.brand} ${p.equipmentTypeLabel} ${p.attributes.refrigerant?.display ?? ""}`,
@@ -108,7 +150,7 @@ export function ProductExplorerPage() {
       if (typeof va === "string" || typeof vb === "string") return String(va).localeCompare(String(vb));
       return va - vb;
     });
-  }, [query, brands, families, refrigerants, coldOnly, quietOnly, verifiedOnly, sort]);
+  }, [scopedProducts, query, brands, families, refrigerants, coldOnly, quietOnly, verifiedOnly, sort]);
 
   const activeFilterCount =
     brands.length + families.length + refrigerants.length + (coldOnly ? 1 : 0) + (quietOnly ? 1 : 0) + (verifiedOnly ? 1 : 0);
@@ -136,13 +178,13 @@ export function ProductExplorerPage() {
     <div>
       <FilterSection title="Brand">
         <div className="max-h-56 space-y-0.5 overflow-y-auto scroll-shadow pr-1">
-          {BRANDS.map((b) => (
+          {scopedBrands.map((b) => (
             <CheckRow
               key={b}
               label={b}
               checked={brands.includes(b)}
               onChange={() => toggleIn(brands, setBrands, b)}
-              count={PRODUCTS.filter((p) => p.brand === b).length}
+              count={scopedProducts.filter((p) => p.brand === b).length}
             />
           ))}
         </div>
@@ -150,26 +192,26 @@ export function ProductExplorerPage() {
 
       <FilterSection title="Product family">
         <div className="max-h-56 space-y-0.5 overflow-y-auto scroll-shadow pr-1">
-          {FAMILIES.map((f) => (
+          {scopedFamilies.map((f) => (
             <CheckRow
               key={f}
               label={f}
               checked={families.includes(f)}
               onChange={() => toggleIn(families, setFamilies, f)}
-              count={PRODUCTS.filter((p) => p.family === f).length}
+              count={scopedProducts.filter((p) => p.family === f).length}
             />
           ))}
         </div>
       </FilterSection>
 
       <FilterSection title="Refrigerant">
-        {REFRIGERANTS.map((r) => (
+        {scopedRefrigerants.map((r) => (
           <CheckRow
             key={r}
             label={r}
             checked={refrigerants.includes(r)}
             onChange={() => toggleIn(refrigerants, setRefrigerants, r)}
-            count={PRODUCTS.filter((p) => p.attributes.refrigerant?.display === r).length}
+            count={scopedProducts.filter((p) => p.attributes.refrigerant?.display === r).length}
           />
         ))}
         <p className="mt-2 text-xs leading-relaxed text-navy-400">
@@ -183,19 +225,19 @@ export function ProductExplorerPage() {
           label="Cold-climate capable"
           checked={coldOnly}
           onChange={setColdOnly}
-          count={PRODUCTS.filter(isColdClimate).length}
+          count={scopedProducts.filter(isColdClimate).length}
         />
         <CheckRow
           label="Quiet operation (≤ 50 dBA)"
           checked={quietOnly}
           onChange={setQuietOnly}
-          count={PRODUCTS.filter(isQuiet).length}
+          count={scopedProducts.filter(isQuiet).length}
         />
         <CheckRow
           label="Verified data ≥ 80%"
           checked={verifiedOnly}
           onChange={setVerifiedOnly}
-          count={PRODUCTS.filter((p) => coverageFor(p).pct >= 80).length}
+          count={scopedProducts.filter((p) => coverageFor(p).pct >= 80).length}
         />
       </FilterSection>
 
@@ -218,10 +260,39 @@ export function ProductExplorerPage() {
         </p>
       </header>
 
+      <div
+        role="tablist"
+        aria-label="Equipment type"
+        className="inline-flex w-full flex-wrap gap-1 rounded-xl border border-edge bg-navy-50/60 p-1 sm:w-auto"
+      >
+        {EQUIPMENT_TABS.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            role="tab"
+            aria-selected={equipmentType === tab.key}
+            onClick={() => setEquipmentTypeAndReset(tab.key)}
+            className={cn(
+              "flex-1 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold transition-colors sm:flex-none",
+              equipmentType === tab.key
+                ? "bg-white text-daikin-700 shadow-card"
+                : "text-navy-500 hover:text-navy-700",
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       <div className="flex flex-col gap-4 lg:flex-row">
         <aside className="hidden w-[268px] shrink-0 lg:block">
           <div className="sticky top-[6.5rem] rounded-2xl border border-edge bg-white p-5 shadow-card">
             <h2 className="mb-1 text-base font-semibold text-navy-900">Filters</h2>
+            {equipmentType !== "all" && (
+              <p className="mb-3 text-xs leading-relaxed text-navy-400">
+                Showing brands and families for {EQUIPMENT_TYPE_LABEL[equipmentType].toLowerCase()}s only.
+              </p>
+            )}
             {filterPanel}
           </div>
         </aside>
@@ -290,7 +361,7 @@ export function ProductExplorerPage() {
           </div>
 
           <p className="text-sm font-medium text-navy-500" aria-live="polite">
-            Showing {filtered.length} of {PRODUCTS.length} products
+            Showing {filtered.length} of {scopedProducts.length} products
             {activeFilterCount > 0 && ` · ${activeFilterCount} filter${activeFilterCount === 1 ? "" : "s"} active`}
           </p>
 
@@ -350,11 +421,11 @@ const SPEC_ROWS: { key: string; label: string }[] = [
   { key: "warranty", label: "Warranty" },
 ];
 
-const HYDRONIC_SPEC_ROWS: { key: string; label: string }[] = [
-  { key: "max_lwt", label: "Max. LWT" },
-  { key: "max_heat_cap_131", label: "Max. heating capacity" },
-  { key: "lowest_ambient_heat", label: "Lowest ambient" },
-  { key: "warranty_hydronic", label: "Warranty" },
+const A2W_SPEC_ROWS: { key: string; label: string }[] = [
+  { key: "cop_a446w158", label: "COP (A44.6°F/W158°F)" },
+  { key: "heat_cap_a446w158", label: "Heating capacity" },
+  { key: "max_lwt", label: "Max. leaving water temp" },
+  { key: "outdoor_sound", label: "Outdoor sound level" },
 ];
 
 function ProductCard({
@@ -366,7 +437,7 @@ function ProductCard({
   selected: boolean;
   onToggle: () => void;
 }) {
-  const rows = product.equipmentType === "air_to_water_hp" ? HYDRONIC_SPEC_ROWS : SPEC_ROWS;
+  const rows = product.equipmentType === "air_to_water_hp" ? A2W_SPEC_ROWS : SPEC_ROWS;
   const coverage = coverageFor(product);
 
   return (
@@ -433,8 +504,22 @@ function ProductCard({
         />
       </div>
 
+      {documentsForProduct(product).length > 0 && (
+        <DocumentsDialog
+          brand={product.brand}
+          equipmentType={product.equipmentType}
+          productLabel={product.displayName}
+          trigger={
+            <Button className="mt-3 w-full" variant="secondary">
+              <FileText aria-hidden />
+              View documents
+            </Button>
+          }
+        />
+      )}
+
       <Button
-        className="mt-4 w-full"
+        className="mt-2 w-full"
         variant={selected ? "subtle" : "primary"}
         onClick={onToggle}
         aria-label={selected ? `Remove ${product.displayName} from comparison` : `Add ${product.displayName} to comparison`}
@@ -455,8 +540,8 @@ function ProductRow({
   selected: boolean;
   onToggle: () => void;
 }) {
-  const sound = product.attributes.sound_level ?? product.attributes.sound_level_hy;
-  const warranty = product.attributes.warranty ?? product.attributes.warranty_hydronic;
+  const sound = product.attributes.sound_level ?? product.attributes.outdoor_sound;
+  const warranty = product.attributes.warranty;
 
   return (
     <li

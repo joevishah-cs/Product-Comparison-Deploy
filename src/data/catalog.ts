@@ -1,4 +1,5 @@
-import { BATTLECARD, HYDRONIC } from "./source-records";
+import { BATTLECARD } from "./source-records";
+import { A2W } from "./a2w-source-records";
 import { PLAIN_LANGUAGE } from "./plain-language";
 import { UNAVAILABLE } from "@/lib/utils";
 import type {
@@ -10,10 +11,10 @@ import type {
   SourceLocation,
 } from "./types";
 
-const IMPORTED_AT = "2026-07-28T00:00:00.000Z";
+const IMPORTED_AT = "2026-07-30T00:00:00.000Z";
 
 export const DOC_BATTLECARD = "doc_battlecard_pdf";
-export const DOC_COMPARISON = "doc_competitor_xlsx";
+export const DOC_A2W = "doc_a2w_xlsx";
 
 export const SOURCE_DOCUMENTS: SourceDocument[] = [
   {
@@ -27,18 +28,18 @@ export const SOURCE_DOCUMENTS: SourceDocument[] = [
     productCount: BATTLECARD.products.length,
   },
   {
-    id: DOC_COMPARISON,
-    title: "Competitor comparison",
-    fileName: "Competitor comparison.xlsx",
+    id: DOC_A2W,
+    title: "A2W Heat Pump Comparison",
+    fileName: "A2WHP Data Comparison.xlsx",
     kind: "spreadsheet",
-    scope: "Air-to-water (hydronic) heat pumps — Daikin UPRA043DAVK vs. 5 competitor brands",
+    scope: "Air-to-water heat pumps — Daikin Altherma vs. Samsung EHS vs. Mitsubishi Ecodan",
     importedAt: IMPORTED_AT,
-    excludedCells: HYDRONIC.errorCells.length,
-    productCount: HYDRONIC.products.length,
+    excludedCells: A2W.errorCells.length,
+    productCount: A2W.products.length,
   },
 ];
 
-export const EXCLUDED_CELLS = HYDRONIC.errorCells;
+export const EXCLUDED_CELLS = A2W.errorCells;
 
 export const EQUIPMENT_TYPE_LABEL: Record<EquipmentType, string> = {
   ducted_split_hp: "Inverter ducted split heat pump",
@@ -187,7 +188,7 @@ function buildAttributeDefinitions(): AttributeDefinition[] {
       equipmentType: "ducted_split_hp",
     });
   }
-  for (const row of HYDRONIC.rows) {
+  for (const row of A2W.rows) {
     defs.push({
       key: row.key,
       label: row.label,
@@ -198,7 +199,7 @@ function buildAttributeDefinitions(): AttributeDefinition[] {
       kind: row.kind,
       plainLanguage: PLAIN_LANGUAGE[row.key] ?? "",
       sourceComment: null,
-      documentId: DOC_COMPARISON,
+      documentId: DOC_A2W,
       equipmentType: "air_to_water_hp",
     });
   }
@@ -213,7 +214,7 @@ export const ATTRIBUTE_BY_KEY: Record<string, AttributeDefinition> = Object.from
 
 export const ATTRIBUTE_KEYS_BY_EQUIPMENT: Record<EquipmentType, string[]> = {
   ducted_split_hp: BATTLECARD.rows.map((r) => r.key),
-  air_to_water_hp: HYDRONIC.rows.map((r) => r.key),
+  air_to_water_hp: A2W.rows.map((r) => r.key),
 };
 
 /* ------------------------------------------------------------------ */
@@ -314,23 +315,25 @@ const BRAND_CASING: Record<string, string> = {
   YORK: "York",
   RHEEM: "Rheem",
   TRANE: "Trane",
+  Samsung: "Samsung",
+  Mitsubishi: "Mitsubishi",
 };
 
 function titleCaseBrand(brand: string): string {
   return BRAND_CASING[brand] ?? brand;
 }
 
-function buildHydronicProducts(): Product[] {
-  return HYDRONIC.products.map((p, idx) => {
+function buildA2WProducts(): Product[] {
+  return A2W.products.map((p, idx) => {
     const isDaikin = p.brand === "Daikin";
     const attributes: Record<string, AttributeValue> = {};
 
-    for (const row of HYDRONIC.rows) {
+    for (const row of A2W.rows) {
       const cell = row.cells[idx];
       const source: SourceLocation = {
-        documentId: DOC_COMPARISON,
-        citation: `Competitor comparison.xlsx · sheet "Comparison" · cell ${cell.ref} · "${row.sourceLabel}"`,
-        sheet: "Comparison",
+        documentId: DOC_A2W,
+        citation: `A2WHP Data Comparison.xlsx · cell ${cell.ref} · "${row.sourceLabel}"`,
+        sheet: "Sheet1",
         cell: cell.ref,
         row: p.sourceHeader,
         column: row.sourceLabel,
@@ -368,7 +371,7 @@ function buildHydronicProducts(): Product[] {
     }
 
     return {
-      id: `hy_${slug(p.sourceHeader)}`,
+      id: `a2w_${slug(p.sourceHeader)}`,
       brand: p.brand,
       brandFromSource: true,
       model: p.model ?? p.sourceHeader,
@@ -383,14 +386,14 @@ function buildHydronicProducts(): Product[] {
       image: chassisImage(null, isDaikin, true),
       imageIsRepresentative: true,
       tonnages: null,
-      documentId: DOC_COMPARISON,
+      documentId: DOC_A2W,
       sourceHeader: p.sourceHeader,
       attributes,
     };
   });
 }
 
-export const PRODUCTS: Product[] = [...buildBattlecardProducts(), ...buildHydronicProducts()];
+export const PRODUCTS: Product[] = [...buildBattlecardProducts(), ...buildA2WProducts()];
 
 export const PRODUCT_BY_ID: Record<string, Product> = Object.fromEntries(
   PRODUCTS.map((p) => [p.id, p]),
@@ -429,15 +432,14 @@ export function isColdClimate(product: Product): boolean {
   if (cchp?.status === "verified" && cchp.boolean === true) return true;
   const heat = product.attributes.heating_range;
   if (heat?.status === "verified" && heat.numeric !== null && heat.numeric <= 0) return true;
-  const ambient = product.attributes.lowest_ambient_heat;
-  if (ambient?.status === "verified" && ambient.numeric !== null && ambient.numeric <= 0)
-    return true;
+  const minLwt = product.attributes.min_lwt;
+  if (minLwt?.status === "verified" && minLwt.numeric !== null && minLwt.numeric <= 0) return true;
   return false;
 }
 
 /** Quiet-operation signal: a verified sound level at or below 50 dBA. */
 export function isQuiet(product: Product): boolean {
-  const sound = product.attributes.sound_level ?? product.attributes.sound_level_hy;
+  const sound = product.attributes.sound_level ?? product.attributes.outdoor_sound;
   return sound?.status === "verified" && sound.numeric !== null && sound.numeric <= 50;
 }
 

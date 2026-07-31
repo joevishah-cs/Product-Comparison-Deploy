@@ -35,6 +35,8 @@ interface SelectionContextValue {
   clearRecentSearches: () => void;
   recentComparisons: RecentComparison[];
   recordComparison: () => void;
+  equipmentTypeFilter: string | null;
+  setEquipmentTypeFilter: (type: string | null) => void;
 }
 
 const SelectionContext = React.createContext<SelectionContextValue | null>(null);
@@ -75,6 +77,8 @@ export function SelectionProvider({ children }: { children: React.ReactNode }) {
     readJson<RecentComparison[]>(RECENT_COMPARES_KEY, []),
   );
 
+  const [equipmentTypeFilter, setEquipmentTypeFilter] = React.useState<string | null>(null);
+
   React.useEffect(() => writeJson(SELECTION_KEY, selectedIds), [selectedIds]);
   React.useEffect(() => writeJson("dcmi.v1.units", unitSelections), [unitSelections]);
   React.useEffect(() => writeJson(RECENT_KEY, recentSearches), [recentSearches]);
@@ -89,7 +93,9 @@ export function SelectionProvider({ children }: { children: React.ReactNode }) {
 
   const add = React.useCallback(
     (id: string) => {
-      if (!PRODUCT_BY_ID[id]) return { ok: false, reason: "Unknown product." };
+      const product = PRODUCT_BY_ID[id];
+      if (!product) return { ok: false, reason: "Unknown product." };
+
       let result: { ok: boolean; reason?: string } = { ok: true };
       setSelectedIds((prev) => {
         if (prev.includes(id)) {
@@ -100,6 +106,20 @@ export function SelectionProvider({ children }: { children: React.ReactNode }) {
           result = { ok: false, reason: `You can compare up to ${MAX_COMPARE} products at once.` };
           return prev;
         }
+
+        // First product: establish equipment type
+        if (prev.length === 0) {
+          setEquipmentTypeFilter(product.equipmentType);
+          return [...prev, id];
+        }
+
+        // Check equipment type compatibility with already-selected products
+        const firstProduct = PRODUCT_BY_ID[prev[0]];
+        if (firstProduct && product.equipmentType !== firstProduct.equipmentType) {
+          result = { ok: false, reason: `Cannot mix ${product.equipmentTypeLabel} with ${firstProduct.equipmentTypeLabel}.` };
+          return prev;
+        }
+
         return [...prev, id];
       });
       return result;
@@ -108,7 +128,13 @@ export function SelectionProvider({ children }: { children: React.ReactNode }) {
   );
 
   const remove = React.useCallback((id: string) => {
-    setSelectedIds((prev) => prev.filter((p) => p !== id));
+    setSelectedIds((prev) => {
+      const next = prev.filter((p) => p !== id);
+      if (next.length === 0) {
+        setEquipmentTypeFilter(null);
+      }
+      return next;
+    });
     setUnitSelections((prev) => {
       if (!(id in prev)) return prev;
       const next = { ...prev };
@@ -131,6 +157,7 @@ export function SelectionProvider({ children }: { children: React.ReactNode }) {
   const clear = React.useCallback(() => {
     setSelectedIds([]);
     setUnitSelections({});
+    setEquipmentTypeFilter(null);
   }, []);
 
   const replaceAll = React.useCallback((ids: string[], units?: Record<string, number>) => {
@@ -186,6 +213,8 @@ export function SelectionProvider({ children }: { children: React.ReactNode }) {
       clearRecentSearches,
       recentComparisons,
       recordComparison,
+      equipmentTypeFilter,
+      setEquipmentTypeFilter,
     }),
     [
       selectedIds,
@@ -203,6 +232,7 @@ export function SelectionProvider({ children }: { children: React.ReactNode }) {
       clearRecentSearches,
       recentComparisons,
       recordComparison,
+      equipmentTypeFilter,
     ],
   );
 

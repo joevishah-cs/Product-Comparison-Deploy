@@ -1003,7 +1003,7 @@ export function PlainEnglishSection({
   const tradeoffs = alignments.filter((a) => a.technical.status === "competitor_advantage");
 
   return (
-    <SectionShell eyebrow="In summary" title="Your comparison in plain English">
+    <SectionShell eyebrow="In summary" title="Your comparison in simple terms">
       <p className="-mt-2"><AiTag kind="generated" /></p>
       <div className="space-y-4 rounded-3xl border border-edge bg-white p-6 shadow-card sm:p-8">
         <p className="text-[1.125rem] leading-relaxed text-navy-800">

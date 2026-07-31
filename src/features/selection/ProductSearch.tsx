@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ProductVisual } from "@/components/common/ProductVisual";
 import { useToast } from "@/components/ui/toast";
-import { BRANDS, FAMILIES } from "@/data/catalog";
+import { BRANDS, FAMILIES, EQUIPMENT_TYPE_LABEL } from "@/data/catalog";
 import { groupHits, highlightSegments, searchProducts, type SearchHit } from "@/features/catalog/search";
 import { useSelection } from "./SelectionProvider";
 
@@ -107,7 +107,7 @@ function ResultRow({
 
 export function ProductSearch({
   size = "lg",
-  placeholder = "Search brand, model, family, tonnage, refrigerant or a feature like “quiet” or “cold climate”",
+  placeholder = 'Search brand, model, family, tonnage, refrigerant or a feature like "quiet" or "cold climate"',
   showFilters = true,
   showSuggestions = true,
 }: {
@@ -116,7 +116,7 @@ export function ProductSearch({
   showFilters?: boolean;
   showSuggestions?: boolean;
 }) {
-  const { add, recentSearches, pushRecentSearch, clearRecentSearches, atCapacity } = useSelection();
+  const { add, recentSearches, pushRecentSearch, clearRecentSearches, atCapacity, equipmentTypeFilter, setEquipmentTypeFilter } = useSelection();
   const { notify } = useToast();
 
   const [query, setQuery] = React.useState("");
@@ -130,8 +130,8 @@ export function ProductSearch({
   const listRef = React.useRef<HTMLDivElement>(null);
 
   const hits = React.useMemo(
-    () => searchProducts(query, { brands: brandFilter, families: familyFilter }, 30),
-    [query, brandFilter, familyFilter],
+    () => searchProducts(query, { brands: brandFilter, families: familyFilter, equipmentType: equipmentTypeFilter }, 30),
+    [query, brandFilter, familyFilter, equipmentTypeFilter],
   );
   const grouped = React.useMemo(() => groupHits(hits), [hits]);
   const flat = React.useMemo(() => [...grouped.daikin, ...grouped.competitors], [grouped]);
@@ -244,39 +244,64 @@ export function ProductSearch({
       </div>
 
       {showFilters && (
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="mr-1 text-sm font-semibold text-navy-500">Families</span>
-          {FAMILIES.slice(0, 9).map((f) => (
+        <div className="mt-4 space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="mr-1 text-sm font-semibold text-navy-500">Product category</span>
             <FilterChip
-              key={f}
-              active={familyFilter.includes(f)}
-              onClick={() => toggleChip(familyFilter, setFamilyFilter, f)}
+              active={equipmentTypeFilter === null}
+              onClick={() => setEquipmentTypeFilter(null)}
             >
-              {f}
+              All
             </FilterChip>
-          ))}
-          <span className="ml-3 mr-1 text-sm font-semibold text-navy-500">Brands</span>
-          {BRANDS.slice(0, 7).map((b) => (
             <FilterChip
-              key={b}
-              active={brandFilter.includes(b)}
-              onClick={() => toggleChip(brandFilter, setBrandFilter, b)}
+              active={equipmentTypeFilter === "ducted_split_hp"}
+              onClick={() => setEquipmentTypeFilter("ducted_split_hp")}
             >
-              {b}
+              {EQUIPMENT_TYPE_LABEL.ducted_split_hp}
             </FilterChip>
-          ))}
-          {(brandFilter.length > 0 || familyFilter.length > 0) && (
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => {
-                setBrandFilter([]);
-                setFamilyFilter([]);
-              }}
+            <FilterChip
+              active={equipmentTypeFilter === "air_to_water_hp"}
+              onClick={() => setEquipmentTypeFilter("air_to_water_hp")}
             >
-              Reset filters
-            </Button>
-          )}
+              {EQUIPMENT_TYPE_LABEL.air_to_water_hp}
+            </FilterChip>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="mr-1 text-sm font-semibold text-navy-500">Families</span>
+            {FAMILIES.slice(0, 9).map((f) => (
+              <FilterChip
+                key={f}
+                active={familyFilter.includes(f)}
+                onClick={() => toggleChip(familyFilter, setFamilyFilter, f)}
+              >
+                {f}
+              </FilterChip>
+            ))}
+            <span className="ml-3 mr-1 text-sm font-semibold text-navy-500">Brands</span>
+            {BRANDS.slice(0, 7).map((b) => (
+              <FilterChip
+                key={b}
+                active={brandFilter.includes(b)}
+                onClick={() => toggleChip(brandFilter, setBrandFilter, b)}
+              >
+                {b}
+              </FilterChip>
+            ))}
+            {(brandFilter.length > 0 || familyFilter.length > 0 || equipmentTypeFilter !== null) && (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  setBrandFilter([]);
+                  setFamilyFilter([]);
+                  setEquipmentTypeFilter(null);
+                }}
+              >
+                Reset filters
+              </Button>
+            )}
+          </div>
         </div>
       )}
 
@@ -394,7 +419,7 @@ export function ProductSearch({
 
             {flat.length === 0 && (
               <li className="px-4 py-8 text-center">
-                <p className="text-base font-medium text-navy-700">No products match “{query}”.</p>
+                <p className="text-base font-medium text-navy-700">No products match "{query}".</p>
                 <p className="mt-1 text-sm text-navy-500">
                   Search covers brand, family, model, tonnage, refrigerant and features recorded in the
                   imported sources.

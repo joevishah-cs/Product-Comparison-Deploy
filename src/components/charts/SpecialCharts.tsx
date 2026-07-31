@@ -141,7 +141,7 @@ export function OperatingRangeChart({
 /* Radar: normalized profile across six dimensions                     */
 /* ------------------------------------------------------------------ */
 
-const RADAR_DIMENSIONS: { key: string; label: string; attributeKey: string; invert?: boolean }[] = [
+const RADAR_DIMENSIONS_DUCTED: { key: string; label: string; attributeKey: string; invert?: boolean }[] = [
   { key: "efficiency", label: "Efficiency", attributeKey: "seer2" },
   { key: "sound", label: "Quietness", attributeKey: "sound_level", invert: true },
   { key: "warranty", label: "Warranty", attributeKey: "warranty" },
@@ -149,6 +149,20 @@ const RADAR_DIMENSIONS: { key: string; label: string; attributeKey: string; inve
   { key: "controls", label: "Controls", attributeKey: "__controls" },
   { key: "install", label: "Installation", attributeKey: "__install" },
 ];
+
+const RADAR_DIMENSIONS_A2W: { key: string; label: string; attributeKey: string; invert?: boolean }[] = [
+  { key: "cop", label: "Efficiency (COP)", attributeKey: "cop_a446w158" },
+  { key: "cop_cold", label: "Cold-climate COP", attributeKey: "cop_a5w95" },
+  { key: "eer", label: "Cooling (EER)", attributeKey: "eer_a95w716" },
+  { key: "sound", label: "Quietness", attributeKey: "outdoor_sound", invert: true },
+  { key: "lwt", label: "Max leaving water temp", attributeKey: "max_lwt" },
+  { key: "capacity", label: "Heating capacity", attributeKey: "heat_cap_a446w158" },
+];
+
+function radarDimensionsFor(products: Product[]) {
+  const allA2W = products.length > 0 && products.every((p) => p.equipmentType === "air_to_water_hp");
+  return allA2W ? RADAR_DIMENSIONS_A2W : RADAR_DIMENSIONS_DUCTED;
+}
 
 const CONTROL_KEYS = ["thermostat_type", "humidity_control", "intelligent_defrost", "cloud_alerts"];
 const INSTALL_KEYS = ["charge_verification", "slow_loss_alerting", "regional_profiles", "reusable_profiles", "coil_only_matchup"];
@@ -165,11 +179,13 @@ function capabilityScore(product: Product, keys: string[]): number | null {
 
 export function CapabilityRadar({ products, height = 380 }: { products: Product[]; height?: number }) {
   const colors = buildColorMap(products);
-  const eligible = products.filter((p) => p.equipmentType === "ducted_split_hp");
+  const dimensions = radarDimensionsFor(products);
+  const eligibleType = dimensions === RADAR_DIMENSIONS_A2W ? "air_to_water_hp" : "ducted_split_hp";
+  const eligible = products.filter((p) => p.equipmentType === eligibleType);
 
   const raw = eligible.map((p) => {
     const scores: Record<string, number | null> = {};
-    for (const dim of RADAR_DIMENSIONS) {
+    for (const dim of dimensions) {
       if (dim.attributeKey === "__controls") scores[dim.key] = capabilityScore(p, CONTROL_KEYS);
       else if (dim.attributeKey === "__install") scores[dim.key] = capabilityScore(p, INSTALL_KEYS);
       else {
@@ -180,9 +196,15 @@ export function CapabilityRadar({ products, height = 380 }: { products: Product[
     return { product: p, scores };
   });
 
-  if (!raw.length) return <EmptyState label="The radar covers inverter ducted split heat pumps. Select at least one to see it." height={height} />;
+  if (!raw.length) {
+    const label =
+      eligibleType === "air_to_water_hp"
+        ? "The radar covers air-to-water heat pumps. Select at least one to see it."
+        : "The radar covers inverter ducted split heat pumps. Select at least one to see it.";
+    return <EmptyState label={label} height={height} />;
+  }
 
-  const data = RADAR_DIMENSIONS.map((dim) => {
+  const data = dimensions.map((dim) => {
     const values = raw.map((r) => r.scores[dim.key]).filter((v): v is number => v !== null);
     const min = values.length ? Math.min(...values) : 0;
     const max = values.length ? Math.max(...values) : 1;
@@ -321,6 +343,84 @@ export function DonutChart({
           {centerLabel && <p className="text-sm text-navy-500">{centerLabel}</p>}
         </div>
       )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Refrigerant reference comparison                                    */
+/* ------------------------------------------------------------------ */
+
+interface RefrigerantReference {
+  gwp: string;
+  flammability: string;
+  efficiency: string;
+  trend: string;
+}
+
+/** General industry reference values -- not drawn from the imported source
+ *  documents, so this is kept separate from any verified-citation display. */
+const REFRIGERANT_REFERENCE: Record<string, RefrigerantReference> = {
+  "R-32": {
+    gwp: "Lower (~675)",
+    flammability: "Mildly flammable (A2L)",
+    efficiency: "High",
+    trend: "Widely adopted, lower environmental impact",
+  },
+  "R-454B": {
+    gwp: "Even lower (~466)",
+    flammability: "Mildly flammable (A2L)",
+    efficiency: "High",
+    trend: "Increasing adoption as an R-410A replacement",
+  },
+  "R-410A": {
+    gwp: "High (~2088)",
+    flammability: "Non-flammable (A1)",
+    efficiency: "High",
+    trend: "Being phased down under EPA AIM Act schedules",
+  },
+};
+
+export function RefrigerantComparisonTable({
+  modelsByRefrigerant,
+}: {
+  /** Refrigerant display value -> model names of selected products using it. */
+  modelsByRefrigerant: Record<string, string[]>;
+}) {
+  const known = Object.keys(modelsByRefrigerant).filter((r) => REFRIGERANT_REFERENCE[r]);
+  if (!known.length) return null;
+
+  return (
+    <div>
+      <div className="mb-2 flex items-center gap-2">
+        <span className="inline-flex items-center rounded-full bg-navy-100 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-navy-600">
+          Industry reference
+        </span>
+      </div>
+      <div className="overflow-x-auto rounded-xl border border-edge">
+        <table className="w-full min-w-[420px] text-left text-sm">
+          <thead>
+            <tr className="border-b border-edge bg-navy-50/60 text-xs font-bold uppercase tracking-wider text-navy-500">
+              <th className="px-3.5 py-2.5">Refrigerant</th>
+              <th className="px-3.5 py-2.5">Model</th>
+              <th className="px-3.5 py-2.5">Industry trend</th>
+            </tr>
+          </thead>
+          <tbody>
+            {known.map((r) => {
+              const ref = REFRIGERANT_REFERENCE[r];
+              const models = modelsByRefrigerant[r];
+              return (
+                <tr key={r} className="border-b border-edge last:border-b-0">
+                  <td className="px-3.5 py-2.5 font-semibold text-navy-900">{r}</td>
+                  <td className="px-3.5 py-2.5 text-navy-700">{models.join(", ")}</td>
+                  <td className="px-3.5 py-2.5 text-navy-700">{ref.trend}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
