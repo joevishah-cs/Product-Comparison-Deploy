@@ -35,6 +35,7 @@ import {
 } from "./HomeownerCharts";
 import type { HomeownerReportConfig, ReportSectionKey } from "./HomeownerProvider";
 import { REPORT_SECTIONS } from "./HomeownerProvider";
+import { AmbientScene } from "@/components/layout/AmbientScene";
 
 /**
  * Read-only shareable report. Contains only homeowner-facing sections — no
@@ -109,8 +110,9 @@ export function ReportSharePage() {
 
   if (!recommended || products.length < 2) {
     return (
-      <div className="grid min-h-screen place-items-center bg-canvas p-8 text-center">
-        <div>
+      <div className="relative grid min-h-screen place-items-center p-8 text-center">
+        <AmbientScene />
+        <div className="surface relative animate-fade-up px-8 py-10 sm:px-12">
           <img src="/brand/daikin-logo.png" alt="Daikin" className="mx-auto h-8 w-auto" />
           <p className="mt-6 text-xl font-semibold text-navy-800">
             This report link is incomplete or has expired.
@@ -124,8 +126,9 @@ export function ReportSharePage() {
   }
 
   return (
-    <div className="min-h-screen bg-canvas">
-      <header className="no-print sticky top-0 z-30 border-b border-edge bg-white/90 backdrop-blur-md">
+    <div className="relative min-h-screen">
+      <AmbientScene />
+      <header className="app-header no-print sticky top-0 z-30 border-b">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-5">
           <img src="/brand/daikin-logo.png" alt="Daikin" className="h-7 w-auto" />
           <div className="flex items-center gap-3">

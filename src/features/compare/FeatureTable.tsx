@@ -114,7 +114,7 @@ export function FeatureTable({
           No attributes match this filter for the current selection.
         </p>
       ) : (
-        <div className="max-h-[calc(100vh-11rem)] overflow-auto rounded-2xl border border-edge bg-white shadow-card scroll-shadow print-scroll-reset">
+        <div className="max-h-[calc(100vh-11rem)] overflow-auto surface scroll-shadow print-scroll-reset">
           <table className="w-full min-w-[900px] border-collapse text-left">
             <caption className="sr-only">
               Attribute comparison across {products.length} selected products

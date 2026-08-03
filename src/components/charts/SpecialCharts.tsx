@@ -22,6 +22,7 @@ import { AXIS_COLOR, GRID_COLOR, buildColorMap, shortLabel, DAIKIN_FILL } from "
 import type { Product } from "@/data/types";
 import { ATTRIBUTE_KEYS_BY_EQUIPMENT, coverageFor } from "@/data/catalog";
 import { UNAVAILABLE, formatNumber } from "@/lib/utils";
+import { gradFill } from "./ChartGradients";
 
 function EmptyState({ label, height = 260 }: { label: string; height?: number }) {
   return (
@@ -128,7 +129,7 @@ export function OperatingRangeChart({
           <Bar dataKey="min" stackId="range" fill="transparent" isAnimationActive={false} />
           <Bar dataKey="span" stackId="range" radius={6} isAnimationActive={false}>
             {data.map((d) => (
-              <Cell key={d.id} fill={colors[d.id]} />
+              <Cell key={d.id} fill={gradFill(colors[d.id], "h")} />
             ))}
           </Bar>
         </BarChart>
@@ -312,7 +313,7 @@ export function DonutChart({
             strokeWidth={2}
           >
             {slices.map((s) => (
-              <Cell key={s.name} fill={s.color} />
+              <Cell key={s.name} fill={gradFill(s.color, "v")} />
             ))}
           </Pie>
           <Tooltip
@@ -398,9 +399,9 @@ export function RefrigerantComparisonTable({
         </span>
       </div>
       <div className="overflow-x-auto rounded-xl border border-edge">
-        <table className="w-full min-w-[420px] text-left text-sm">
+        <table className="table-sleek min-w-[420px]">
           <thead>
-            <tr className="border-b border-edge bg-navy-50/60 text-xs font-bold uppercase tracking-wider text-navy-500">
+            <tr>
               <th className="px-3.5 py-2.5">Refrigerant</th>
               <th className="px-3.5 py-2.5">Model</th>
               <th className="px-3.5 py-2.5">Industry trend</th>
@@ -472,7 +473,7 @@ export function DataCompletenessChart({ products, height = 300 }: { products: Pr
           />
           <Bar dataKey="pct" radius={[0, 8, 8, 0]} isAnimationActive={false} label={{ position: "right", formatter: (v: number) => `${v}%`, style: { fontSize: 14, fontWeight: 700, fill: AXIS_COLOR } }}>
             {data.map((d) => (
-              <Cell key={d.id} fill={colors[d.id]} />
+              <Cell key={d.id} fill={gradFill(colors[d.id], "h")} />
             ))}
           </Bar>
         </BarChart>
@@ -659,7 +660,7 @@ export function FitScoreChart({ products, height = 300 }: { products: Product[];
           />
           <Bar dataKey="score" radius={[0, 8, 8, 0]} isAnimationActive={false} label={{ position: "right", style: { fontSize: 14, fontWeight: 700, fill: AXIS_COLOR } }}>
             {scored.map((d) => (
-              <Cell key={d.id} fill={colors[d.id]} />
+              <Cell key={d.id} fill={gradFill(colors[d.id], "h")} />
             ))}
           </Bar>
         </BarChart>
@@ -844,7 +845,7 @@ export function CountBarChart({
           />
           <Bar dataKey="value" radius={[0, 8, 8, 0]} isAnimationActive={false} label={{ position: "right", style: { fontSize: 14, fontWeight: 700, fill: AXIS_COLOR } }}>
             {data.map((d, i) => (
-              <Cell key={i} fill={d.color ?? color} />
+              <Cell key={i} fill={gradFill(d.color ?? color, "h")} />
             ))}
           </Bar>
         </BarChart>

@@ -500,18 +500,24 @@ export function StrengthsConcernsChart({
                 <button
                   type="button"
                   onClick={() => lead && onViewReviews({ productId: lead.product.id, theme: t.key })}
-                  className="flex w-full items-center gap-3 rounded-xl border border-edge p-3 text-left transition-colors hover:border-daikin-300 hover:bg-daikin-50/40"
+                  // Four fixed-width columns don't fit a phone, so below `sm`
+                  // the row reflows: label, then the figures, then the bar.
+                  className="surface-row flex w-full flex-wrap items-center gap-x-3 gap-y-2 border-edge p-3 text-left hover:border-daikin-300 hover:bg-daikin-50/40 sm:flex-nowrap"
                 >
-                  <span className="w-40 shrink-0 text-sm font-semibold text-navy-800">{t.label}</span>
-                  <span className="flex h-3 flex-1 overflow-hidden rounded-full bg-navy-100">
+                  <span className="w-full text-sm font-semibold text-navy-800 sm:w-40 sm:shrink-0">
+                    {t.label}
+                  </span>
+                  <span className="order-last flex h-3 w-full overflow-hidden rounded-full bg-navy-100 sm:order-none sm:flex-1">
                     <span style={{ width: `${(t.positive / t.total) * 100}%`, background: SENTIMENT_COLOR.positive }} />
                     <span style={{ width: `${(t.neutral / t.total) * 100}%`, background: SENTIMENT_COLOR.neutral }} />
                     <span style={{ width: `${(t.negative / t.total) * 100}%`, background: SENTIMENT_COLOR.negative }} />
                   </span>
-                  <span className="w-28 shrink-0 text-right text-sm font-bold text-navy-900">
+                  <span className="text-sm font-bold tabular-nums text-navy-900 sm:w-28 sm:shrink-0 sm:text-right">
                     {pct}% positive
                   </span>
-                  <span className="w-24 shrink-0 text-right text-xs text-navy-500">{t.total} mentions</span>
+                  <span className="text-xs tabular-nums text-navy-500 sm:w-24 sm:shrink-0 sm:text-right">
+                    {t.total} mentions
+                  </span>
                 </button>
               </li>
             );

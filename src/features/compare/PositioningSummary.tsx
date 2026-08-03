@@ -95,7 +95,7 @@ function AttributesCompared({ result }: { result: ComparisonResult }) {
                   {attrs.map((attr) => (
                     <li
                       key={attr.attributeKey}
-                      className="rounded-2xl border border-edge bg-white p-4 shadow-card"
+                      className="surface p-4"
                     >
                       <h5 className="text-base font-semibold text-navy-900">
                         {attr.attributeLabel}
@@ -353,7 +353,7 @@ export function PositioningSummary({ result }: { result: ComparisonResult }) {
           </h3>
           <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {result.validations.map((v) => (
-              <li key={v.id} className="rounded-2xl border border-edge bg-white p-4 shadow-card">
+              <li key={v.id} className="surface p-4">
                 <Badge variant="outline" size="sm">
                   Validation required
                 </Badge>

@@ -137,7 +137,7 @@ export function CompetitorReviewsSection() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-edge bg-white p-4 shadow-card">
+      <div className="flex flex-wrap items-center gap-3 surface p-4">
         <span className="flex items-center gap-2 text-sm font-semibold text-navy-500">
           <Filter className="size-4" aria-hidden />
           Filters

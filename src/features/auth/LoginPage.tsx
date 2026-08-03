@@ -7,6 +7,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useAuth, DEMO_EMAIL, DEMO_PASSWORD } from "./AuthProvider";
+import { AmbientScene } from "@/components/layout/AmbientScene";
+import { LoginBackdrop } from "./LoginBackdrop";
 
 export function LoginPage() {
   const { signIn, user } = useAuth();
@@ -45,40 +47,38 @@ export function LoginPage() {
   }
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
+    <div className="relative grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
+      <AmbientScene />
       {/* Brand panel — deliberately minimal: logo, product name, one line. */}
-      <section className="relative hidden overflow-hidden bg-navy-900 lg:flex lg:flex-col lg:justify-between lg:p-10">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-90"
-          style={{
-            background:
-              "radial-gradient(1100px 620px at 12% -8%, rgba(0,151,224,0.45), transparent 62%), radial-gradient(820px 520px at 96% 104%, rgba(89,188,255,0.25), transparent 60%)",
-          }}
-        />
+      <section className="relative z-10 hidden overflow-hidden bg-navy-900 lg:flex lg:flex-col lg:justify-between lg:p-10">
+        <LoginBackdrop />
 
-        <div className="relative z-10 flex items-center gap-3">
+        <div className="relative z-10 flex animate-fade-up items-center gap-3">
           <span className="inline-flex items-center rounded-lg bg-white px-3 py-2 shadow-sm">
             <img src="/brand/daikin-logo.png" alt="Daikin" className="h-6 w-auto" />
           </span>
         </div>
 
         <div className="relative z-10 max-w-md">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-daikin-300">
+          <p className="animate-fade-up text-xs font-bold uppercase tracking-[0.2em] text-white [animation-delay:80ms] [text-shadow:0_1px_12px_rgba(0,0,0,0.45)]">
             Competitive Marketing Intelligence
           </p>
-          <h1 className="mt-4 text-balance text-3xl font-bold leading-tight text-white">
+          <h1 className="mt-4 animate-fade-up text-balance text-3xl font-bold leading-tight text-white [animation-delay:180ms] [text-shadow:0_2px_18px_rgba(0,0,0,0.5)]">
             Turn verified product intelligence into market momentum.
           </h1>
-          <p className="mt-3 text-lg font-medium text-daikin-200">Compare. Position. Win.</p>
+          <p className="mt-3 animate-fade-up text-lg font-medium text-white [animation-delay:300ms] [text-shadow:0_1px_12px_rgba(0,0,0,0.45)]">
+            Compare. Position. Win.
+          </p>
+          {/* Accent rule wipes in beneath the tagline */}
+          <div className="mt-6 h-px w-40 origin-left animate-[scale-in_0.6s_cubic-bezier(0.16,1,0.3,1)_420ms_backwards] bg-gradient-to-r from-daikin-300 to-transparent" />
         </div>
 
-        <p className="relative z-10 text-xs text-navy-400">© Daikin — internal sales enablement</p>
+        <p className="relative z-10 animate-fade-up text-xs text-white/80 [animation-delay:520ms]">© Daikin — internal sales enablement</p>
       </section>
 
       {/* Form panel */}
-      <section className="flex items-center justify-center bg-white px-5 py-12 sm:px-10">
-        <div className="w-full max-w-md">
+      <section className="relative flex items-center justify-center px-5 py-12 sm:px-10">
+        <div className="surface w-full max-w-md animate-fade-up p-7 sm:p-9">
           <img src="/brand/daikin-logo.png" alt="Daikin" className="mb-8 h-8 w-auto lg:hidden" />
 
           <h2 className="text-3xl font-bold text-navy-900">Sign in</h2>
@@ -86,7 +86,7 @@ export function LoginPage() {
             Access the competitive intelligence workspace for Daikin sales and product marketing.
           </p>
 
-          <form className="mt-8 space-y-5" onSubmit={(e) => submit(e)} noValidate>
+          <form className="stagger mt-8 space-y-5" onSubmit={(e) => submit(e)} noValidate>
             {error && (
               <div role="alert" className="flex items-start gap-2.5 rounded-xl border border-risk-500/25 bg-risk-50 px-4 py-3">
                 <AlertCircle className="mt-0.5 size-5 shrink-0 text-risk-600" aria-hidden />

@@ -14,6 +14,7 @@ import { AXIS_COLOR, GRID_COLOR, buildColorMap, shortLabel } from "./palette";
 import type { AttributeValue, Product } from "@/data/types";
 import { ATTRIBUTE_BY_KEY } from "@/data/catalog";
 import { formatNumber, UNAVAILABLE } from "@/lib/utils";
+import { gradFill } from "./ChartGradients";
 
 export interface BarDatum {
   id: string;
@@ -164,7 +165,7 @@ export function AttributeBarChart({
             />
             <Bar dataKey="value" radius={[0, 8, 8, 0]} isAnimationActive={false}>
               {data.map((d) => (
-                <Cell key={d.id} fill={colors[d.id]} />
+                <Cell key={d.id} fill={gradFill(colors[d.id], "h")} />
               ))}
               <LabelList
                 dataKey="label"
@@ -195,7 +196,7 @@ export function AttributeBarChart({
             <Tooltip content={<ChartTooltip unit={def?.unit} />} cursor={{ fill: "rgba(0,151,224,0.06)" }} />
             <Bar dataKey="value" radius={[8, 8, 0, 0]} isAnimationActive={false}>
               {data.map((d) => (
-                <Cell key={d.id} fill={colors[d.id]} />
+                <Cell key={d.id} fill={gradFill(colors[d.id], "v")} />
               ))}
               <LabelList
                 dataKey="label"

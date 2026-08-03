@@ -76,7 +76,7 @@ export function ImportedReviewsSection() {
           </p>
         </div>
         {stats && (
-          <div className="rounded-2xl border border-edge bg-white px-5 py-3 text-right shadow-card">
+          <div className="surface px-5 py-3 text-right">
             <StarRating value={stats.avg} showValue />
             <p className="mt-0.5 text-sm text-navy-500">
               {stats.count.toLocaleString()} {stats.count === 1 ? "review" : "reviews"} in view
@@ -124,7 +124,7 @@ export function ImportedReviewsSection() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-edge bg-white p-4 shadow-card">
+      <div className="flex flex-wrap items-center gap-3 surface p-4">
         <span className="flex items-center gap-2 text-sm font-semibold text-navy-500">
           <Filter className="size-4" aria-hidden />
           Filters

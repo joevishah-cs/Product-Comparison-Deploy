@@ -19,6 +19,8 @@ import { PressPage } from "@/features/press/PressPage";
 import { BriefsPage } from "@/features/briefs/BriefsPage";
 import { SavedComparisonsPage } from "@/features/saved/SavedComparisonsPage";
 import { ReportSharePage } from "@/features/homeowner/ReportSharePage";
+import { ChartGradientDefs } from "@/components/charts/ChartGradients";
+import { ScrollToTop } from "@/components/layout/ScrollToTop";
 
 
 function RequireAuth() {
@@ -26,7 +28,7 @@ function RequireAuth() {
 
   if (!ready) {
     return (
-      <div className="grid min-h-screen place-items-center bg-canvas">
+      <div className="grid min-h-screen place-items-center">
         <div className="text-center">
           <img src="/brand/daikin-logo.png" alt="Daikin" className="mx-auto h-8 w-auto opacity-80" />
           <p className="mt-4 text-sm text-navy-500">Loading workspace…</p>
@@ -42,6 +44,8 @@ function RequireAuth() {
 export function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
+      <ChartGradientDefs />
       <TooltipProvider delayDuration={180} skipDelayDuration={300}>
         <ToastProvider>
           <AuthProvider>

@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Callout } from "@/components/common/Callout";
 import { PRODUCT_BY_ID } from "@/data/catalog";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useSelection } from "@/features/selection/SelectionProvider";
@@ -57,34 +59,39 @@ export function SavedComparisonsPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="eyebrow">Saved comparisons</p>
-          <h1 className="mt-2.5 text-3xl font-bold text-navy-900">Your saved product sets</h1>
-          <p className="mt-2 max-w-3xl text-lg text-navy-500">
-            Each saved comparison keeps the exact product selection and unit sizes, so the evidence you
-            showed once can be reopened unchanged.
-          </p>
-        </div>
-        <Button asChild variant="secondary" size="lg">
-          <Link to="/dashboard">Build a new comparison</Link>
-        </Button>
-      </header>
+    <div className="stagger space-y-8">
+      <PageHeader
+        eyebrow="Saved comparisons"
+        title="Your saved product sets"
+        description="Each saved comparison keeps the exact product selection and unit sizes, so the evidence you showed once can be reopened unchanged."
+        actions={
+          <Button asChild variant="secondary" size="lg">
+            <Link to="/dashboard">Build a new comparison</Link>
+          </Button>
+        }
+      />
 
       {STORAGE_MODE === "local" && (
-        <p className="rounded-xl border border-edge bg-navy-50 px-4 py-3 text-sm leading-relaxed text-navy-600">
+        <Callout className="animate-fade-up [animation-delay:60ms]">
           Supabase is not configured, so saved comparisons persist locally in this browser under your
-          account. Add <code className="rounded bg-white px-1.5 py-0.5 font-mono text-xs">VITE_SUPABASE_URL</code>{" "}
-          and <code className="rounded bg-white px-1.5 py-0.5 font-mono text-xs">VITE_SUPABASE_ANON_KEY</code> and
+          account. Add <code className="rounded bg-white/80 px-1.5 py-0.5 font-mono text-xs">VITE_SUPABASE_URL</code>{" "}
+          and <code className="rounded bg-white/80 px-1.5 py-0.5 font-mono text-xs">VITE_SUPABASE_ANON_KEY</code> and
           the same records write to your Supabase project instead — no code change required.
-        </p>
+        </Callout>
       )}
 
       {loading ? (
-        <p className="text-base text-navy-500">Loading saved comparisons…</p>
+        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-hidden>
+          {[0, 1, 2].map((i) => (
+            <li key={i} className="surface p-5">
+              <div className="skeleton h-4 w-2/5" />
+              <div className="skeleton mt-3 h-3 w-3/5" />
+              <div className="skeleton mt-4 h-9 w-full" />
+            </li>
+          ))}
+        </ul>
       ) : items.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-edge bg-white p-12 text-center">
+        <div className="surface animate-fade-up border-dashed border-navy-200/70 p-12 text-center [animation-delay:100ms]">
           <Bookmark className="mx-auto size-8 text-navy-300" aria-hidden />
           <p className="mt-3 text-lg font-semibold text-navy-700">Nothing saved yet</p>
           <p className="mx-auto mt-1 max-w-md text-base text-navy-500">
@@ -101,7 +108,7 @@ export function SavedComparisonsPage() {
             const products = item.product_ids.map((id) => PRODUCT_BY_ID[id]).filter(Boolean);
             const missing = item.product_ids.length - products.length;
             return (
-              <li key={item.id} className="rounded-2xl border border-edge bg-white p-5 shadow-card">
+              <li key={item.id} className="surface p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <h2 className="text-lg font-bold text-navy-900">{item.name}</h2>

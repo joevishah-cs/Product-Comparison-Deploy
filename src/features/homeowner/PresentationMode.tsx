@@ -40,7 +40,7 @@ export function PresentationMode({ slides, onExit }: { slides: ReportSlide[]; on
 
   if (!slide) {
     return createPortal(
-      <div className="fixed inset-0 z-[200] grid place-items-center bg-white p-8 text-center">
+      <div className="theme-scene fixed inset-0 z-[200] grid place-items-center p-8 text-center">
         <div>
           <p className="text-xl font-semibold text-navy-800">
             There is nothing to present with the current section settings.
@@ -55,7 +55,7 @@ export function PresentationMode({ slides, onExit }: { slides: ReportSlide[]; on
   }
 
   return createPortal(
-    <div className="no-print fixed inset-0 z-[200] flex flex-col bg-white text-[1.0625rem]">
+    <div className="theme-scene no-print fixed inset-0 z-[200] flex flex-col text-[1.0625rem]">
       {/* Header — Daikin branding stays visible, nothing internal does */}
       <header className="flex shrink-0 items-center justify-between gap-4 border-b border-edge px-6 py-4">
         <img src="/brand/daikin-logo.png" alt="Daikin" className="h-8 w-auto" />

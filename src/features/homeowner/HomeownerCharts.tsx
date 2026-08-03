@@ -47,7 +47,7 @@ export function HomeownerChartCard({
   className?: string;
 }) {
   return (
-    <section className={cn("rounded-3xl border border-edge bg-white p-6 shadow-card sm:p-8", className)}>
+    <section className={cn("rounded-3xl surface p-6 sm:p-8", className)}>
       <h3 className="flex items-center gap-2 text-xl font-bold text-navy-900 sm:text-2xl">
         {title}
       </h3>

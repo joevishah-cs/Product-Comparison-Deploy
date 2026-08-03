@@ -84,6 +84,7 @@ export default {
         card: "0 1px 2px rgba(15,39,64,0.04), 0 8px 24px -12px rgba(15,39,64,0.14)",
         lift: "0 2px 4px rgba(15,39,64,0.05), 0 18px 40px -18px rgba(15,39,64,0.28)",
         pop: "0 24px 60px -20px rgba(15,39,64,0.35)",
+        glow: "0 1px 2px rgba(15,39,64,0.04), 0 12px 32px -10px rgba(0,151,224,0.35)",
       },
       keyframes: {
         "fade-up": {
@@ -97,10 +98,18 @@ export default {
         shimmer: {
           "100%": { transform: "translateX(100%)" },
         },
+        drift: {
+          from: { transform: "translate3d(0,0,0)" },
+          to: { transform: "translate3d(0,22px,0)" },
+        },
       },
       animation: {
-        "fade-up": "fade-up 0.35s cubic-bezier(0.16,1,0.3,1) both",
-        "scale-in": "scale-in 0.18s cubic-bezier(0.16,1,0.3,1) both",
+        /* `backwards` (not `both`) so the finished animation releases `transform`
+           back to the cascade — hover lifts on the same element keep working. */
+        "fade-up": "fade-up 0.35s cubic-bezier(0.16,1,0.3,1) backwards",
+        "scale-in": "scale-in 0.18s cubic-bezier(0.16,1,0.3,1) backwards",
+        shimmer: "shimmer 1.8s ease-in-out infinite",
+        drift: "drift 14s ease-in-out infinite alternate",
       },
       maxWidth: { content: "1600px" },
     },

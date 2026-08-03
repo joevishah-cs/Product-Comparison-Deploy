@@ -60,6 +60,7 @@ import {
   type BrandSeries,
 } from "@/data/brand-scorecard";
 import { BrandLegend, BrandRadar, RankedBars, SentimentBars } from "./BrandCharts";
+import { PageHeader } from "@/components/layout/PageHeader";
 import {
   COMPETITORS,
   Card,
@@ -360,7 +361,7 @@ function CommercialPanel() {
                     {band}
                   </Badge>
                 </div>
-                <div className="mt-3 h-2 overflow-hidden rounded-full bg-navy-100">
+                <div className="meter-track mt-3">
                   <div
                     className="h-full rounded-full"
                     style={{ width: `${score}%`, background: b.color }}
@@ -673,37 +674,34 @@ export function BrandDepartmentsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <header>
-        <p className="eyebrow">Brand Intelligence</p>
-        <h1 className="mt-2.5 text-3xl font-bold text-navy-900">Brand view by department</h1>
-        <p className="mt-2 max-w-4xl text-lg text-navy-500">
-          The same {INTEL_METRICS.length} tracked metrics as the brand workspace, rolled up from
-          {" "}{Object.keys(CATEGORY_BY_KEY).length} sheet topics into the five department groups that
-          own them — so each function opens one tab and sees everything it is accountable for.
-        </p>
-        <p className="mt-2 text-sm text-navy-400">{BRAND_INTEL_SCOPE}</p>
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          <Button variant="secondary" size="sm" onClick={copyBrief}>
-            <ClipboardCopy aria-hidden />
-            Copy {group.label} brief
-          </Button>
-          <Button variant="secondary" size="sm" onClick={exportCsv}>
-            <Download aria-hidden />
-            Export {filteredMetrics.length} metrics (CSV)
-          </Button>
-        </div>
-      </header>
+    <div className="stagger space-y-6">
+      <PageHeader
+        eyebrow="Brand Intelligence"
+        title="Brand view by department"
+        description={`The same ${INTEL_METRICS.length} tracked metrics as the brand workspace, rolled up from ${Object.keys(CATEGORY_BY_KEY).length} sheet topics into the five department groups that own them — so each function opens one tab and sees everything it is accountable for.`}
+        meta={BRAND_INTEL_SCOPE}
+        actions={
+          <>
+            <Button variant="secondary" size="md" onClick={copyBrief} className="min-w-0">
+              <ClipboardCopy aria-hidden />
+              <span className="truncate">Copy {group.label} brief</span>
+            </Button>
+            <Button variant="secondary" size="md" onClick={exportCsv}>
+              <Download aria-hidden />
+              Export {filteredMetrics.length} metrics (CSV)
+            </Button>
+          </>
+        }
+      />
 
       <SyntheticDataBanner />
 
       {/* Department switcher. Sticky so it stays reachable on long panels. */}
-      <div className="sticky top-0 z-20 -mx-1 bg-canvas/95 px-1 py-2 backdrop-blur supports-[backdrop-filter]:bg-canvas/80">
+      <div className="sticky top-0 z-20 -mx-1 bg-white/70 px-1 py-2 backdrop-blur-xl">
         <div
           role="tablist"
           aria-label="Department groups"
-          className="flex gap-1 overflow-x-auto rounded-xl border border-edge bg-navy-50/60 p-1"
+          className="segmented scroll-x-fade"
         >
           {DEPARTMENT_GROUPS.map((g, i) => {
             const selected = g.key === activeKey;

@@ -55,7 +55,10 @@ export function ChartCard({
 
   return (
     <section
-      className={cn("flex flex-col rounded-2xl border border-edge bg-white p-6 shadow-card", className)}
+      // `min-w-0` is load-bearing: as a grid/flex item this card would otherwise
+      // size to its min-content width (a long title plus a nowrap badge is
+      // ~640px) and blow past a narrow column instead of shrinking.
+      className={cn("flex min-w-0 flex-col surface p-6", className)}
       aria-label={title}
     >
       <header className="flex flex-wrap items-start justify-between gap-3">

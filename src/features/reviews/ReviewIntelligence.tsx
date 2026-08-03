@@ -159,7 +159,7 @@ function ProductReviewPanel({
 
   if (s.count === 0) {
     return (
-      <div className="rounded-2xl border border-edge bg-white p-5 shadow-card">
+      <div className="surface p-5">
         <div className="flex items-center gap-3">
           <ProductVisual product={s.product} size="sm" />
           <div className="min-w-0">
@@ -181,7 +181,7 @@ function ProductReviewPanel({
     .slice(0, 3);
 
   return (
-    <div className="rounded-2xl border border-edge bg-white p-5 shadow-card">
+    <div className="surface p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <ProductVisual product={s.product} size="sm" />
@@ -214,7 +214,7 @@ function ProductReviewPanel({
           return (
             <div key={star} className="flex items-center gap-2.5">
               <span className="w-8 shrink-0 text-xs font-semibold text-navy-500">{star}★</span>
-              <span className="h-2 flex-1 overflow-hidden rounded-full bg-navy-100">
+              <span className="meter-track flex-1">
                 <span className="block h-full rounded-full bg-daikin-500" style={{ width: `${pct}%` }} />
               </span>
               <span className="w-10 shrink-0 text-right text-xs text-navy-500">{n}</span>

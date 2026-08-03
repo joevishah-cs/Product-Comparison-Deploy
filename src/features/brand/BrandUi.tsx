@@ -337,7 +337,7 @@ export function Card({
 }) {
   return (
     <section
-      className={cn("rounded-2xl border border-edge bg-white p-5 shadow-card", className)}
+      className={cn("surface p-5", className)}
       aria-label={title}
     >
       <h3 className="text-base font-semibold text-navy-900">{title}</h3>
@@ -451,9 +451,9 @@ export function MetricsTable({ metrics }: { metrics: IntelMetric[] }) {
 
   return (
     <div className="overflow-x-auto rounded-xl border border-edge">
-      <table className="w-full min-w-[1100px] text-left text-sm">
+      <table className="table-sleek min-w-[1100px]">
         <thead>
-          <tr className="border-b border-edge bg-navy-50/70 text-xs font-bold uppercase tracking-wider text-navy-500">
+          <tr>
             <th className="px-3 py-2.5">Metric</th>
             {BRANDS.map((b) => (
               <th key={b.key} className="px-3 py-2.5">
