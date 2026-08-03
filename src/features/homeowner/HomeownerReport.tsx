@@ -204,7 +204,7 @@ export function ReportCover({
 
         {recommended && (
           <div className="flex justify-center">
-            <div className="w-full max-w-sm rounded-3xl border border-edge bg-white p-6 shadow-lift">
+            <div className="w-full max-w-sm rounded-3xl surface p-6 shadow-lift">
               <ProductVisual product={recommended} size="xl" className="w-full" />
               <p className="mt-4 text-sm font-semibold text-navy-500">{recommended.brand}</p>
               <p className="text-2xl font-bold text-navy-900">{recommended.model}</p>
@@ -317,7 +317,7 @@ export function PriorityFitSection({
     >
       <ul className="space-y-4">
         {alignments.map((a) => (
-          <li key={a.priority.key} className="rounded-2xl border border-edge bg-white p-6 shadow-card">
+          <li key={a.priority.key} className="surface p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h3 className="text-xl font-bold text-navy-900">{a.priority.label}</h3>
               <StatusChip status={a.technical.status} />
@@ -407,7 +407,7 @@ export function SimpleComparisonSection({
 
       <ul className="space-y-3">
         {rows.map((row) => (
-          <li key={row.category.key} className="rounded-2xl border border-edge bg-white p-5 shadow-card">
+          <li key={row.category.key} className="surface p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <h3 className="text-lg font-bold text-navy-900">{row.category.label}</h3>
@@ -489,7 +489,7 @@ export function ComfortBenefitsSection({ daikin }: { daikin: Product }) {
     >
       <ul className="grid gap-4 sm:grid-cols-2">
         {benefits.map((b) => (
-          <li key={b.key} className="rounded-2xl border border-edge bg-white p-5 shadow-card">
+          <li key={b.key} className="surface p-5">
             {/* Lead with what the capability is; the recorded value is supporting
                 detail. Showing the bare value read as a meaningless number. */}
             <p className="flex items-center justify-between gap-2 text-sm font-semibold text-daikin-700">
@@ -539,7 +539,7 @@ export function BrochureCapabilitiesSection({ daikin }: { daikin: Product }) {
             <h3 className="text-lg font-bold text-navy-900">{group.label}</h3>
             <ul className="mt-2.5 grid gap-3 sm:grid-cols-2">
               {group.features.map((f) => (
-                <li key={f.label} className="rounded-2xl border border-edge bg-white p-5 shadow-card">
+                <li key={f.label} className="surface p-5">
                   <p className="text-sm font-semibold text-daikin-700">{f.label}</p>
                   <p className="mt-1.5 text-[1.0625rem] leading-relaxed text-navy-700">{f.detail}</p>
                   <p className="mt-2 text-xs text-navy-400">
@@ -600,7 +600,7 @@ export function HomeownerReviewsSection({
 
           <ul className="grid gap-4 lg:grid-cols-2">
             {summaries.map((s) => (
-              <li key={s.product.id} className="rounded-2xl border border-edge bg-white p-5 shadow-card">
+              <li key={s.product.id} className="surface p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <ProductVisual product={s.product} size="sm" />
@@ -804,7 +804,7 @@ export function ImportantDifferencesSection({
         )}
 
         {comparable.length > 0 && (
-          <div className="rounded-2xl border border-edge bg-white p-5">
+          <div className="surface p-5">
             <h3 className="text-lg font-bold text-navy-900">Where the products are alike</h3>
             <p className="mt-2 text-[0.9375rem] leading-relaxed text-navy-600">
               {comparable.map((c) => c.category.label).join(", ")} — the published figures are the same or
@@ -823,7 +823,7 @@ export function ImportantDifferencesSection({
         )}
 
         {unavailable.length > 0 && (
-          <div className="rounded-2xl border border-edge bg-white p-5">
+          <div className="surface p-5">
             <h3 className="text-lg font-bold text-navy-900">Where information is not published</h3>
             <p className="mt-2 text-[0.9375rem] leading-relaxed text-navy-600">
               {unavailable.map((c) => c.category.label).join(", ")} — one or both manufacturers do not
@@ -833,7 +833,7 @@ export function ImportantDifferencesSection({
         )}
 
         {reviewGap.length > 0 && (
-          <div className="rounded-2xl border border-edge bg-white p-5">
+          <div className="surface p-5">
             <h3 className="text-lg font-bold text-navy-900">Review coverage is uneven</h3>
             <p className="mt-2 text-[0.9375rem] leading-relaxed text-navy-600">
               There is no approved customer-review data for{" "}
@@ -845,7 +845,7 @@ export function ImportantDifferencesSection({
         )}
 
         {equipmentConcerns.length > 0 && (
-          <div className="rounded-2xl border border-edge bg-white p-5">
+          <div className="surface p-5">
             <h3 className="text-lg font-bold text-navy-900">
               What some Daikin owners have raised
             </h3>
@@ -902,7 +902,7 @@ export function FaqSection({
     >
       <ul className="space-y-3">
         {faqs.map((f) => (
-          <li key={f.q} className="rounded-2xl border border-edge bg-white shadow-card">
+          <li key={f.q} className="surface">
             <details className="group">
               <summary className="flex cursor-pointer items-center justify-between gap-4 p-5 text-[1.0625rem] font-bold text-navy-900">
                 {f.q}
@@ -1065,7 +1065,7 @@ export function PlainEnglishSection({
   return (
     <SectionShell eyebrow="In summary" title="Your comparison in simple terms">
       <p className="-mt-2"><AiTag kind="generated" /></p>
-      <div className="space-y-4 rounded-3xl border border-edge bg-white p-6 shadow-card sm:p-8">
+      <div className="space-y-4 rounded-3xl surface p-6 sm:p-8">
         <p className="text-[1.125rem] leading-relaxed text-navy-800">
           {daikin.brand} {daikin.model}
           {tons ? ` at ${tons} tons` : ""} is recommended here because{" "}
@@ -1270,7 +1270,7 @@ export function SupportingInformation({
   source: ReviewSource | null;
 }) {
   return (
-    <details className="group rounded-2xl border border-edge bg-white shadow-card">
+    <details className="group surface">
       <summary className="flex min-h-[52px] cursor-pointer items-center justify-between gap-4 px-6 py-4 text-[0.9375rem] font-semibold text-navy-600 hover:text-daikin-700">
         View supporting product information
         <ChevronRight

@@ -40,9 +40,9 @@ function SeriesTable({ series }: { series: BrandSeries }) {
   const leader = leaderOf(series);
   return (
     <div className="overflow-x-auto rounded-xl border border-edge">
-      <table className="w-full min-w-[320px] text-left text-sm">
+      <table className="table-sleek min-w-[320px]">
         <thead>
-          <tr className="border-b border-edge bg-navy-50/60 text-xs font-bold uppercase tracking-wider text-navy-500">
+          <tr>
             <th className="px-3 py-2">Brand</th>
             <th className="px-3 py-2 text-right">{series.label}</th>
           </tr>

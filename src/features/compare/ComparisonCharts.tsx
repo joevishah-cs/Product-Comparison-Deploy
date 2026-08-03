@@ -15,7 +15,7 @@ import {
 import { ATTRIBUTE_BY_KEY, SOURCE_DOCUMENTS } from "@/data/catalog";
 import type { Product } from "@/data/types";
 import type { ComparisonResult } from "./engine";
-import { DAIKIN_FILL, DAIKIN_FILL_ALT, DAIKIN_LIGHT } from "@/components/charts/palette";
+import { COMPETITOR_SERIES, DAIKIN_FILL, DAIKIN_FILL_ALT, DAIKIN_LIGHT } from "@/components/charts/palette";
 import { UNAVAILABLE } from "@/lib/utils";
 
 const SOURCE_LABELS = SOURCE_DOCUMENTS.map((d) => `${d.fileName} — ${d.scope}`);
@@ -171,7 +171,7 @@ export function ComparisonCharts({
   }, [products]);
 
   const refrigerantSlices = React.useMemo(() => {
-    const palette = [DAIKIN_FILL, "#94a3b8", "#64748b", "#cbd5e1"];
+    const palette = [DAIKIN_FILL, ...COMPETITOR_SERIES.slice(0, 3)];
     const unknownCount = products.filter((p) => p.attributes.refrigerant?.status !== "verified").length;
     const slices = Object.entries(modelsByRefrigerant).map(([name, models], i) => ({
       name,

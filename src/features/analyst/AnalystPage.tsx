@@ -10,6 +10,7 @@ import { useAuth } from "@/features/auth/AuthProvider";
 import { deleteRow, insertRow, listRows, updateRow, type AnalystNote } from "@/lib/store";
 import { useNavigate } from "react-router-dom";
 import { SOURCED_ANALYST_ITEMS } from "@/data/web-coverage";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const TRACKS = [
   "Cold-climate heat pump performance",
@@ -215,17 +216,13 @@ export function AnalystPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="eyebrow">Analyst coverage</p>
-          <h1 className="mt-2.5 text-3xl font-bold text-navy-900">Research tracks and open questions</h1>
-          <p className="mt-2 max-w-3xl text-lg text-navy-500">
-            The questions your team is working through, who owns them, and whether the evidence behind each
-            one is licensed.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
+    <div className="stagger space-y-8">
+      <PageHeader
+        eyebrow="Analyst coverage"
+        title="Research tracks and open questions"
+        description="The questions your team is working through, who owns them, and whether the evidence behind each one is licensed."
+        actions={
+          <>
           <Button variant="secondary" size="lg" onClick={() => navigate("/briefs")}>
             <FileSearch aria-hidden />
             Create research brief
@@ -234,12 +231,13 @@ export function AnalystPage() {
             <Microscope aria-hidden />
             Add suggested questions
           </Button>
-          <Button size="lg" onClick={() => setAddOpen(true)}>
-            <Plus aria-hidden />
-            Add analyst note
-          </Button>
-        </div>
-      </header>
+            <Button size="lg" onClick={() => setAddOpen(true)}>
+              <Plus aria-hidden />
+              Add analyst note
+            </Button>
+          </>
+        }
+      />
 
       <div className="flex items-start gap-3 rounded-2xl border border-risk-500/25 bg-risk-50 p-5">
         <ExternalLink className="mt-0.5 size-5 shrink-0 text-risk-600" aria-hidden />
@@ -261,7 +259,7 @@ export function AnalystPage() {
           {byTrack.map(([track, items]) => {
             const linked = items.filter((i) => i.evidence_status === "source_linked").length;
             return (
-              <li key={track} className="rounded-2xl border border-edge bg-white p-5 shadow-card">
+              <li key={track} className="surface p-5">
                 <h3 className="text-base font-bold leading-snug text-navy-900">{track}</h3>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <Badge variant="neutral" size="sm">
@@ -286,7 +284,7 @@ export function AnalystPage() {
       </section>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-edge bg-white p-4 shadow-card">
+      <div className="flex flex-wrap items-center gap-3 surface p-4">
         <div>
           <label className="sr-only" htmlFor="analyst-track">
             Filter by topic
@@ -362,13 +360,25 @@ export function AnalystPage() {
           </div>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-edge bg-white shadow-card scroll-shadow">
-          <table className="w-full min-w-[900px] text-left">
+        <div className="overflow-x-auto surface scroll-shadow">
+          <table className="table-sleek table-fixed min-w-[1080px]">
             <caption className="sr-only">Open research questions</caption>
+            {/* Explicit widths: without them the question column collapses to a
+                few words per line while the short columns keep slack. */}
+            <colgroup>
+              <col className="w-[26rem]" />
+              <col className="w-[10rem]" />
+              <col className="w-[8rem]" />
+              <col className="w-[10.5rem]" />
+              <col className="w-[5.5rem]" />
+              <col className="w-[12rem]" />
+              <col className="w-[11.5rem]" />
+              <col className="w-[4.5rem]" />
+            </colgroup>
             <thead>
-              <tr className="border-b border-edge">
+              <tr>
                 {["Question", "Track", "Owner", "Status", "Due", "Connected report", "Evidence", ""].map((h) => (
-                  <th key={h} scope="col" className="px-4 py-3 text-sm font-bold text-navy-500">
+                  <th key={h} scope="col">
                     {h}
                   </th>
                 ))}
@@ -399,7 +409,7 @@ export function AnalystPage() {
                           });
                           await reload();
                         }}
-                        className="h-10 rounded-lg border border-edge bg-white px-2 text-sm text-navy-800 focus:border-daikin-500 focus:outline-none focus:ring-2 focus:ring-daikin-500/25"
+                        className="h-10 w-full rounded-lg border border-edge bg-white px-2 text-center text-sm text-navy-800 focus:border-daikin-500 focus:outline-none focus:ring-2 focus:ring-daikin-500/25"
                       >
                         {STATUSES.map((s) => (
                           <option key={s.value} value={s.value}>
@@ -416,7 +426,13 @@ export function AnalystPage() {
                       {n.connected_report || "None linked"}
                     </td>
                     <td className="px-4 py-3.5">
-                      <Badge variant={evidence?.badge ?? "neutral"} size="sm">
+                      {/* `whitespace-normal` overrides the badge default so a
+                          long status label wraps instead of overflowing. */}
+                      <Badge
+                        variant={evidence?.badge ?? "neutral"}
+                        size="sm"
+                        className="justify-center whitespace-normal text-center leading-snug"
+                      >
                         {evidence?.label}
                       </Badge>
                     </td>

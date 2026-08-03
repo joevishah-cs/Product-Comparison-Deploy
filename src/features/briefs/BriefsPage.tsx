@@ -35,6 +35,7 @@ import {
   type BriefSection,
 } from "./generate";
 import { ExecutiveNewsbrief } from "./ExecutiveNewsbrief";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const SECTION_STYLE: Record<
   BriefSection["kind"],
@@ -98,24 +99,17 @@ export function BriefsPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="eyebrow">Briefs &amp; newsletters</p>
-          <h1 className="mt-2.5 text-3xl font-bold text-navy-900">
-            {mode === "newsbrief" ? "Executive newsbrief" : "Generate source-backed content"}
-          </h1>
-          <p className="mt-2 max-w-3xl text-lg text-navy-500">
-            {mode === "newsbrief"
-              ? "A daily-brief view of the logged coverage, competitive position and customer voice — ready to put in front of leadership."
-              : "Every line is generated from the products you selected and the values recorded in the imported sources, and labelled by what kind of statement it is."}
-          </p>
-        </div>
-        <div
-          role="radiogroup"
-          aria-label="Briefs view"
-          className="no-print inline-flex rounded-xl border border-edge bg-navy-100/70 p-1"
-        >
+    <div className="stagger space-y-8">
+      <PageHeader
+        eyebrow="Briefs & newsletters"
+        title={mode === "newsbrief" ? "Executive newsbrief" : "Generate source-backed content"}
+        description={
+          mode === "newsbrief"
+            ? "A daily-brief view of the logged coverage, competitive position and customer voice — ready to put in front of leadership."
+            : "Every line is generated from the products you selected and the values recorded in the imported sources, and labelled by what kind of statement it is."
+        }
+        actions={
+        <div role="radiogroup" aria-label="Briefs view" className="segmented no-print inline-flex">
           {(
             [
               { value: "newsbrief", label: "Executive newsbrief" },
@@ -139,7 +133,8 @@ export function BriefsPage() {
             </button>
           ))}
         </div>
-      </header>
+        }
+      />
 
       {mode === "newsbrief" && <ExecutiveNewsbrief />}
 
@@ -157,7 +152,7 @@ export function BriefsPage() {
       ) : (
         <>
           {/* Controls */}
-          <section className="rounded-2xl border border-edge bg-white p-6 shadow-card">
+          <section className="surface p-6">
             <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr]">
               <div>
                 <Label id="format-label">Format</Label>
@@ -233,7 +228,7 @@ export function BriefsPage() {
 
           {/* Draft */}
           {doc && (
-            <section aria-label="Generated draft" className="rounded-2xl border border-edge bg-white shadow-card">
+            <section aria-label="Generated draft" className="surface">
               <header className="flex flex-wrap items-start justify-between gap-4 border-b border-edge p-6">
                 <div className="min-w-0">
                   <h2 className="text-xl font-bold text-navy-900">{doc.title}</h2>
@@ -339,7 +334,7 @@ export function BriefsPage() {
         ) : (
           <ul className="space-y-3">
             {drafts.map((d) => (
-              <li key={d.id} className="rounded-2xl border border-edge bg-white p-5 shadow-card">
+              <li key={d.id} className="surface p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-base font-bold text-navy-900">{d.title}</p>

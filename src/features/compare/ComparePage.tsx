@@ -49,6 +49,7 @@ import { ReviewDrawer, useReviewDrawer } from "@/features/reviews/ReviewDrawer";
 import { ViewToggle } from "./ViewToggle";
 import { summarizeSelection } from "@/features/reviews/reviewEngine";
 import type { ReviewSource } from "@/data/review-types";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 /** Review summaries for the drawer, memoized per source + selection by React. */
 function summarizeForDrawer(source: ReviewSource, products: Product[]) {
@@ -101,14 +102,12 @@ export function ComparePage() {
   if (selected.length < MIN_COMPARE) {
     return (
       <div className="space-y-6">
-        <header>
-          <p className="eyebrow">Compare products</p>
-          <h1 className="mt-2.5 text-3xl font-bold text-navy-900">Where Daikin wins — and where to improve.</h1>
-          <p className="mt-2 max-w-3xl text-lg text-navy-500">
-            Select at least {MIN_COMPARE} products to run a comparison. You currently have {selected.length}.
-          </p>
-        </header>
-        <div className="rounded-2xl border border-edge bg-white p-6 shadow-card">
+        <PageHeader
+          eyebrow="Compare products"
+          title="Where Daikin wins — and where to improve."
+          description={`Select at least ${MIN_COMPARE} products to run a comparison. You currently have ${selected.length}.`}
+        />
+        <div className="surface p-6">
           <ProductSearch size="md" />
         </div>
         <div className="flex gap-3">
@@ -260,64 +259,65 @@ export function ComparePage() {
         </div>
       )}
 
-      <header className="flex flex-wrap items-end justify-between gap-5">
-        <div className="min-w-0">
-          <p className="eyebrow">Compare products</p>
-          <h1 className="mt-2.5 text-balance text-3xl font-bold leading-tight text-navy-900 sm:text-4xl">
-            Where Daikin wins — and where to improve.
-          </h1>
-          <p className="mt-2.5 max-w-3xl text-lg text-navy-500">
-            {selected.length} products compared across {result.attributesCompared} attributes with a verified
-            source value.
-          </p>
-        </div>
-
-        <div className="no-print flex flex-wrap items-center gap-2">
-          {viewToggle}
-          <Button variant="secondary" size="md" onClick={() => setView("homeowner")} disabled={result.daikinProducts.length === 0}>
-            <Users aria-hidden />
-            Create homeowner report
-          </Button>
-          <Button variant="secondary" size="md" onClick={() => window.print()}>
-            <Printer aria-hidden />
-            Print
-          </Button>
-          <Button
-            variant="secondary"
-            size="md"
-            onClick={() => {
-              notify("Opening the print dialog — choose “Save as PDF” as the destination.", "info");
-              window.setTimeout(() => window.print(), 400);
-            }}
-          >
-            <FileDown aria-hidden />
-            Export to PDF
-          </Button>
-          <Button
-            variant="secondary"
-            size="md"
-            onClick={async () => {
-              const ok = await copyText(buildSummaryText());
-              notify(ok ? "Comparison summary copied to clipboard." : "Could not access the clipboard.", ok ? "success" : "warning");
-            }}
-          >
-            <ClipboardCopy aria-hidden />
-            Copy summary
-          </Button>
-          <Button variant="secondary" size="md" onClick={() => setPresentation((v) => !v)} aria-pressed={presentation}>
-            <Presentation aria-hidden />
-            Presentation mode
-          </Button>
-          <Button variant="secondary" size="md" onClick={openAi}>
-            <Sparkles aria-hidden />
-            Ask AI
-          </Button>
-          <Button size="md" onClick={() => setSaveOpen(true)}>
+      <PageHeader
+        eyebrow="Compare products"
+        title="Where Daikin wins — and where to improve."
+        description={`${selected.length} products compared across ${result.attributesCompared} attributes with a verified source value.`}
+        actions={
+          <Button size="lg" className="no-print" onClick={() => setSaveOpen(true)}>
             <Bookmark aria-hidden />
             Save comparison
           </Button>
+        }
+      >
+        {/* View switch and tools are separated: the toggle changes what you are
+            looking at, the toolbar acts on it. Every action stays visible —
+            nothing moved behind an overflow menu. */}
+        <div className="no-print flex flex-wrap items-center justify-between gap-3">
+          {viewToggle}
+          <div className="segmented flex-wrap gap-1">
+            <Button variant="ghost" size="sm" onClick={() => setView("homeowner")} disabled={result.daikinProducts.length === 0}>
+              <Users aria-hidden />
+              Homeowner report
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setPresentation((v) => !v)} aria-pressed={presentation}>
+              <Presentation aria-hidden />
+              Present
+            </Button>
+            <Button variant="ghost" size="sm" onClick={openAi}>
+              <Sparkles aria-hidden />
+              Ask AI
+            </Button>
+            <span className="mx-0.5 h-6 w-px self-center bg-edge" aria-hidden />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={async () => {
+                const ok = await copyText(buildSummaryText());
+                notify(ok ? "Comparison summary copied to clipboard." : "Could not access the clipboard.", ok ? "success" : "warning");
+              }}
+            >
+              <ClipboardCopy aria-hidden />
+              Copy summary
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => window.print()}>
+              <Printer aria-hidden />
+              Print
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                notify("Opening the print dialog — choose “Save as PDF” as the destination.", "info");
+                window.setTimeout(() => window.print(), 400);
+              }}
+            >
+              <FileDown aria-hidden />
+              PDF
+            </Button>
+          </div>
         </div>
-      </header>
+      </PageHeader>
 
       {/* Selected product summary cards */}
       <section aria-label="Selected product summary">

@@ -13,7 +13,7 @@ export function SelectedProducts({ compact = false }: { compact?: boolean }) {
   const navigate = useNavigate();
 
   return (
-    <section aria-label="Selected products" className="rounded-2xl border border-edge bg-white p-5 shadow-card sm:p-6">
+    <section aria-label="Selected products" className="surface p-5 sm:p-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-semibold text-navy-900">Selected products</h2>

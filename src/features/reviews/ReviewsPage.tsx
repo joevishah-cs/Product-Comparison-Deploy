@@ -13,11 +13,12 @@ import { PRODUCTS, PRODUCT_BY_ID } from "@/data/catalog";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useSelection } from "@/features/selection/SelectionProvider";
 import { deleteRow, insertRow, listRows, type ReviewSignal, type Sentiment } from "@/lib/store";
-import { DAIKIN_FILL } from "@/components/charts/palette";
+import { COMPETITOR_SERIES, DAIKIN_FILL } from "@/components/charts/palette";
 import { ImportedReviewsSection } from "./ImportedReviewsSection";
 import { CompetitorReviewsSection } from "./CompetitorReviewsSection";
 import { loadReviewSource } from "./useReviewSource";
 import type { ReviewRecord } from "@/data/review-types";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const SENTIMENTS: { value: Sentiment; label: string; color: string; badge: "verified" | "caution" | "risk" }[] = [
   { value: "positive", label: "Positive", color: "#16a45c", badge: "verified" },
@@ -175,7 +176,7 @@ export function ReviewsPage() {
       .map(([id, value]) => ({
         name: PRODUCT_BY_ID[id]?.displayName ?? id,
         value,
-        color: PRODUCT_BY_ID[id]?.isDaikin ? DAIKIN_FILL : "#94a3b8",
+        color: PRODUCT_BY_ID[id]?.isDaikin ? DAIKIN_FILL : COMPETITOR_SERIES[0],
       }))
       .sort((a, b) => b.value - a.value);
   }, [filtered]);
@@ -237,15 +238,12 @@ export function ReviewsPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <header>
-        <p className="eyebrow">User reviews</p>
-        <h1 className="mt-2.5 text-3xl font-bold text-navy-900">Customer reviews and field signals</h1>
-        <p className="mt-2 max-w-3xl text-lg text-navy-500">
-          The imported customer-review dataset, plus field notes your team records — both kept deliberately
-          separate from verified product specifications.
-        </p>
-      </header>
+    <div className="stagger space-y-8">
+      <PageHeader
+        eyebrow="User reviews"
+        title="Customer reviews and field signals"
+        description="The imported customer-review dataset, plus field notes your team records — both kept deliberately separate from verified product specifications."
+      />
 
       <ImportedReviewsSection />
 
@@ -277,7 +275,7 @@ export function ReviewsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-edge bg-white p-4 shadow-card">
+      <div className="flex flex-wrap items-center gap-3 surface p-4">
         <span className="flex items-center gap-2 text-sm font-semibold text-navy-500">
           <Filter className="size-4" aria-hidden />
           Filters
@@ -431,7 +429,7 @@ export function ReviewsPage() {
 
       {/* Cross-product sentiment comparison */}
       {comparison && (
-        <section className="rounded-2xl border border-edge bg-white p-6 shadow-card">
+        <section className="surface p-6">
           <h2 className="text-lg font-semibold text-navy-900">
             Sentiment across your selected comparison
           </h2>
@@ -487,7 +485,7 @@ export function ReviewsPage() {
               const product = PRODUCT_BY_ID[s.product_id];
               const sentiment = SENTIMENTS.find((x) => x.value === s.sentiment);
               return (
-                <li key={s.id} className="rounded-2xl border border-edge bg-white p-5 shadow-card">
+                <li key={s.id} className="surface p-5">
                   <div className="flex flex-wrap items-start gap-4">
                     {product && <ProductVisual product={product} size="sm" />}
                     <div className="min-w-[14rem] flex-1">

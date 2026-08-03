@@ -12,8 +12,15 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Working pages sit on white with only a breath of brand tint, so dense
+     tables and charts stay maximally legible. The saturated scene is reserved
+     for the dashboard (`.scene-rich`) and the login screen. */
   body {
-    @apply bg-canvas text-navy-900 font-sans text-base antialiased;
+    @apply text-navy-900 font-sans text-base antialiased;
+    background:
+      radial-gradient(60rem 40rem at 100% -10%, rgba(0, 151, 224, 0.07), transparent 60%),
+      linear-gradient(180deg, #ffffff 0%, #f5faff 100%);
+    background-attachment: fixed;
   }
 
   h1,
@@ -33,16 +40,213 @@
 }
 
 @layer components {
-  .surface {
-    @apply rounded-2xl border border-edge bg-white shadow-card;
+  /* ---- Card tokens -------------------------------------------------------
+     `.surface` is the canonical frosted card used by every page. `.glass-card`
+     is kept as an alias so both names resolve to one recipe. */
+  .surface,
+  .glass-card {
+    @apply rounded-2xl border border-edge/80 bg-white/95 backdrop-blur-sm;
+    box-shadow:
+      inset 0 1px 0 #fff,
+      0 1px 2px rgba(15, 39, 64, 0.03),
+      0 10px 30px -14px rgba(15, 39, 64, 0.16);
+  }
+
+  /* On the saturated dashboard scene the same cards go properly frosted. */
+  .scene-rich .surface,
+  .scene-rich .glass-card {
+    @apply border-white/70 bg-white/80 backdrop-blur-xl;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      0 12px 40px -16px rgba(15, 39, 64, 0.25);
+  }
+
+  /* The dashboard's saturated glass scene. */
+  .scene-rich {
+    background:
+      radial-gradient(55rem 40rem at 115% -5%, rgba(0, 151, 224, 0.28), transparent 60%),
+      radial-gradient(45rem 34rem at -10% 40%, rgba(118, 140, 255, 0.24), transparent 60%),
+      radial-gradient(40rem 30rem at 60% 110%, rgba(0, 151, 224, 0.18), transparent 65%),
+      linear-gradient(165deg, #d7e9fd 0%, #dde9fe 40%, #cbdcf8 100%);
+    background-attachment: fixed;
+  }
+
+  /* Nested tile inside a `.surface` — no blur (it would compound) and no
+     shadow, so inner content reads as one level down, never as a second card. */
+  .surface-inner {
+    @apply rounded-xl border border-edge/70 bg-navy-50/40;
+  }
+
+  /* Interactive nested row: same as `.surface-inner` plus a hover response. */
+  .surface-row {
+    @apply rounded-xl border border-edge/80 bg-white transition-all duration-200 hover:border-daikin-300 hover:bg-daikin-50/40 hover:shadow-card;
   }
 
   .surface-muted {
-    @apply rounded-2xl border border-edge bg-navy-50/60;
+    @apply rounded-2xl border border-white/50 bg-navy-50/50;
   }
 
   .eyebrow {
     @apply text-xs font-bold uppercase tracking-[0.16em] text-daikin-700;
+  }
+
+  /* Interactive card: gentle lift + border glow on hover, GPU-friendly. */
+  .card-lift {
+    @apply transition-[transform,box-shadow,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-daikin-200 hover:shadow-lift;
+  }
+
+  /* Full-screen surfaces (presentation mode) that need the scene painted on
+     their own element, since they are fixed and sit above the body. */
+  .theme-scene {
+    background:
+      radial-gradient(55rem 40rem at 115% -5%, rgba(0, 151, 224, 0.22), transparent 60%),
+      radial-gradient(45rem 34rem at -10% 40%, rgba(118, 140, 255, 0.18), transparent 60%),
+      linear-gradient(165deg, #e4f0fe 0%, #e8f0fe 40%, #dbe8fb 100%);
+  }
+
+  /* ---- Frosted chrome ---------------------------------------------------- */
+
+  .app-sidebar {
+    @apply border-edge/80 bg-white/85 backdrop-blur-2xl;
+  }
+
+  .app-header {
+    @apply border-edge/80 bg-white/80 backdrop-blur-2xl;
+  }
+
+  .scene-rich .app-sidebar {
+    @apply border-white/40 bg-white/55;
+  }
+
+  .scene-rich .app-header {
+    @apply border-white/50 bg-white/45;
+  }
+
+  /* Active nav item becomes a floating white pill. */
+  .nav-item-active {
+    @apply bg-white text-daikin-700;
+    box-shadow:
+      0 1px 2px rgba(15, 39, 64, 0.06),
+      0 8px 20px -10px rgba(15, 39, 64, 0.28);
+  }
+
+  /* The page-level search is a glowing pill. Scoped to the `lg` variant via
+     `.search-hero` so the compact ⌘K/compare inputs keep their own styling. */
+  .search-hero input[type="search"] {
+    @apply rounded-full border-white/80;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      0 12px 36px -14px rgba(0, 151, 224, 0.35),
+      0 2px 6px rgba(15, 39, 64, 0.05);
+  }
+
+  /* Staggered page entrance: put `stagger` on a page's root container and its
+     direct children fade up in sequence. One class per page keeps the motion
+     identical everywhere. `backwards` releases `transform` when finished so
+     hover lifts and sticky children behave normally afterwards. */
+  .stagger > * {
+    animation: fade-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+
+  .stagger > *:nth-child(1) {
+    animation-delay: 20ms;
+  }
+  .stagger > *:nth-child(2) {
+    animation-delay: 70ms;
+  }
+  .stagger > *:nth-child(3) {
+    animation-delay: 120ms;
+  }
+  .stagger > *:nth-child(4) {
+    animation-delay: 170ms;
+  }
+  .stagger > *:nth-child(5) {
+    animation-delay: 220ms;
+  }
+  .stagger > *:nth-child(n + 6) {
+    animation-delay: 260ms;
+  }
+
+  /* Segmented control shared by every tab strip in the app. */
+  .segmented {
+    @apply flex gap-1 rounded-xl border border-edge/80 bg-navy-50/60 p-1 backdrop-blur;
+  }
+
+  .scene-rich .segmented {
+    @apply border-white/70 bg-white/60;
+  }
+
+  /* Horizontal scroller that fades its right edge, so a clipped tab reads as
+     "there is more" instead of as a broken layout. The mask only appears while
+     the content actually overflows because it tracks scroll position. */
+  .scroll-x-fade {
+    @apply overflow-x-auto;
+    scrollbar-width: none;
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 2.5rem), transparent 100%);
+  }
+
+  .scroll-x-fade::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ---- Tables ------------------------------------------------------------
+     One treatment for every table in the app: a frosted sticky header, roomy
+     cells, hairline row rules, a brand-tinted row hover and right-aligned
+     numerics. Wrap the table in `.table-wrap` for the rounded scroll frame. */
+  .table-wrap {
+    @apply overflow-x-auto rounded-2xl border border-edge/80 bg-white/95;
+  }
+
+  .table-sleek {
+    @apply w-full border-collapse text-left text-sm;
+  }
+
+  .table-sleek thead th {
+    @apply sticky top-0 z-10 whitespace-nowrap border-b border-edge bg-navy-50/80 px-4 py-3 text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-navy-500 backdrop-blur;
+  }
+
+  .table-sleek tbody td {
+    @apply border-b border-edge/60 px-4 py-3 align-middle text-navy-700;
+    /* Long URLs and unbroken tokens must wrap inside their column rather than
+       overflow and paint over the neighbouring cell. */
+    overflow-wrap: anywhere;
+  }
+
+  .table-sleek tbody tr {
+    @apply transition-colors;
+  }
+
+  .table-sleek tbody tr:hover {
+    @apply bg-daikin-50/50;
+  }
+
+  .table-sleek tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  /* Numeric columns line up when they share a digit width. */
+  .table-sleek .num {
+    @apply text-right tabular-nums;
+  }
+
+  /* Loading shimmer block; size it with height/width utilities where used. */
+  .skeleton {
+    @apply relative overflow-hidden rounded-lg bg-navy-100/70;
+  }
+
+  .skeleton::after {
+    content: "";
+    @apply absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/70 to-transparent;
+  }
+
+  /* Coverage meters: slim 6px rail. The unfilled track is a lighter step of the
+     same blue ramp so the whole bar reads as one measure, not two colors. */
+  .meter-track {
+    @apply h-1.5 w-full overflow-hidden rounded-full bg-daikin-100/70;
+  }
+
+  .meter-fill {
+    @apply h-full rounded-full bg-gradient-to-r from-daikin-400 to-daikin-600 transition-[width] duration-700 ease-out;
   }
 
   .scroll-shadow {
@@ -108,8 +312,24 @@
     margin: 12mm;
   }
 
+  /* Flatten the whole glass theme for paper: no gradients, no blur, no
+     translucency — printed homeowner reports must stay clean solid white. */
   body {
-    background: #fff;
+    background: #fff !important;
+  }
+
+  .surface,
+  .glass-card,
+  .surface-inner,
+  .surface-row,
+  .surface-muted,
+  .app-sidebar,
+  .app-header {
+    background: #fff !important;
+    border-color: #cbd9ea !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    break-inside: avoid;
   }
 
   .no-print {

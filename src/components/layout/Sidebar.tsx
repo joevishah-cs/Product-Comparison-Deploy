@@ -53,29 +53,31 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3 px-6 pb-6 pt-7">
+      {/* px-6 puts the logo and subtitle on the same left edge as the nav icons
+          (nav px-3 + item px-3). */}
+      <div className="flex items-center px-6 pb-3 pt-5">
         <img
           src="/brand/daikin-logo.png"
           alt="Daikin"
-          className="h-8 w-auto"
+          className="h-10 w-auto"
           width={1168}
           height={244}
         />
       </div>
 
-      <p className="px-6 pb-6 text-xs font-semibold uppercase leading-relaxed tracking-[0.14em] text-navy-400">
+      <p className="px-6 pb-4 text-[0.6875rem] font-semibold uppercase leading-[1.4] tracking-[0.13em] text-navy-400">
         Competitive Marketing
         <br />
         Intelligence
       </p>
 
-      <nav className="flex-1 space-y-7 overflow-y-auto px-3 pb-6 scroll-shadow" aria-label="Primary">
+      <nav className="flex-1 space-y-5 overflow-y-auto px-3 pb-5 scroll-shadow" aria-label="Primary">
         {NAV_GROUPS.map((group) => (
           <div key={group.title}>
-            <h2 className="px-3 pb-2 text-xs font-bold uppercase tracking-[0.14em] text-navy-400">
+            <h2 className="px-3 pb-1.5 text-[0.625rem] font-bold uppercase tracking-[0.14em] text-navy-400">
               {group.title}
             </h2>
-            <ul className="space-y-1">
+            <ul className="space-y-0.5">
               {group.items.map((item) => (
                 <li key={item.to}>
                   <NavLink
@@ -85,7 +87,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                       cn(
                         "flex min-h-[44px] items-center gap-3 rounded-xl px-3 text-[0.9375rem] font-medium transition-colors",
                         isActive
-                          ? "bg-daikin-50 text-daikin-800 shadow-[inset_0_0_0_1px_theme(colors.daikin.200)]"
+                          ? "nav-item-active bg-daikin-50 text-daikin-800 shadow-[inset_0_0_0_1px_theme(colors.daikin.200)]"
                           : "text-navy-600 hover:bg-navy-100/70 hover:text-navy-900",
                       )
                     }
@@ -121,7 +123,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
 export function Sidebar() {
   return (
-    <aside className="no-print fixed inset-y-0 left-0 z-40 hidden w-[260px] border-r border-edge bg-white lg:block">
+    <aside className="app-sidebar no-print fixed inset-y-0 left-0 z-40 hidden w-[260px] border-r border-edge bg-white lg:block">
       <SidebarContent />
     </aside>
   );
@@ -145,7 +147,7 @@ export function MobileSidebar({ open, onClose }: { open: boolean; onClose: () =>
         onClick={onClose}
         className="absolute inset-0 bg-navy-950/40 backdrop-blur-[2px]"
       />
-      <div className="absolute inset-y-0 left-0 w-[280px] max-w-[85vw] border-r border-edge bg-white shadow-pop">
+      <div className="app-sidebar absolute inset-y-0 left-0 w-[280px] max-w-[85vw] border-r border-edge bg-white shadow-pop">
         <button
           type="button"
           onClick={onClose}

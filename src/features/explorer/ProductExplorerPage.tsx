@@ -13,6 +13,7 @@ import { EQUIPMENT_TYPE_LABEL, PRODUCTS, coverageFor, isColdClimate, isQuiet } f
 import { documentsForProduct } from "@/data/documents";
 import { DocumentsDialog } from "./DocumentsDialog";
 import type { EquipmentType, Product } from "@/data/types";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 type SortKey = "model" | "brand" | "seer2" | "sound" | "warranty";
 
@@ -250,20 +251,17 @@ export function ProductExplorerPage() {
   );
 
   return (
-    <div className="space-y-6">
-      <header>
-        <p className="eyebrow">Product Explorer</p>
-        <h1 className="mt-2.5 text-3xl font-bold text-navy-900">All imported products</h1>
-        <p className="mt-2 max-w-3xl text-lg text-navy-500">
-          Every one of the {PRODUCTS.length} models imported from the two source documents, with the source
-          value behind each specification.
-        </p>
-      </header>
+    <div className="stagger space-y-6">
+      <PageHeader
+        eyebrow="Product Explorer"
+        title="All imported products"
+        description={`Every one of the ${PRODUCTS.length} models imported from the two source documents, with the source value behind each specification.`}
+      />
 
       <div
         role="tablist"
         aria-label="Equipment type"
-        className="inline-flex w-full flex-wrap gap-1 rounded-xl border border-edge bg-navy-50/60 p-1 sm:w-auto"
+        className="segmented inline-flex w-full flex-wrap sm:w-auto"
       >
         {EQUIPMENT_TABS.map((tab) => (
           <button
@@ -286,7 +284,7 @@ export function ProductExplorerPage() {
 
       <div className="flex flex-col gap-4 lg:flex-row">
         <aside className="hidden w-[268px] shrink-0 lg:block">
-          <div className="sticky top-[6.5rem] rounded-2xl border border-edge bg-white p-5 shadow-card">
+          <div className="sticky top-[6.5rem] surface p-5">
             <h2 className="mb-1 text-base font-semibold text-navy-900">Filters</h2>
             {equipmentType !== "all" && (
               <p className="mb-3 text-xs leading-relaxed text-navy-400">
@@ -298,7 +296,7 @@ export function ProductExplorerPage() {
         </aside>
 
         <div className="min-w-0 flex-1 space-y-4">
-          <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-edge bg-white p-4 shadow-card">
+          <div className="flex flex-wrap items-center gap-3 surface p-4">
             <div className="relative min-w-[16rem] flex-1">
               <Search className="pointer-events-none absolute left-3.5 top-1/2 size-5 -translate-y-1/2 text-navy-400" aria-hidden />
               <input

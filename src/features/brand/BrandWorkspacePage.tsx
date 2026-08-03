@@ -1,7 +1,6 @@
 import * as React from "react";
 import { useSearchParams } from "react-router-dom";
 import {
-  ShieldAlert,
   TrendingUp,
   Users,
   Megaphone,
@@ -80,6 +79,8 @@ import {
   type BrandSeries,
 } from "@/data/brand-scorecard";
 import { BrandLegend, BrandRadar, RankedBars, SentimentBars } from "./BrandCharts";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Callout } from "@/components/common/Callout";
 import {
   ALL_RECOMMENDATIONS,
   RecommendationCallout,
@@ -172,7 +173,7 @@ function Card({
 }) {
   return (
     <section
-      className={cn("rounded-2xl border border-edge bg-white p-5 shadow-card", className)}
+      className={cn("surface p-5", className)}
       aria-label={title}
     >
       <h3 className="text-base font-semibold text-navy-900">{title}</h3>
@@ -266,7 +267,7 @@ function SummaryPanel() {
   const highThreats = COMPETITORS.filter((b) => threatLevel(b.key) === "High");
 
   return (
-    <div className="space-y-6">
+    <div className="stagger space-y-6">
       <PanelIntro icon={TrendingUp} title="Executive summary" audience="Leadership">
         The four questions an executive opens this page to answer, each traceable to a row in the
         source sheet.
@@ -503,7 +504,7 @@ function MediaPanel() {
                   {band}
                 </Badge>
               </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-navy-100">
+              <div className="meter-track mt-3">
                 <div
                   className="h-full rounded-full"
                   style={{ width: `${score}%`, background: b.color }}
@@ -748,7 +749,7 @@ function ByTeamPanel({
         names the ingestion mechanism and the source a real feed would come from.
       </PanelIntro>
 
-      <div className="rounded-2xl border border-edge bg-white p-5 shadow-card">
+      <div className="surface p-5">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative min-w-[15rem] flex-1">
             <Search
@@ -821,9 +822,9 @@ function ByTeamPanel({
         )}
 
         <div className="mt-4 overflow-x-auto rounded-xl border border-edge">
-          <table className="w-full min-w-[1100px] text-left text-sm">
+          <table className="table-sleek min-w-[1100px]">
             <thead>
-              <tr className="border-b border-edge bg-navy-50/70 text-xs font-bold uppercase tracking-wider text-navy-500">
+              <tr>
                 <th className="px-3 py-2.5">Metric</th>
                 {BRANDS.map((b) => (
                   <th key={b.key} className="px-3 py-2.5">
@@ -912,7 +913,7 @@ function FeedReadinessPanel() {
           const rows = INTEL_METRICS.filter((m) => ingestionKind(m.ingestion) === kind);
           const pct = Math.round((rows.length / INTEL_METRICS.length) * 100);
           return (
-            <div key={kind} className="rounded-2xl border border-edge bg-white p-5 shadow-card">
+            <div key={kind} className="surface p-5">
               <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-navy-500">
                 <Icon className="size-4 text-daikin-600" aria-hidden />
                 {label}
@@ -923,8 +924,8 @@ function FeedReadinessPanel() {
                   / {INTEL_METRICS.length}
                 </span>
               </p>
-              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-navy-100">
-                <div className="h-full rounded-full bg-daikin-500" style={{ width: `${pct}%` }} />
+              <div className="meter-track mt-2">
+                <div className="meter-fill" style={{ width: `${pct}%` }} />
               </div>
               <p className="mt-2.5 text-sm leading-relaxed text-navy-500">{blurb}</p>
             </div>
@@ -1083,33 +1084,28 @@ export function BrandWorkspacePage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <header>
-        <p className="eyebrow">Brand Intelligence</p>
-        <h1 className="mt-2.5 text-3xl font-bold text-navy-900">Brand workspace</h1>
-        <p className="mt-2 max-w-4xl text-lg text-navy-500">
-          Customer reviews, media visibility, analyst positioning and competitive signals for Daikin Altherma against five tracked rivals — aggregated into one view, then broken out per team.
-        </p>
-        <p className="mt-2 text-sm text-navy-400">{BRAND_INTEL_SCOPE}</p>
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          <Button variant="secondary" size="sm" onClick={copySummary}>
-            <ClipboardCopy aria-hidden />
-            Copy executive summary
-          </Button>
-          <Button variant="secondary" size="sm" onClick={exportCsv}>
-            <Download aria-hidden />
-            Export {filteredMetrics.length} metrics (CSV)
-          </Button>
-        </div>
-      </header>
+      <PageHeader
+        eyebrow="Brand Intelligence"
+        title="Brand workspace"
+        description={"Customer reviews, media visibility, analyst positioning and competitive signals for Daikin Altherma against five tracked rivals — aggregated into one view, then broken out per team."}
+        meta={BRAND_INTEL_SCOPE}
+        actions={
+          <>
+            <Button variant="secondary" size="md" onClick={copySummary}>
+              <ClipboardCopy aria-hidden />
+              Copy executive summary
+            </Button>
+            <Button variant="secondary" size="md" onClick={exportCsv}>
+              <Download aria-hidden />
+              Export {filteredMetrics.length} metrics (CSV)
+            </Button>
+          </>
+        }
+      />
 
       {/* Provenance banner -- deliberately loud and above everything. */}
-      <div className="flex items-start gap-3 rounded-2xl border border-risk-500/30 bg-risk-50 px-4 py-3.5">
-        <ShieldAlert className="mt-0.5 size-5 shrink-0 text-risk-700" aria-hidden />
+      <Callout tone="risk" title="Synthetic demonstration data" className="animate-fade-up [animation-delay:60ms]">
         <div>
-          <p className="text-sm font-bold uppercase tracking-wider text-risk-700">
-            Synthetic demonstration data
-          </p>
           <p className="mt-1 text-sm leading-relaxed text-risk-700/90">
             Every per-brand figure on this page is an illustrative placeholder generated for this
             proof of concept — it is <strong>not researched, sourced, or verified</strong>, and must
@@ -1118,14 +1114,14 @@ export function BrandWorkspacePage() {
             <em>suggested source</em> columns are genuine recommendations for wiring real feeds.
           </p>
         </div>
-      </div>
+      </Callout>
 
       {/* Tab bar — sticky so the section switcher stays reachable on long panels. */}
-      <div className="sticky top-0 z-20 -mx-1 bg-canvas/95 px-1 py-2 backdrop-blur supports-[backdrop-filter]:bg-canvas/80">
+      <div className="sticky top-0 z-20 -mx-1 bg-white/70 px-1 py-2 backdrop-blur-xl">
         <div
           role="tablist"
           aria-label="Brand intelligence sections"
-          className="flex gap-1 overflow-x-auto rounded-xl border border-edge bg-navy-50/60 p-1"
+          className="segmented scroll-x-fade"
         >
           {TABS.map((tab, i) => {
             const selected = tab.key === active;

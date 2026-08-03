@@ -17,7 +17,7 @@ export const DialogContent = React.forwardRef<
       ref={ref}
       className={cn(
         "fixed left-1/2 top-[6vh] z-[95] w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2",
-        "rounded-2xl border border-edge bg-white p-6 shadow-pop animate-scale-in",
+        "surface p-6 shadow-pop animate-scale-in",
         "max-h-[88vh] overflow-y-auto scroll-shadow",
         className,
       )}

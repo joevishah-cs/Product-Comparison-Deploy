@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Plus, Newspaper, Copy, Check, Trash2, Radio, FileText, ExternalLink } from "lucide-react";
+import { Plus, Newspaper, Copy, Check, Trash2, Radio, FileText } from "lucide-react";
 import { copyText, formatDate, uid } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,10 +13,12 @@ import { useAuth } from "@/features/auth/AuthProvider";
 import { useSelection } from "@/features/selection/SelectionProvider";
 import { deleteRow, insertRow, listRows, type MediaClip, type Sentiment } from "@/lib/store";
 import { buildComparison } from "@/features/compare/engine";
-import { DAIKIN_FILL } from "@/components/charts/palette";
+import { COMPETITOR_SERIES, DAIKIN_FILL } from "@/components/charts/palette";
 import { useNavigate } from "react-router-dom";
 import { SOURCED_CLIPS, COVERAGE_RETRIEVED_ON } from "@/data/web-coverage";
 import { AiTag } from "@/components/common/AiTag";
+import { Callout } from "@/components/common/Callout";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const TOPICS = [
   "Cold-climate performance",
@@ -146,7 +148,7 @@ export function PressPage() {
       counts.set(brand, (counts.get(brand) ?? 0) + 1);
     }
     return Array.from(counts.entries())
-      .map(([name, value]) => ({ name, value, color: name === "Daikin" ? DAIKIN_FILL : "#94a3b8" }))
+      .map(([name, value]) => ({ name, value, color: name === "Daikin" ? DAIKIN_FILL : COMPETITOR_SERIES[0] }))
       .sort((a, b) => b.value - a.value);
   }, [clips]);
 
@@ -187,30 +189,26 @@ export function PressPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="eyebrow">Press &amp; media</p>
-          <h1 className="mt-2.5 text-3xl font-bold text-navy-900">Coverage, angles and share of voice</h1>
-          <p className="mt-2 max-w-3xl text-lg text-navy-500">
-            Generate editorial angles from verified comparison evidence, and log coverage as your team
-            finds it.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
+    <div className="stagger space-y-8">
+      <PageHeader
+        eyebrow="Press & media"
+        title="Coverage, angles and share of voice"
+        description="Generate editorial angles from verified comparison evidence, and log coverage as your team finds it."
+        actions={
+          <>
           <Button variant="secondary" size="lg" onClick={addSourced}>
             <Newspaper aria-hidden />
             Add sourced coverage
           </Button>
-          <Button size="lg" onClick={() => setAddOpen(true)}>
-            <Plus aria-hidden />
-            Add media clip
-          </Button>
-        </div>
-      </header>
+            <Button size="lg" onClick={() => setAddOpen(true)}>
+              <Plus aria-hidden />
+              Add media clip
+            </Button>
+          </>
+        }
+      />
 
-      <div className="flex items-start gap-3 rounded-2xl border border-risk-500/25 bg-risk-50 p-5">
-        <ExternalLink className="mt-0.5 size-5 shrink-0 text-risk-600" aria-hidden />
+      <Callout tone="risk" className="animate-fade-up [animation-delay:60ms]">
         <div>
           <p className="text-base font-bold text-risk-700">No live media monitoring feed is connected</p>
           <p className="mt-1 text-[0.9375rem] leading-relaxed text-navy-700">
@@ -220,10 +218,10 @@ export function PressPage() {
             from your team or a licensed feed.
           </p>
         </div>
-      </div>
+      </Callout>
 
       {/* Comparison angle generator */}
-      <section aria-label="Comparison angle generator" className="rounded-2xl border border-edge bg-white p-6 shadow-card">
+      <section aria-label="Comparison angle generator" className="surface p-6">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="flex items-center gap-2 text-lg font-semibold text-navy-900">
@@ -287,7 +285,7 @@ export function PressPage() {
       </section>
 
       {/* Media watchlist */}
-      <section aria-label="Media watchlist" className="rounded-2xl border border-edge bg-white p-6 shadow-card">
+      <section aria-label="Media watchlist" className="surface p-6">
         <h2 className="text-lg font-semibold text-navy-900">Media watchlist</h2>
         <p className="mt-1 text-sm text-navy-500">
           Topics worth watching, and why each one matters for positioning. These are internal editorial
@@ -384,7 +382,7 @@ export function PressPage() {
               const meta = SENTIMENT_META[c.sentiment];
               const product = PRODUCT_BY_ID[c.product_id];
               return (
-                <li key={c.id} className="rounded-2xl border border-edge bg-white p-5 shadow-card">
+                <li key={c.id} className="surface p-5">
                   <div className="flex flex-wrap items-start gap-4">
                     <div className="min-w-[16rem] flex-1">
                       <div className="flex flex-wrap items-center gap-2">

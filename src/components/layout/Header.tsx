@@ -51,7 +51,7 @@ export function Header({ onOpenMenu }: { onOpenMenu: () => void }) {
   }, []);
 
   return (
-    <header className="no-print sticky top-0 z-30 border-b border-edge bg-white/85 backdrop-blur-md">
+    <header className="app-header no-print sticky top-0 z-30 border-b border-edge bg-white/85 backdrop-blur-md">
       <div className="mx-auto flex h-[4.5rem] max-w-content items-center gap-3 px-4 sm:px-6 lg:px-8">
         <Button
           variant="ghost"
@@ -116,7 +116,7 @@ export function Header({ onOpenMenu }: { onOpenMenu: () => void }) {
                 aria-label="Close notifications"
                 onClick={() => setNotifOpen(false)}
               />
-              <div className="absolute right-0 z-50 mt-2 w-[min(24rem,calc(100vw-2rem))] rounded-2xl border border-edge bg-white p-2 shadow-pop animate-scale-in">
+              <div className="absolute right-0 z-50 mt-2 w-[min(24rem,calc(100vw-2rem))] surface p-2 shadow-pop animate-scale-in">
                 <div className="flex items-center justify-between px-3 py-2">
                   <h2 className="text-sm font-bold uppercase tracking-wider text-navy-400">
                     Notifications
@@ -177,7 +177,7 @@ export function Header({ onOpenMenu }: { onOpenMenu: () => void }) {
                 aria-label="Close account menu"
                 onClick={() => setMenuOpen(false)}
               />
-              <div className="absolute right-0 z-50 mt-2 w-64 rounded-2xl border border-edge bg-white p-2 shadow-pop animate-scale-in">
+              <div className="absolute right-0 z-50 mt-2 w-64 surface p-2 shadow-pop animate-scale-in">
                 <div className="px-3 py-2">
                   <p className="text-sm font-semibold text-navy-900">{user?.name}</p>
                   <p className="truncate text-sm text-navy-500">{user?.email}</p>

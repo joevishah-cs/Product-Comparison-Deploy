@@ -262,7 +262,7 @@ export function ExecutiveNewsbrief() {
       </div>
 
       {/* The brief document */}
-      <div className="overflow-hidden rounded-2xl border border-edge bg-white shadow-card">
+      <div className="overflow-hidden surface">
         {/* Masthead */}
         <header className="border-b-4 border-daikin-600 px-8 pb-6 pt-8 sm:px-12">
           <div className="flex flex-wrap items-center justify-between gap-4">

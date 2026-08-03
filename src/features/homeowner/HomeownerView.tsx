@@ -422,7 +422,7 @@ export function HomeownerView({
   return (
     <div className="space-y-10" ref={reportRef}>
       {/* Action bar */}
-      <div className="no-print flex flex-wrap items-center gap-2 rounded-2xl border border-edge bg-white p-4 shadow-card">
+      <div className="no-print flex flex-wrap items-center gap-2 surface p-4">
         <Button onClick={() => setSetupOpen(true)}>
           <FileText aria-hidden />
           {generated ? "Edit homeowner report" : "Create homeowner report"}
