@@ -1,11 +1,140 @@
 import * as React from "react";
-import { ShieldCheck, TriangleAlert, CircleSlash, Copy, Check, Layers } from "lucide-react";
+import { ShieldCheck, TriangleAlert, CircleSlash, Copy, Check, Layers, ChevronRight } from "lucide-react";
 import { copyText } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/toast";
 import { InfoTip } from "@/components/ui/tooltip";
 import { AiTag } from "@/components/common/AiTag";
 import type { ComparisonResult } from "./engine";
+
+/** Attribute groups, each independently collapsible. A2W selections produce ~46
+ *  attributes, which is far too much to read as one flat wall of cards. */
+function AttributesCompared({ result }: { result: ComparisonResult }) {
+  const groups = React.useMemo(
+    () =>
+      Object.entries(
+        result.comparedAttributes.reduce<Record<string, typeof result.comparedAttributes>>(
+          (acc, attr) => {
+            (acc[attr.group] ??= []).push(attr);
+            return acc;
+          },
+          {},
+        ),
+      ),
+    [result.comparedAttributes],
+  );
+
+  // First group open by default; the rest collapsed so the section stays scannable.
+  const [open, setOpen] = React.useState<Record<string, boolean>>(() =>
+    Object.fromEntries(groups.map(([g], i) => [g, i === 0])),
+  );
+
+  // Re-seed when the selection changes the set of groups.
+  React.useEffect(() => {
+    setOpen((prev) =>
+      Object.fromEntries(groups.map(([g], i) => [g, prev[g] ?? i === 0])),
+    );
+  }, [groups]);
+
+  const allOpen = groups.length > 0 && groups.every(([g]) => open[g]);
+
+  return (
+    <div id="attributes-compared" className="scroll-mt-24">
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <h3 className="flex items-center gap-2 text-lg font-semibold text-navy-900">
+          <Layers className="size-5 text-navy-500" aria-hidden />
+          Attributes compared
+          <Badge variant="neutral" size="sm">
+            {result.attributesCompared}
+          </Badge>
+        </h3>
+        {groups.length > 0 && (
+          <button
+            type="button"
+            onClick={() =>
+              setOpen(Object.fromEntries(groups.map(([g]) => [g, !allOpen])))
+            }
+            className="no-print ml-auto rounded-lg border border-edge px-3 py-1.5 text-sm font-semibold text-navy-600 transition-colors hover:bg-navy-50 hover:text-navy-900"
+          >
+            {allOpen ? "Collapse all" : "Expand all"}
+          </button>
+        )}
+      </div>
+
+      {groups.length === 0 ? (
+        <p className="rounded-2xl border border-dashed border-edge bg-white p-8 text-center text-base text-navy-500">
+          No attribute in this selection carries a verified source value yet.
+        </p>
+      ) : (
+        groups.map(([group, attrs]) => {
+          const isOpen = Boolean(open[group]);
+          const panelId = `attrs-${group.replace(/[^a-zA-Z0-9]+/g, "-").toLowerCase()}`;
+          return (
+            <div key={group} className="mb-3 last:mb-0">
+              <button
+                type="button"
+                aria-expanded={isOpen}
+                aria-controls={panelId}
+                onClick={() => setOpen((p) => ({ ...p, [group]: !p[group] }))}
+                className="flex w-full items-center gap-2 rounded-xl border border-edge bg-white px-3 py-2.5 text-left transition-colors hover:bg-navy-50"
+              >
+                <ChevronRight
+                  className={`size-4 shrink-0 text-navy-400 transition-transform ${isOpen ? "rotate-90" : ""}`}
+                  aria-hidden
+                />
+                <span className="text-sm font-bold uppercase tracking-wider text-navy-600">
+                  {group}
+                </span>
+                <Badge variant="neutral" size="sm">
+                  {attrs.length}
+                </Badge>
+              </button>
+
+              {isOpen && (
+                <ul id={panelId} className="mt-2 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {attrs.map((attr) => (
+                    <li
+                      key={attr.attributeKey}
+                      className="rounded-2xl border border-edge bg-white p-4 shadow-card"
+                    >
+                      <h5 className="text-base font-semibold text-navy-900">
+                        {attr.attributeLabel}
+                      </h5>
+                      <dl className="mt-2.5 space-y-1.5 text-sm">
+                        {attr.verifiedProducts.map(({ product, value }) => (
+                          <div key={product.id} className="flex justify-between gap-2">
+                            {/* Brand sits under the model so a bare model number is
+                                still attributable at a glance and on hover. */}
+                            <dt
+                              className="text-navy-500"
+                              title={`${product.brand} — ${product.displayName}`}
+                            >
+                              {product.displayName}
+                              <span className="block text-xs font-medium text-navy-400">
+                                {product.brand}
+                              </span>
+                            </dt>
+                            <dd className="font-semibold text-navy-800">{value.display}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                      {attr.unverifiedProducts.length > 0 && (
+                        <p className="mt-2 border-t border-edge pt-2 text-xs text-caution-700">
+                          No verified value:{" "}
+                          {attr.unverifiedProducts.map((p) => p.displayName).join(", ")}
+                        </p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          );
+        })
+      )}
+    </div>
+  );
+}
 
 function CopyButton({ text, label }: { text: string; label: string }) {
   const { notify } = useToast();
@@ -210,55 +339,7 @@ export function PositioningSummary({ result }: { result: ComparisonResult }) {
       </div>
 
       {/* Attributes compared */}
-      <div id="attributes-compared" className="scroll-mt-24">
-        <h3 className="mb-3 flex items-center gap-2 text-lg font-semibold text-navy-900">
-          <Layers className="size-5 text-navy-500" aria-hidden />
-          Attributes compared
-          <Badge variant="neutral" size="sm">
-            {result.attributesCompared}
-          </Badge>
-        </h3>
-
-        {result.comparedAttributes.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-edge bg-white p-8 text-center text-base text-navy-500">
-            No attribute in this selection carries a verified source value yet.
-          </p>
-        ) : (
-          Object.entries(
-            result.comparedAttributes.reduce<Record<string, typeof result.comparedAttributes>>(
-              (groups, attr) => {
-                (groups[attr.group] ??= []).push(attr);
-                return groups;
-              },
-              {},
-            ),
-          ).map(([group, attrs]) => (
-            <div key={group} className="mb-4 last:mb-0">
-              <h4 className="mb-2 text-sm font-bold uppercase tracking-wider text-navy-500">{group}</h4>
-              <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {attrs.map((attr) => (
-                  <li key={attr.attributeKey} className="rounded-2xl border border-edge bg-white p-4 shadow-card">
-                    <h5 className="text-base font-semibold text-navy-900">{attr.attributeLabel}</h5>
-                    <dl className="mt-2.5 space-y-1.5 text-sm">
-                      {attr.verifiedProducts.map(({ product, value }) => (
-                        <div key={product.id} className="flex justify-between gap-2">
-                          <dt className="text-navy-500">{product.displayName}</dt>
-                          <dd className="font-semibold text-navy-800">{value.display}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                    {attr.unverifiedProducts.length > 0 && (
-                      <p className="mt-2 border-t border-edge pt-2 text-xs text-caution-700">
-                        No verified value: {attr.unverifiedProducts.map((p) => p.displayName).join(", ")}
-                      </p>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))
-        )}
-      </div>
+      <AttributesCompared result={result} />
 
       {/* Validation required */}
       {result.validations.length > 0 && (

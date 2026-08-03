@@ -165,6 +165,8 @@ export interface Product {
   image: string;
   imageIsRepresentative: boolean;
   tonnages: number[] | null;
+  /** Rated capacities in kBtu/h. Air-to-water models are listed by capacity, not tonnage. */
+  capacities: number[] | null;
   documentId: string;
   sourceHeader: string;
   attributes: Record<string, AttributeValue>;

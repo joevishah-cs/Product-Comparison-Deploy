@@ -85,26 +85,46 @@ export const PLAIN_LANGUAGE: Record<string, string> = {
   max_lwt:
     "The hottest water the heat pump can send out to your radiators or floor loops, in °F. Higher means it can drive older high-temperature radiators.",
   min_lwt:
-    "The water temperature the unit can still produce when it is at its coldest permitted outdoor condition. Lower is better in a cold climate.",
+    "The coolest water the heat pump is rated to leave with, in °F. A lower figure widens the range the system can cover.",
+  heating_water_range:
+    "The full span of leaving-water temperatures the unit is rated for in heating, from coolest to hottest.",
+  cooling_water_range:
+    "The span of chilled-water temperatures the unit is rated to produce in cooling.",
+  dhw_water_range:
+    "The span of water temperatures the unit is rated to produce when heating domestic hot water.",
+  heating_ambient_range:
+    "The outdoor air temperatures the unit is rated to heat in, from coldest to warmest.",
+  cooling_ambient_range:
+    "The outdoor air temperatures the unit is rated to cool in.",
+  dhw_ambient_range:
+    "The outdoor air temperatures the unit is rated to make domestic hot water in.",
+  min_ambient_heating:
+    "The coldest outdoor air temperature the unit is rated to keep heating in, in °F. Lower means it stays useful deeper into a cold snap.",
+  max_ambient_heating:
+    "The warmest outdoor air temperature the unit is rated to heat in, in °F.",
+  min_ambient_cooling:
+    "The coolest outdoor air temperature the unit is rated to cool in, in °F.",
+  max_ambient_cooling:
+    "The hottest outdoor air temperature the unit is rated to keep cooling in, in °F. Higher means it holds up better in extreme heat.",
   emitter_high_temp:
     "The water temperature available for high-temperature emitters -- traditional baseboard and cast-iron radiators, which need hot water to work.",
 
   heat_cap_a446w158:
-    "Heating output in kBtu/h at 44.6°F outdoor air while producing 158°F leaving water -- a demanding, high-temperature-radiator condition. Higher is more heat.",
+    "Heating output in Btu/h at 44.6°F outdoor air while producing 158°F leaving water -- a demanding, high-temperature-radiator condition. Higher is more heat.",
   heat_cap_a446w131:
-    "Heating output in kBtu/h at 44.6°F outdoor air while producing 131°F leaving water. Higher is more heat.",
+    "Heating output in Btu/h at 44.6°F outdoor air while producing 131°F leaving water. Higher is more heat.",
   heat_cap_a446w110:
-    "Heating output in kBtu/h at 44.6°F outdoor air while producing 110°F leaving water -- a low-temperature-emitter condition. Higher is more heat.",
+    "Heating output in Btu/h at 44.6°F outdoor air while producing 110°F leaving water -- a low-temperature-emitter condition. Higher is more heat.",
   heat_cap_a446w95:
-    "Heating output in kBtu/h at 44.6°F outdoor air while producing 95°F leaving water, the mildest condition recorded. Higher is more heat.",
+    "Heating output in Btu/h at 44.6°F outdoor air while producing 95°F leaving water, the mildest condition recorded. Higher is more heat.",
   heat_cap_a5w158:
-    "Heating output in kBtu/h at 5°F outdoor air while producing 158°F leaving water -- how much heat the unit still delivers on a genuinely cold day at a demanding water temperature. Higher is more heat.",
+    "Heating output in Btu/h at 5°F outdoor air while producing 158°F leaving water -- how much heat the unit still delivers on a genuinely cold day at a demanding water temperature. Higher is more heat.",
   heat_cap_a5w131:
-    "Heating output in kBtu/h at 5°F outdoor air while producing 131°F leaving water. Higher is more heat.",
+    "Heating output in Btu/h at 5°F outdoor air while producing 131°F leaving water. Higher is more heat.",
   heat_cap_a5w110:
-    "Heating output in kBtu/h at 5°F outdoor air while producing 110°F leaving water. Higher is more heat.",
+    "Heating output in Btu/h at 5°F outdoor air while producing 110°F leaving water. Higher is more heat.",
   heat_cap_a5w95:
-    "Heating output in kBtu/h at 5°F outdoor air while producing 95°F leaving water. Higher is more heat.",
+    "Heating output in Btu/h at 5°F outdoor air while producing 95°F leaving water. Higher is more heat.",
 
   cop_a446w158:
     "Coefficient of performance at 44.6°F outdoor air producing 158°F water. A COP of 2.0 means the system moves two units of heat for every one unit of electricity. Higher is better.",
@@ -124,11 +144,11 @@ export const PLAIN_LANGUAGE: Record<string, string> = {
     "Coefficient of performance at 5°F outdoor air producing 95°F water, the mildest water temperature recorded at this cold-weather condition. Higher is better.",
 
   cool_cap_a95w716:
-    "Cooling output in kBtu/h at 95°F outdoor air producing 71.6°F chilled water. Higher is more cooling.",
+    "Cooling output in Btu/h at 95°F outdoor air producing 71.6°F chilled water. Higher is more cooling.",
   cool_cap_a95w644:
-    "Cooling output in kBtu/h at 95°F outdoor air producing 64.4°F chilled water. Higher is more cooling.",
+    "Cooling output in Btu/h at 95°F outdoor air producing 64.4°F chilled water. Higher is more cooling.",
   cool_cap_a95w446:
-    "Cooling output in kBtu/h at 95°F outdoor air producing 44.6°F chilled water. Higher is more cooling.",
+    "Cooling output in Btu/h at 95°F outdoor air producing 44.6°F chilled water. Higher is more cooling.",
   eer_a95w716:
     "Cooling efficiency (Btu per watt-hour) at 95°F outdoor air producing 71.6°F chilled water. Higher is better.",
   eer_a95w644:
@@ -142,13 +162,9 @@ export const PLAIN_LANGUAGE: Record<string, string> = {
     "How loud the indoor hydronic unit is, in decibels (dBA). Lower is quieter.",
 
   outdoor_weight: "The weight of the outdoor unit, in pounds. Heavier units need a sturdier pad and more installers to set.",
-  outdoor_height: "The height of the outdoor unit, in inches.",
-  outdoor_width: "The width of the outdoor unit, in inches.",
-  outdoor_depth: "The depth of the outdoor unit, in inches.",
+  outdoor_dimensions: "The outdoor unit's height, width and depth in inches -- what has to fit the pad and the clearances.",
   indoor_weight: "The weight of the indoor hydronic unit, in pounds.",
-  indoor_height: "The height of the indoor hydronic unit, in inches.",
-  indoor_width: "The width of the indoor hydronic unit, in inches.",
-  indoor_depth: "The depth of the indoor hydronic unit, in inches.",
+  indoor_dimensions: "The indoor hydronic unit's height, width and depth in inches -- what has to fit the mechanical space.",
 
   backup_heater_cap:
     "The output of the electric backup heater built into the hydronic system, in kW. This is what covers the gap when the heat pump alone cannot meet the load.",
@@ -158,7 +174,8 @@ export const PLAIN_LANGUAGE: Record<string, string> = {
   backup_heater_mop: "Maximum overcurrent protection for the backup heater circuit, in amps -- sets the breaker size.",
   backup_heater_mca: "Minimum circuit ampacity for the backup heater -- the minimum wire and breaker rating the installer must provide.",
 
-  outdoor_power_amps: "The outdoor unit's rated current draw, in amps -- used to size the electrical circuit.",
+  outdoor_phase: "The electrical phase (single or three) the outdoor unit requires.",
+  outdoor_power_amps: "The electrical frequency the outdoor unit is rated for, in Hz.",
   outdoor_voltage: "The voltage the outdoor unit requires.",
   outdoor_mop: "Maximum overcurrent protection for the outdoor unit circuit, in amps -- sets the breaker size.",
   outdoor_mca: "Minimum circuit ampacity for the outdoor unit -- the minimum wire and breaker rating the installer must provide.",

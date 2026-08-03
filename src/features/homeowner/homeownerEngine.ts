@@ -1,5 +1,10 @@
 import type { AttributeValue, Product } from "@/data/types";
 import { ATTRIBUTE_BY_KEY } from "@/data/catalog";
+import {
+  brochureFeaturesFor,
+  type BrochureCapabilities,
+  type BrochureFeature,
+} from "@/data/a2w-brochure-features";
 import type { ComparisonResult } from "@/features/compare/engine";
 import type { ProductReviewSummary } from "@/features/reviews/reviewEngine";
 import { MIN_REPORTABLE } from "@/features/reviews/reviewEngine";
@@ -32,6 +37,49 @@ export const PRIORITIES: PriorityDefinition[] = [
   { key: "footprint", label: "Smaller outdoor unit", attributeKeys: ["footprint", "chassis_type"], reviewThemes: ["size"], icon: "Ruler" },
   { key: "refrigerant", label: "Environmentally responsible refrigerant", attributeKeys: ["refrigerant"], reviewThemes: [], icon: "Recycle" },
 ];
+
+/** Air-to-water equivalents of the priority attribute keys. The hydronic sheet
+ *  records different columns, so each priority is re-pointed at the keys that
+ *  actually carry a value; priorities with no hydronic equivalent (warranty,
+ *  humidity, easier service) fall back to the brochure capabilities instead of
+ *  rendering as permanently unavailable. */
+const A2W_PRIORITY_KEYS: Record<string, string[]> = {
+  energy: ["cop_a446w95", "cop_a446w110", "eer_a95w644"],
+  quiet: ["outdoor_sound", "indoor_sound"],
+  comfort: ["compressor_type", "heat_cap_a446w110"],
+  cold: ["cop_a5w95", "heat_cap_a5w95", "min_ambient_heating"],
+  reliability: ["compressor_type"],
+  footprint: ["outdoor_dimensions", "outdoor_weight"],
+  refrigerant: ["refrigerant"],
+  smart: [],
+  humidity: [],
+  warranty: [],
+  service: [],
+};
+
+/** Priority definitions re-pointed for the products in the report. */
+export function prioritiesFor(products: Product[]): PriorityDefinition[] {
+  const atwOnly =
+    products.some((p) => p.equipmentType === "air_to_water_hp") &&
+    !products.some((p) => p.equipmentType === "ducted_split_hp");
+  if (!atwOnly) return PRIORITIES;
+  return PRIORITIES.map((p) => ({
+    ...p,
+    attributeKeys: A2W_PRIORITY_KEYS[p.key] ?? p.attributeKeys,
+  }));
+}
+
+/** Which brochure capability list backs each priority, for priorities the
+ *  comparison sheet cannot answer. */
+const BROCHURE_PRIORITY_FEATURES: Record<
+  string,
+  (b: BrochureCapabilities) => BrochureFeature[]
+> = {
+  quiet: (b) => b.quiet,
+  smart: (b) => b.smartControls,
+  service: (b) => b.installation,
+  footprint: (b) => b.installation,
+};
 
 export const RECOMMENDED_PRIORITIES = ["quiet", "comfort", "energy", "warranty"];
 
@@ -99,6 +147,34 @@ export const BENEFIT_TRANSLATION: Record<string, string> = {
   cee_2025: "Meets the Consortium for Energy Efficiency 2025 tier, which some utility rebate programmes reference.",
   refrigerant:
     "Identifies the refrigerant the system uses. Refrigerants differ in operating pressure, service procedure and global-warming potential.",
+
+  /* Air-to-water (hydronic) capabilities */
+  max_lwt:
+    "The hottest water the system is rated to send to your radiators or floor loops. A higher figure means existing high-temperature radiators are more likely to work as they are.",
+  min_lwt:
+    "The coolest water the system is rated to leave with, which widens the range one machine can cover across heating and cooling.",
+  outdoor_sound:
+    "Designed for quieter outdoor operation, which may help reduce noise around patios, bedrooms and neighbouring homes.",
+  indoor_sound:
+    "Indicates how quiet the indoor hydronic unit is in the space it is installed in.",
+  min_ambient_heating:
+    "Designed to keep producing heat down to this outdoor air temperature, which may reduce how often a backup heat source is needed.",
+  heating_ambient_range:
+    "The span of outdoor air temperatures the system is rated to keep heating across.",
+  cop_a446w95:
+    "Indicates how much heat the system moves in mild weather relative to the electricity it draws, at a low water temperature.",
+  cop_a5w95:
+    "Indicates how much heat the system still moves at 5°F outdoors relative to the electricity it draws.",
+  heat_cap_a5w95:
+    "Indicates how much heating output remains available on genuinely cold days, which may reduce reliance on a backup heat source.",
+  heat_cap_a446w110:
+    "Indicates the heating output available at a low water temperature, the condition underfloor heating typically runs at.",
+  backup_heater_cap:
+    "The output of the built-in electric backup heater, which covers the gap when the heat pump alone cannot meet the load.",
+  outdoor_dimensions:
+    "The outdoor unit's overall size, which determines the pad and clearances the installer needs.",
+  indoor_dimensions:
+    "The indoor hydronic unit's overall size, which determines the mechanical space it needs.",
   air_handler_matchup:
     "Indicates the electrical supply the matching indoor unit can run on. A 115V option may avoid running a new dedicated circuit.",
   coil_only_matchup:
@@ -151,6 +227,30 @@ export const CATEGORIES: CategoryDefinition[] = [
   { key: "environment", label: "Environmental considerations", icon: "Recycle", attributeKeys: ["refrigerant", "energy_star"], question: "What refrigerant does it use and how is it certified?" },
 ];
 
+/** Air-to-water categories. The hydronic sheet records no humidity-control or
+ *  service-diagnostics column, so those two categories are dropped rather than shown
+ *  as permanently "Information not available"; the rest point at hydronic keys. */
+export const A2W_CATEGORIES: CategoryDefinition[] = [
+  { key: "comfort", label: "Comfort", icon: "Sofa", attributeKeys: ["compressor_type", "heat_cap_a446w110"], question: "How steady will the temperature feel?" },
+  { key: "quiet", label: "Quiet operation", icon: "Volume2", attributeKeys: ["outdoor_sound", "indoor_sound"], question: "How loud is the outdoor unit?" },
+  { key: "efficiency", label: "Energy efficiency", icon: "Leaf", attributeKeys: ["cop_a446w95", "cop_a446w110"], question: "How much electricity does it use for the same comfort?" },
+  { key: "heating", label: "Heating performance", icon: "Flame", attributeKeys: ["cop_a5w95", "heat_cap_a5w95", "min_ambient_heating"], question: "How well does it heat when it gets cold?" },
+  { key: "water_temp", label: "Water temperature range", icon: "Thermometer", attributeKeys: ["max_lwt", "min_lwt"], question: "Can it drive the radiators or floor loops you already have?" },
+  { key: "smart", label: "Smart controls", icon: "Smartphone", attributeKeys: ["thermostat_type", "cloud_alerts"], question: "How do you control it, and what can it tell you?" },
+  // Dimensions and weight are recorded but have no better/worse direction, so this
+  // category reports what is listed rather than ranking it.
+  { key: "install", label: "Installation flexibility", icon: "Ruler", attributeKeys: ["outdoor_dimensions", "indoor_dimensions"], question: "How easily does it fit your home?" },
+  { key: "environment", label: "Environmental considerations", icon: "Recycle", attributeKeys: ["refrigerant"], question: "What refrigerant does it use?" },
+];
+
+/** Categories appropriate to the products in the report. */
+export function categoriesFor(products: Product[]): CategoryDefinition[] {
+  return products.some((p) => p.equipmentType === "air_to_water_hp") &&
+    !products.some((p) => p.equipmentType === "ducted_split_hp")
+    ? A2W_CATEGORIES
+    : CATEGORIES;
+}
+
 export interface CategoryComparison {
   category: CategoryDefinition;
   status: ComparisonStatus;
@@ -174,9 +274,22 @@ function better(key: string, a: number, b: number): boolean {
   return (ATTRIBUTE_BY_KEY[key]?.direction ?? "higher") === "lower" ? a < b : a > b;
 }
 
+/** Which brochure capability list backs each homeowner category, for categories the
+ *  comparison sheet cannot answer. */
+const BROCHURE_CATEGORY_FEATURES: Record<
+  string,
+  (b: BrochureCapabilities) => BrochureFeature[]
+> = {
+  quiet: (b) => b.quiet,
+  smart: (b) => b.smartControls,
+  install: (b) => b.installation,
+};
+
 /** Compares one Daikin product against one competitor across the homeowner categories. */
 export function compareCategories(daikin: Product, competitor: Product): CategoryComparison[] {
-  return CATEGORIES.map((category) => {
+  const brochure = brochureFeaturesFor(daikin);
+
+  return categoriesFor([daikin, competitor]).map((category) => {
     let best: CategoryComparison = {
       category,
       status: "unavailable",
@@ -193,7 +306,31 @@ export function compareCategories(daikin: Product, competitor: Product): Categor
       const cv = competitor.attributes[key];
       const ds = score(dv);
       const cs = score(cv);
-      if (ds === null || cs === null) continue;
+
+      // Text and non-directional attributes (refrigerant, compressor type,
+      // dimensions) carry no score, but both products still recording a value is
+      // reportable — it is just never an advantage either way.
+      if (ds === null || cs === null) {
+        const bothRecorded = dv?.status === "verified" && cv?.status === "verified";
+        const nonDirectional = (ATTRIBUTE_BY_KEY[key]?.direction ?? "higher") === "none";
+        if (bothRecorded && nonDirectional && best.status === "unavailable") {
+          const label = ATTRIBUTE_BY_KEY[key]?.label ?? key;
+          best = {
+            category,
+            status: "comparable",
+            decidingKey: key,
+            daikinValue: dv,
+            competitorValue: cv,
+            competitor,
+            explanation:
+              dv.display === cv.display
+                ? `Both list ${dv.display} for ${label.toLowerCase()}, so this is not a point of difference.`
+                : `${daikin.model} lists ${dv.display} and the compared product lists ${cv.display} for ${label.toLowerCase()}. The source records these without ranking them.`,
+            benefit: BENEFIT_TRANSLATION[key] ?? null,
+          };
+        }
+        continue;
+      }
 
       const def = ATTRIBUTE_BY_KEY[key];
       const label = def?.label ?? key;
@@ -222,6 +359,24 @@ export function compareCategories(daikin: Product, competitor: Product): Categor
         benefit: BENEFIT_TRANSLATION[key] ?? null,
       };
       break; // the first attribute with values on both sides decides the category
+    }
+
+    /* Brochure fallback: the comparison sheet has no column for smart controls or
+       installation flexibility, so fall back to the brand's own consumer brochure.
+       Single-product literature cannot establish an advantage, so it reports as
+       "comparable" — a published capability, not a win over the competitor. */
+    if (best.status === "unavailable" && brochure) {
+      const features = BROCHURE_CATEGORY_FEATURES[category.key]?.(brochure);
+      if (features?.length) {
+        best = {
+          ...best,
+          status: "comparable",
+          explanation: `${brochure.documentLabel} records: ${features
+            .slice(0, 2)
+            .map((f) => f.detail)
+            .join(" ")}`,
+        };
+      }
     }
 
     return best;
@@ -260,8 +415,13 @@ export function alignPriorities(
   competitors: Product[],
   daikinReviews: ProductReviewSummary | null,
 ): PriorityAlignment[] {
+  const byKey = Object.fromEntries(
+    prioritiesFor([daikin, ...competitors]).map((p) => [p.key, p]),
+  );
+  const brochure = brochureFeaturesFor(daikin);
+
   return priorityKeys
-    .map((key) => PRIORITY_BY_KEY[key])
+    .map((key) => byKey[key] ?? PRIORITY_BY_KEY[key])
     .filter(Boolean)
     .map((priority) => {
       /* ---- technical side ---- */
@@ -271,6 +431,7 @@ export function alignPriorities(
         attributeKey: null,
         citation: null,
       };
+
 
       for (const attributeKey of priority.attributeKeys) {
         const dv = daikin.attributes[attributeKey];
@@ -298,6 +459,24 @@ export function alignPriorities(
           citation: dv.source.citation,
         };
         break;
+      }
+
+      /* ---- brochure fallback ------------------------------------------
+         Where the comparison sheet has no column for a priority, the brand's own
+         consumer brochure often does. It is single-product literature rather than a
+         like-for-like measurement, so it is reported as "comparable" — a published
+         capability — and never as an advantage over a competitor. */
+      if (technical.status === "unavailable" && brochure) {
+        const features = BROCHURE_PRIORITY_FEATURES[priority.key]?.(brochure);
+        if (features?.length) {
+          const first = features[0];
+          technical = {
+            status: "comparable",
+            statement: `${brochure.documentLabel} records: ${first.detail}`,
+            attributeKey: null,
+            citation: `${brochure.documentLabel} · p.${first.page} · “${first.label}”`,
+          };
+        }
       }
 
       /* ---- review side ---- */

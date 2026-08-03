@@ -43,7 +43,7 @@ import { MarketingTakeaways, buildTakeaways } from "./MarketingTakeaways";
 import { ProductSearch } from "@/features/selection/ProductSearch";
 import { useHomeowner } from "@/features/homeowner/HomeownerProvider";
 import { HomeownerView } from "@/features/homeowner/HomeownerView";
-import { useReviewSource } from "@/features/reviews/useReviewSource";
+import { useMergedReviewSource } from "@/features/reviews/useMergedReviewSource";
 import { ReviewIntelligence, ReviewAnalyticalCharts } from "@/features/reviews/ReviewIntelligence";
 import { ReviewDrawer, useReviewDrawer } from "@/features/reviews/ReviewDrawer";
 import { ViewToggle } from "./ViewToggle";
@@ -72,7 +72,7 @@ export function ComparePage() {
   const navigate = useNavigate();
 
   const { view, setView } = useHomeowner();
-  const { source: reviewSource, loading: reviewsLoading } = useReviewSource();
+  const { source: reviewSource, loading: reviewsLoading } = useMergedReviewSource();
   const reviewDrawer = useReviewDrawer();
 
   const [presentation, setPresentation] = React.useState(false);
@@ -135,7 +135,13 @@ export function ComparePage() {
       "SELECTED PRODUCTS",
       ...selected.map((p) => {
         const unit = unitSelections[p.id];
-        return `• ${p.displayName}${unit ? ` — ${unit} ton` : ""} (${p.equipmentTypeLabel})`;
+        // Air-to-water models are sized by rated capacity, not tonnage.
+        const size = unit
+          ? ` — ${unit} ton`
+          : p.capacities
+            ? ` — ${p.capacities.map((c) => `${c} kBtu/h`).join(", ")}`
+            : "";
+        return `• ${p.displayName}${size} (${p.equipmentTypeLabel})`;
       }),
       "",
       `VERIFIED DAIKIN EDGES (${result.edges.length})`,
@@ -318,6 +324,7 @@ export function ComparePage() {
         <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {selected.map((p) => {
             const sound = p.attributes.sound_level ?? p.attributes.outdoor_sound;
+            const isAtw = p.equipmentType === "air_to_water_hp";
             return (
               <li
                 key={p.id}
@@ -356,22 +363,31 @@ export function ComparePage() {
 
                 <dl className="mt-3.5 space-y-1.5 border-t border-edge pt-3 text-sm">
                   <div className="flex justify-between gap-3">
-                    <dt className="text-navy-500">Selected unit</dt>
+                    <dt className="text-navy-500">
+                      {isAtw ? "Rated capacity" : "Selected unit"}
+                    </dt>
                     <dd className="font-medium text-navy-800">
-                      {unitSelections[p.id]
-                        ? `${unitSelections[p.id]} ton`
-                        : p.tonnages
-                          ? "Not selected"
-                          : "Model-level only"}
+                      {isAtw
+                        ? p.capacities
+                          ? p.capacities.map((c) => `${c} kBtu/h`).join(", ")
+                          : "Model-level only"
+                        : unitSelections[p.id]
+                          ? `${unitSelections[p.id]} ton`
+                          : p.tonnages
+                            ? "Not selected"
+                            : "Model-level only"}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-navy-500">Refrigerant</dt>
                     <dd className="text-right"><ValueText value={p.attributes.refrigerant} /></dd>
                   </div>
+                  {/* The hydronic sheet records COP at rated conditions, not SEER2. */}
                   <div className="flex justify-between gap-3">
-                    <dt className="text-navy-500">SEER2</dt>
-                    <dd className="text-right"><ValueText value={p.attributes.seer2} /></dd>
+                    <dt className="text-navy-500">{isAtw ? "COP (A44.6°F/W95°F)" : "SEER2"}</dt>
+                    <dd className="text-right">
+                      <ValueText value={isAtw ? p.attributes.cop_a446w95 : p.attributes.seer2} />
+                    </dd>
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-navy-500">Sound level</dt>

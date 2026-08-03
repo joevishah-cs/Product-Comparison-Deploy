@@ -61,7 +61,7 @@ function series(
 
 /* ---- Executive / share ---------------------------------------------- */
 
-/* The Daikin cell reads "EU A2W unit share 21.3% (No.1); revenue share 22.8%",
+/* The Daikin cell reads "EU heat pump unit share 21.3% (No.1); revenue share 22.8%",
  * the others read "14.6% unit / 15.1% revenue" -- so unit share needs both
  * shapes, and revenue share is read off the explicit "revenue" phrasing. */
 export const UNIT_SHARE: BrandSeries = (() => {
@@ -74,7 +74,7 @@ export const UNIT_SHARE: BrandSeries = (() => {
   }
   return {
     id: "unit_share",
-    label: "EU A2W unit share",
+    label: "EU heat pump unit share",
     unit: "%",
     direction: "higher",
     sourceRow: 17,
@@ -92,7 +92,7 @@ export const REVENUE_SHARE: BrandSeries = (() => {
   }
   return {
     id: "revenue_share",
-    label: "EU A2W revenue share",
+    label: "EU heat pump revenue share",
     unit: "%",
     direction: "higher",
     sourceRow: 17,
@@ -227,7 +227,7 @@ export const PRICE_INDEX = series(
 
 export const GROSS_MARGIN = series(
   "gross_margin",
-  "A2W gross margin",
+  "Heat pump gross margin",
   "%",
   "higher",
   62,

@@ -29,6 +29,47 @@ BRANDS = [
     {"brand": "LG", "productId": "lg-artcool", "productName": "LG Art Cool Series"},
 ]
 
+# Air-to-water models from datasets-1/A2WHP Data Comparison.xlsx. No review export
+# exists for any of them -- Daikin included -- so all seven get the same synthetic
+# treatment, keyed to the catalog product ids built in src/data/catalog.ts.
+A2W_MODELS = [
+    {"brand": "Daikin", "productId": "a2w_upra036davk-utbx040ef6vj", "productName": "UPRA036DAVK + UTBX040EF6VJ"},
+    {"brand": "Daikin", "productId": "a2w_upra043davk-utbx040ef6vj", "productName": "UPRA043DAVK + UTBX040EF6VJ"},
+    {"brand": "Samsung", "productId": "a2w_ae041fcydcg-aa-ae055feymcg-aa", "productName": "AE041FCYDCG/AA + AE055FEYMCG/AA"},
+    {"brand": "Samsung", "productId": "a2w_ae055fcydcg-aa-ae055feymcg-aa", "productName": "AE055FCYDCG/AA + AE055FEYMCG/AA"},
+    {"brand": "Mitsubishi", "productId": "a2w_wuz-sa24nmz-ersf-nm6e", "productName": "WUZ-SA24NMZ + ERSF-NM6E"},
+    {"brand": "Mitsubishi", "productId": "a2w_wuz-sa36nmz-ersf-nm6e", "productName": "WUZ-SA36NMZ + ERSF-NM6E"},
+    {"brand": "Mitsubishi", "productId": "a2w_wuz-sa48nmz-ersf-nm6e", "productName": "WUZ-SA48NMZ + ERSF-NM6E"},
+]
+
+A2W_CATEGORY = "Air-to-water (hydronic) heat pump"
+
+# Hydronic systems draw comment on radiators, floor loops and hot water rather than
+# ducts and airflow, so they get their own fragment pool.
+A2W_POSITIVE_TITLES = [
+    "Radiators finally keep up", "Quiet outside, warm inside", "Good swap from the old boiler",
+    "Floor loops stay even", "Hot water has been reliable", "Handled the cold snap well",
+]
+A2W_POSITIVE_BODIES = [
+    "Replaced an old gas boiler and the existing radiators still get hot enough. The outdoor unit is much quieter than I expected.",
+    "Underfloor loops hold a steady temperature all day instead of cycling. Running cost has been lower than the boiler it replaced.",
+    "Domestic hot water recovers quickly and we have not run out with three of us showering in the morning.",
+    "The installer set the water temperature curve properly and the house has been even ever since. No cold rooms.",
+    "It kept the radiators warm through a genuinely cold week without the backup heater running much at all.",
+]
+A2W_NEUTRAL_TITLES = ["Works, with caveats", "Fine once dialled in", "Mixed so far"]
+A2W_NEUTRAL_BODIES = [
+    "Takes longer to warm the house from cold than the old boiler did, but it holds temperature well once there.",
+    "Had to have the installer come back to rebalance the radiators before it felt right.",
+    "The outdoor unit is audible from the patio when it is defrosting, though not intrusive indoors.",
+]
+A2W_NEGATIVE_TITLES = ["Commissioning was a struggle", "Not the retrofit I was sold", "Hot water issues"]
+A2W_NEGATIVE_BODIES = [
+    "The existing radiators were undersized for the lower water temperature and nobody flagged it before install.",
+    "Took three visits to get the water temperature curve and the buffer tank set up correctly.",
+    "Backup heater ran far more than expected in the first winter, and the bill showed it.",
+]
+
 THEME_DEFS = [
     ("quietness", "Quiet operation"),
     ("comfort", "Consistent comfort"),
@@ -74,7 +115,8 @@ NEGATIVE_BODIES = [
 ]
 
 
-def make_review(idx, brand_info, rating, title, body, date):
+def make_review(idx, brand_info, rating, title, body, date,
+                category="Inverter ducted split heat pump"):
     haystack = f"{title}\n{body}".lower()
     themes = [k for k, _ in THEME_DEFS if k.split("_")[0] in haystack or _keyword_hit(k, haystack)]
     subjects = [k for k, _ in SUBJECT_DEFS if _keyword_hit(k, haystack)]
@@ -87,7 +129,7 @@ def make_review(idx, brand_info, rating, title, body, date):
         "productId": brand_info["productId"],
         "productName": brand_info["productName"],
         "brand": brand_info["brand"],
-        "category": "Inverter ducted split heat pump",
+        "category": category,
         "sentiment": "positive" if rating >= 4 else "neutral" if rating == 3 else "negative",
         "themes": themes,
         "subjects": subjects or ["equipment"],
@@ -100,16 +142,16 @@ def make_review(idx, brand_info, rating, title, body, date):
 
 def _keyword_hit(key, haystack):
     lookup = {
-        "quietness": ["quiet", "loud", "noise", "noisier"],
-        "comfort": ["comfortable", "comfort"],
-        "efficiency": ["electric bill", "efficient"],
+        "quietness": ["quiet", "loud", "noise", "noisier", "audible", "intrusive"],
+        "comfort": ["comfortable", "comfort", "even", "steady", "cold rooms"],
+        "efficiency": ["electric bill", "efficient", "running cost", "bill"],
         "reliability": ["reliable", "issue", "error code"],
-        "controls": ["app", "wifi", "control"],
-        "heating": ["cold", "winter", "heat"],
-        "installation": ["install", "crew", "installer"],
-        "service": ["service", "technician", "repair"],
-        "dealer": ["dealer", "salesperson", "quote"],
-        "equipment": ["unit", "system"],
+        "controls": ["app", "wifi", "control", "temperature curve"],
+        "heating": ["cold", "winter", "heat", "radiator", "underfloor", "floor loops", "hot water"],
+        "installation": ["install", "crew", "installer", "commission", "rebalance"],
+        "service": ["service", "technician", "repair", "visits"],
+        "dealer": ["dealer", "salesperson", "quote", "sold"],
+        "equipment": ["unit", "system", "boiler", "tank"],
     }
     return any(word in haystack for word in lookup.get(key, []))
 
@@ -136,10 +178,24 @@ def main():
             reviews.append(make_review(idx, brand_info, rating, title, body, date))
             idx += 1
 
+    # Air-to-water models: 12 illustrative reviews each (7 positive, 3 neutral,
+    # 2 negative). 12 clears MIN_REPORTABLE (10) in reviewEngine.ts, so the sample is
+    # large enough for the UI to summarise rather than suppress as too small.
+    for model in A2W_MODELS:
+        plan = (
+            [(random.choice([4, 5]), random.choice(A2W_POSITIVE_TITLES), random.choice(A2W_POSITIVE_BODIES)) for _ in range(7)]
+            + [(3, random.choice(A2W_NEUTRAL_TITLES), random.choice(A2W_NEUTRAL_BODIES)) for _ in range(3)]
+            + [(random.choice([1, 2]), random.choice(A2W_NEGATIVE_TITLES), random.choice(A2W_NEGATIVE_BODIES)) for _ in range(2)]
+        )
+        random.shuffle(plan)
+        for (rating, title, body), date in zip(plan, months):
+            reviews.append(make_review(idx, model, rating, title, body, date, A2W_CATEGORY))
+            idx += 1
+
     reviewed_products = [
         {"productId": b["productId"], "productName": b["productName"], "brand": b["brand"],
          "reviewCount": sum(1 for r in reviews if r["productId"] == b["productId"])}
-        for b in BRANDS
+        for b in BRANDS + A2W_MODELS
     ]
 
     payload = {

@@ -21,6 +21,9 @@ const MODEL_ALIASES: Record<string, string[]> = {
 function aliasesFor(product: Product): string[] {
   const normalized = product.id.replace(/-/g, "_");
   if (MODEL_ALIASES[normalized]) return MODEL_ALIASES[normalized];
+  // Air-to-water synthetic reviews are keyed by the catalog id verbatim, because
+  // the hydronic models have no separate review-export identifier.
+  if (product.equipmentType === "air_to_water_hp") return [product.id];
   // Fall back to matching the catalog model prefix (e.g. "DH7VS FIT" -> "DH7VS").
   const token = product.model.split(/\s+/)[0]?.toUpperCase();
   return token ? [token] : [];
@@ -111,7 +114,11 @@ export function matchReviews(source: ReviewSource, product: Product): {
   matchLevel: MatchLevel;
   matchedOn: string[];
 } {
-  if (!product.isDaikin || product.family !== FAMILY_KEY) {
+  // The real export covers only the Daikin FIT family. Air-to-water products are
+  // matched too, against the clearly-labelled synthetic set, which carries reviews
+  // for competitor hydronic models as well as Daikin's.
+  const isAtw = product.equipmentType === "air_to_water_hp";
+  if (!isAtw && (!product.isDaikin || product.family !== FAMILY_KEY)) {
     return { reviews: [], matchLevel: "none", matchedOn: [] };
   }
 

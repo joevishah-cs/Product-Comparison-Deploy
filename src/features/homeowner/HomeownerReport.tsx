@@ -15,6 +15,8 @@ import { cn, formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ProductVisual } from "@/components/common/ProductVisual";
 import type { Product } from "@/data/types";
+import { ATTRIBUTE_BY_KEY } from "@/data/catalog";
+import { brochureFeaturesFor } from "@/data/a2w-brochure-features";
 import type { ReviewSource } from "@/data/review-types";
 import type { ComparisonResult } from "@/features/compare/engine";
 import {
@@ -153,7 +155,12 @@ export function ReportCover({
                 <dt className="font-semibold text-navy-500">Recommended system</dt>
                 <dd className="text-navy-900">
                   {recommended.brand} {recommended.model}
-                  {tons ? ` — ${tons} Ton` : ""}
+                  {/* Air-to-water models are sized by rated capacity, not tonnage. */}
+                  {tons
+                    ? ` — ${tons} Ton`
+                    : recommended.capacities
+                      ? ` — ${recommended.capacities.map((c) => `${c} kBtu/h`).join(", ")}`
+                      : ""}
                 </dd>
               </div>
             )}
@@ -483,14 +490,67 @@ export function ComfortBenefitsSection({ daikin }: { daikin: Product }) {
       <ul className="grid gap-4 sm:grid-cols-2">
         {benefits.map((b) => (
           <li key={b.key} className="rounded-2xl border border-edge bg-white p-5 shadow-card">
+            {/* Lead with what the capability is; the recorded value is supporting
+                detail. Showing the bare value read as a meaningless number. */}
             <p className="flex items-center justify-between gap-2 text-sm font-semibold text-daikin-700">
-              {b.value.display}
+              {ATTRIBUTE_BY_KEY[b.key]?.label ?? b.key}
               <AiTag kind="generated" />
+            </p>
+            <p className="mt-1 text-sm font-medium text-navy-500">
+              {b.value.display}
+              {b.value.unit && !b.value.display.includes(b.value.unit) ? ` ${b.value.unit}` : ""}
             </p>
             <p className="mt-2 text-[1.0625rem] leading-relaxed text-navy-700">{b.benefit}</p>
           </li>
         ))}
       </ul>
+    </SectionShell>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* 5b. Published capabilities from the consumer brochure               */
+/* ------------------------------------------------------------------ */
+
+/** Installation flexibility, smart controls and quiet operation for air-to-water
+ *  products. The comparison spreadsheet has no column for any of these, so the
+ *  claims come from the brand's own consumer brochure and are cited to it. */
+export function BrochureCapabilitiesSection({ daikin }: { daikin: Product }) {
+  const brochure = brochureFeaturesFor(daikin);
+  if (!brochure) return null;
+
+  const groups = [
+    { label: "Quiet operation", features: brochure.quiet },
+    { label: "Installation flexibility", features: brochure.installation },
+    { label: "Smart controls", features: brochure.smartControls },
+  ].filter((g) => g.features.length);
+
+  if (!groups.length) return null;
+
+  return (
+    <SectionShell
+      eyebrow="Published capabilities"
+      title="How it installs, how it is controlled, how quiet it is"
+      intro="These come from the manufacturer's consumer brochure rather than the specification comparison, so they describe what this system offers rather than ranking it against another product."
+    >
+      <div className="space-y-5">
+        {groups.map((group) => (
+          <div key={group.label}>
+            <h3 className="text-lg font-bold text-navy-900">{group.label}</h3>
+            <ul className="mt-2.5 grid gap-3 sm:grid-cols-2">
+              {group.features.map((f) => (
+                <li key={f.label} className="rounded-2xl border border-edge bg-white p-5 shadow-card">
+                  <p className="text-sm font-semibold text-daikin-700">{f.label}</p>
+                  <p className="mt-1.5 text-[1.0625rem] leading-relaxed text-navy-700">{f.detail}</p>
+                  <p className="mt-2 text-xs text-navy-400">
+                    {brochure.documentLabel} · p.{f.page}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </SectionShell>
   );
 }

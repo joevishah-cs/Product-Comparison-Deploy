@@ -461,7 +461,9 @@ export function FeatureComparison({ products }: { products: Product[] }) {
 /* Comfort benefits overview                                           */
 /* ------------------------------------------------------------------ */
 
-const COMFORT_AXES: { key: string; label: string; attributeKey: string; invert?: boolean }[] = [
+type ComfortAxis = { key: string; label: string; attributeKey: string; invert?: boolean };
+
+const COMFORT_AXES: ComfortAxis[] = [
   { key: "quiet", label: "Quietness", attributeKey: "sound_level", invert: true },
   { key: "humidity", label: "Humidity control", attributeKey: "humidity_control" },
   { key: "consistency", label: "Temperature consistency", attributeKey: "compressor_type" },
@@ -469,10 +471,23 @@ const COMFORT_AXES: { key: string; label: string; attributeKey: string; invert?:
   { key: "warranty", label: "Warranty protection", attributeKey: "warranty" },
 ];
 
+/** Air-to-water axes. The hydronic sheet records no humidity, smart-control or
+ *  warranty column, so those axes are replaced with measures it does record. */
+const A2W_COMFORT_AXES: ComfortAxis[] = [
+  { key: "quiet", label: "Quietness (outdoor)", attributeKey: "outdoor_sound", invert: true },
+  { key: "quiet_indoor", label: "Quietness (indoor)", attributeKey: "indoor_sound", invert: true },
+  { key: "efficiency", label: "Efficiency (COP)", attributeKey: "cop_a446w95" },
+  { key: "cold_heating", label: "Cold-weather heating", attributeKey: "cop_a5w95" },
+  { key: "water_temp", label: "Max water temperature", attributeKey: "max_lwt" },
+];
+
 export function ComfortBenefitsOverview({ products }: { products: Product[] }) {
   const colors = buildColorMap(products);
+  const isAtw =
+    products.some((p) => p.equipmentType === "air_to_water_hp") &&
+    !products.some((p) => p.equipmentType === "ducted_split_hp");
 
-  const axes = COMFORT_AXES.map((axis) => {
+  const axes = (isAtw ? A2W_COMFORT_AXES : COMFORT_AXES).map((axis) => {
     const values = products.map((p) => {
       const v = p.attributes[axis.attributeKey];
       if (v?.status !== "verified") return { product: p, pct: null as number | null, raw: null as string | null };

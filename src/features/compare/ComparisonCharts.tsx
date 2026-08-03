@@ -3,6 +3,7 @@ import { ChartCard } from "@/components/charts/ChartCard";
 import { AttributeBarChart, ChartLegend, buildBarData } from "@/components/charts/AttributeBarChart";
 import {
   CapabilityRadar,
+  CapacityAvailabilityChart,
   DataCompletenessChart,
   DonutChart,
   FeatureMatrix,
@@ -384,6 +385,9 @@ export function ComparisonCharts({
           </div>
         </ChartCard>
 
+        {/* A2W selections have no Daikin-advantage distribution: the hydronic sheet
+            records no qualitative assessment to attribute an edge to. */}
+        {!hasHydronic && (
         <ChartCard
           title="Daikin advantage distribution"
           subtitle="Where the verified edges in this selection come from"
@@ -408,7 +412,9 @@ export function ComparisonCharts({
             centerLabel={result.edges.length === 1 ? "verified edge" : "verified edges"}
           />
         </ChartCard>
+        )}
 
+        {!hasHydronic && (
         <ChartCard
           title="Competitive profile radar"
           subtitle="Efficiency, quietness, warranty, cold climate, controls and installation"
@@ -427,7 +433,38 @@ export function ComparisonCharts({
         >
           <CapabilityRadar products={products} />
         </ChartCard>
+        )}
 
+        {/* A2W models are listed by rated capacity, not by tonnage. */}
+        {hasHydronic ? (
+          <ChartCard
+            title="Capacity availability"
+            subtitle="Rated capacities each model is listed in"
+            direction="higher"
+            glossaryTerm="Rated capacity"
+            glossary="The nominal capacities the model is sold in, in kBtu/h. More sizes means an installer can match the heat load more precisely instead of rounding up."
+            meaning={
+              <>
+                Air-to-water models are listed by rated capacity rather than tonnage. More sizes means an
+                installer can match the heat load more precisely instead of rounding up — oversizing is one
+                of the most common causes of a system that short-cycles and wears out early.
+              </>
+            }
+            sources={sourcesFor(products, "heat_cap_a446w95")}
+            unavailableNote={
+              products.some((p) => p.equipmentType === "air_to_water_hp" && !p.capacities)
+                ? `${products
+                    .filter((p) => p.equipmentType === "air_to_water_hp" && !p.capacities)
+                    .map((p) => p.displayName)
+                    .join(", ")} — the source does not break out rated capacities for this model.`
+                : null
+            }
+          >
+            <CapacityAvailabilityChart
+              products={products.filter((p) => p.equipmentType === "air_to_water_hp")}
+            />
+          </ChartCard>
+        ) : (
         <ChartCard
           title="Tonnage availability"
           subtitle="Unit sizes each model is listed in"
@@ -450,6 +487,7 @@ export function ComparisonCharts({
         >
           <TonnageAvailabilityChart products={products} />
         </ChartCard>
+        )}
 
         <ChartCard
           title="Data completeness"
@@ -468,6 +506,9 @@ export function ComparisonCharts({
           <DataCompletenessChart products={products} />
         </ChartCard>
 
+        {/* The fit score composites ducted-split metrics (SEER2, HSPF2, warranty) that
+            the hydronic sheet does not record, so it is not shown for A2W selections. */}
+        {!hasHydronic && (
         <ChartCard
           title="Selected-product fit score"
           subtitle="Composite of the verified metrics this selection shares"
@@ -484,6 +525,7 @@ export function ComparisonCharts({
         >
           <FitScoreChart products={products} />
         </ChartCard>
+        )}
 
         {hasHydronic && (
           <>
@@ -507,8 +549,69 @@ export function ComparisonCharts({
             </ChartCard>
 
             <ChartCard
-              title="Heating capacity at 46°F / 158°F LWT"
-              subtitle="Peak heating output in BTU/h while producing 158°F water at 46°F outdoor air"
+              title="Minimum leaving water temperature"
+              subtitle="Coolest water the unit is rated to leave with, in °F"
+              direction="lower"
+              glossaryTerm="Minimum leaving water temperature"
+              glossary={ATTRIBUTE_BY_KEY.min_lwt?.plainLanguage}
+              meaning={
+                <>
+                  The bottom of the leaving-water band recorded in the sheet. Together with the maximum it
+                  defines how much of the heating and cooling range one machine can cover before a second
+                  heat source or a buffer strategy is needed.
+                </>
+              }
+              sources={sourcesFor(products, "min_lwt")}
+              unavailableNote={missingNote(products, "min_lwt")}
+            >
+              <AttributeBarChart products={products} attributeKey="min_lwt" />
+            </ChartCard>
+
+            <ChartCard
+              title="Outdoor ambient operating range — heating"
+              subtitle="Outdoor air temperatures permitted in heating mode, in °F"
+              direction="none"
+              glossaryTerm="Outdoor ambient operating range"
+              glossary={ATTRIBUTE_BY_KEY.heating_ambient_range?.plainLanguage}
+              meaning={
+                <>
+                  Each bar spans the outdoor air temperatures the manufacturer allows in heating. The left
+                  edge is what matters in a cold climate — it is the point at which the heat pump stops and
+                  something else has to keep the house warm.
+                </>
+              }
+              sources={sourcesFor(products, "heating_ambient_range")}
+              unavailableNote={missingNote(products, "heating_ambient_range")}
+            >
+              <OperatingRangeChart products={products} attributeKey="heating_ambient_range" />
+              <ChartLegend
+                products={products.filter(
+                  (p) => p.attributes.heating_ambient_range?.status === "verified",
+                )}
+              />
+            </ChartCard>
+
+            <ChartCard
+              title="Outdoor ambient operating range — cooling"
+              subtitle="Outdoor air temperatures permitted in cooling mode, in °F"
+              direction="none"
+              glossaryTerm="Outdoor ambient operating range"
+              glossary={ATTRIBUTE_BY_KEY.cooling_ambient_range?.plainLanguage}
+              meaning={
+                <>
+                  The same envelope for cooling. A wider band is not automatically better — what matters is
+                  whether it covers the weather the territory actually sees.
+                </>
+              }
+              sources={sourcesFor(products, "cooling_ambient_range")}
+              unavailableNote={missingNote(products, "cooling_ambient_range")}
+            >
+              <OperatingRangeChart products={products} attributeKey="cooling_ambient_range" />
+            </ChartCard>
+
+            <ChartCard
+              title="Heating capacity at 44.6°F / 158°F LWT"
+              subtitle="Peak heating output in Btu/h while producing 158°F water at 44.6°F outdoor air"
               direction="higher"
               glossaryTerm="Heating capacity"
               glossary={ATTRIBUTE_BY_KEY.heat_cap_a446w158?.plainLanguage}
@@ -523,6 +626,46 @@ export function ComparisonCharts({
               unavailableNote={missingNote(products, "heat_cap_a446w158")}
             >
               <AttributeBarChart products={products} attributeKey="heat_cap_a446w158" />
+            </ChartCard>
+
+            {/* The W158°F condition is blank for some models in the source sheet, so the
+                W95°F condition is charted alongside it — every model records that one. */}
+            <ChartCard
+              title="Heating capacity at 44.6°F / 95°F LWT"
+              subtitle="Heating output in Btu/h while producing 95°F water at 44.6°F outdoor air"
+              direction="higher"
+              glossaryTerm="Heating capacity"
+              glossary={ATTRIBUTE_BY_KEY.heat_cap_a446w95?.plainLanguage}
+              meaning={
+                <>
+                  The same measurement at the low water temperature underfloor heating typically runs at.
+                  Every model in the sheet records this condition, so it is the most complete
+                  like-for-like heating comparison available here.
+                </>
+              }
+              sources={sourcesFor(products, "heat_cap_a446w95")}
+              unavailableNote={missingNote(products, "heat_cap_a446w95")}
+            >
+              <AttributeBarChart products={products} attributeKey="heat_cap_a446w95" />
+            </ChartCard>
+
+            <ChartCard
+              title="COP at 5°F / 95°F LWT"
+              subtitle="Coefficient of performance at 5°F outdoor air producing 95°F water"
+              direction="higher"
+              glossaryTerm="COP"
+              glossary={ATTRIBUTE_BY_KEY.cop_a5w95?.plainLanguage}
+              meaning={
+                <>
+                  Cold-weather efficiency: how much heat the system moves per unit of electricity when it
+                  is 5°F outside. Recorded for every model in the sheet, so it is directly comparable
+                  across all three brands.
+                </>
+              }
+              sources={sourcesFor(products, "cop_a5w95")}
+              unavailableNote={missingNote(products, "cop_a5w95")}
+            >
+              <AttributeBarChart products={products} attributeKey="cop_a5w95" />
             </ChartCard>
           </>
         )}

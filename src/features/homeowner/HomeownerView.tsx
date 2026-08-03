@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/toast";
 import type { ReviewSource } from "@/data/review-types";
+import { brochureFeaturesFor } from "@/data/a2w-brochure-features";
 import type { ComparisonResult } from "@/features/compare/engine";
 import {
   buildReviewNarrative,
@@ -32,6 +33,7 @@ import {
 } from "./homeownerEngine";
 import {
   ComfortBenefitsSection,
+  BrochureCapabilitiesSection,
   Disclaimers,
   FaqSection,
   SupportingInformation,
@@ -197,6 +199,14 @@ export function HomeownerView({
         title: "Comfort at a glance",
         node: <ComfortBenefitsOverview products={reportProducts} />,
       });
+      // Air-to-water only: renders nothing when no brochure is registered.
+      if (brochureFeaturesFor(recommended)) {
+        list.push({
+          key: "brochure-capabilities",
+          title: "Installation and controls",
+          node: <BrochureCapabilitiesSection daikin={recommended} />,
+        });
+      }
     }
 
     if (on("comparison") && includedCompetitors.length) {
@@ -296,7 +306,7 @@ export function HomeownerView({
     if (on("plainEnglish")) {
       list.push({
         key: "plain",
-        title: "In plain English",
+        title: "Why this recommendation",
         node: (
           <PlainEnglishSection
             daikin={recommended}

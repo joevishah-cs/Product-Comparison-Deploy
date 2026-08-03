@@ -103,6 +103,9 @@ const MEASURE_EDGE_KEYS = [
   "cop_a5w95",
   "heat_cap_a446w158",
   "outdoor_sound",
+  "indoor_sound",
+  "min_ambient_heating",
+  "max_ambient_cooling",
 ] as const;
 
 /** Source values such as "12y parts & 12y Repl." end in a period; drop it so the
@@ -144,6 +147,17 @@ function marginFor(a: AttributeValue, b: AttributeValue): number | null {
   return Math.abs(a.numeric - b.numeric);
 }
 
+/** A real margin must never print as "0". Ratio metrics such as COP differ in the
+ *  second or third decimal, so widen the precision until the figure is non-zero
+ *  rather than rounding a genuine lead away. */
+function formatMargin(diff: number, maxDigits = 1): string {
+  for (let digits = maxDigits; digits <= 3; digits += 1) {
+    const text = formatNumber(diff, digits);
+    if (Number(text.replace(/,/g, "")) !== 0) return text;
+  }
+  return formatNumber(diff, 3);
+}
+
 function marginText(key: string, diff: number): string {
   const def = ATTRIBUTE_BY_KEY[key];
   const unit = def?.unit ?? "";
@@ -151,10 +165,15 @@ function marginText(key: string, diff: number): string {
     return `${formatNumber(diff)} ${diff === 1 ? "year" : "years"} longer on parts coverage`;
   }
   if (def?.direction === "lower") {
-    return `${formatNumber(diff)}${unit ? ` ${unit}` : ""} quieter`;
+    // "quieter" only makes sense for sound. Every other lower-is-better attribute
+    // (minimum leaving-water temp, minimum ambient) needs a neutral comparative.
+    const comparative = unit === "dBA" ? "quieter" : "lower";
+    return `${formatMargin(diff)}${unit ? ` ${unit}` : ""} ${comparative}`;
   }
-  if (unit === "BTU/h") return `${formatNumber(diff, 0)} BTU/h more`;
-  return `${formatNumber(diff)}${unit && unit !== "tons" ? ` ${unit}` : ""} higher`;
+  if (unit === "BTU/h" || unit === "Btu/h") {
+    return `${formatNumber(diff, 0)} ${unit} more`;
+  }
+  return `${formatMargin(diff)}${unit && unit !== "tons" ? ` ${unit}` : ""} higher`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -537,23 +556,20 @@ export function buildScorecards(products: Product[], result: ComparisonResult): 
     );
   }
 
-  const cold = leaderFor(products, "heating_range") ?? leaderFor(products, "min_lwt");
   const coldLeader = coldClimateLeader(products);
   cards.push(
     coldLeader
       ? {
           id: "cold",
           title: "Best cold-climate range",
-          attributeKey: "heating_range",
+          attributeKey: coldLeader.value.attributeKey,
           winner: coldLeader.product,
           value: coldLeader.value.display,
-          detail: "Lowest verified minimum heating operating temperature in this selection.",
+          detail: "Lowest verified minimum outdoor operating temperature in heating in this selection.",
           citation: coldLeader.value.source.citation,
           isDaikin: coldLeader.product.isDaikin,
         }
-      : cold
-        ? emptyCard("cold", "Best cold-climate range")
-        : emptyCard("cold", "Best cold-climate range"),
+      : emptyCard("cold", "Best cold-climate range"),
   );
 
   if (a2wOnly) {
@@ -627,7 +643,10 @@ function emptyCard(id: string, title: string): Scorecard {
 function coldClimateLeader(products: Product[]): { product: Product; value: AttributeValue } | null {
   const scored = products
     .map((p) => {
-      const v = p.attributes.heating_range ?? p.attributes.min_lwt;
+      // Cold-climate capability is an outdoor-air figure. For hydronic products that
+      // is the minimum heating ambient -- never a leaving-water temperature, which
+      // describes the water side and is unrelated to how cold it can run.
+      const v = p.attributes.heating_range ?? p.attributes.min_ambient_heating;
       return v && v.status === "verified" && v.numeric !== null ? { product: p, value: v, score: v.numeric } : null;
     })
     .filter(Boolean) as { product: Product; value: AttributeValue; score: number }[];

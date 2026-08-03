@@ -277,7 +277,7 @@ function SummaryPanel() {
           tone="daikin"
           label="Market position"
           value={`${daikinShare?.value ?? "—"}%`}
-          sub={`EU A2W unit share. Revenue share ${pointFor(REVENUE_SHARE, "daikin")?.value}%.`}
+          sub={`EU heat pump unit share. Revenue share ${pointFor(REVENUE_SHARE, "daikin")?.value}%.`}
           rank={`#${daikinRank(UNIT_SHARE)} of ${UNIT_SHARE.points.length}`}
         />
         <StatTile
@@ -306,7 +306,7 @@ function SummaryPanel() {
       >
         <div className="space-y-3 text-[0.9375rem] leading-relaxed text-navy-700">
           <p>
-            <strong>Daikin leads on scale and visibility.</strong> It holds the largest EU A2W unit
+            <strong>Daikin leads on scale and visibility.</strong> It holds the largest EU heat pump unit
             share ({daikinShare?.value}%) and revenue share (
             {pointFor(REVENUE_SHARE, "daikin")?.value}%), the highest unaided awareness (
             {pointFor(AWARENESS_UNAIDED, "daikin")?.value}%), the most web traffic (
@@ -1065,7 +1065,7 @@ export function BrandWorkspacePage() {
       `Scope: ${BRAND_INTEL_SCOPE}`,
       "*** ALL FIGURES SYNTHETIC - DEMO USE ONLY, NOT SOURCED ***",
       "",
-      `Market position: Daikin ${daikinShare?.value}% EU A2W unit share (rank ${daikinRank(UNIT_SHARE)} of ${UNIT_SHARE.points.length}).`,
+      `Market position: Daikin ${daikinShare?.value}% EU heat pump unit share (rank ${daikinRank(UNIT_SHARE)} of ${UNIT_SHARE.points.length}).`,
       `Media visibility leader: ${visibilityLeader.name} (${visibilityBand(visibilityScore(visibilityLeader.key))}).`,
       `Best customer sentiment: ${BRAND_BY_KEY[sentimentLeader!.brand].name} at ${sentimentLeader!.value}% positive; Daikin ${pointFor(SENTIMENT_POSITIVE, "daikin")?.value}%.`,
       `High-threat competitors: ${highThreats.map((b) => b.name).join(", ")}.`,

@@ -140,7 +140,7 @@ function parseValue(kind: string, raw: string): ParseResult {
 function formatSpreadsheetValue(parsed: ParseResult, unit: string): string {
   if (parsed.numeric === null) return parsed.display;
   if (unit === "ratio") return parsed.numeric.toFixed(2);
-  const digits = unit === "BTU/h" ? 0 : 1;
+  const digits = unit === "BTU/h" || unit === "Btu/h" ? 0 : 1;
   const formatted = parsed.numeric.toLocaleString("en-US", { maximumFractionDigits: digits });
   return unit ? `${formatted} ${unit}` : formatted;
 }
@@ -297,6 +297,7 @@ function buildBattlecardProducts(): Product[] {
       image: chassisImage(chassisRaw, isDaikin, false),
       imageIsRepresentative: true,
       tonnages: tonnages && tonnages.length ? tonnages : null,
+      capacities: null,
       documentId: DOC_BATTLECARD,
       sourceHeader: p.sourceHeader,
       attributes,
@@ -323,7 +324,29 @@ function titleCaseBrand(brand: string): string {
   return BRAND_CASING[brand] ?? brand;
 }
 
+/** A2W model numbers encode the rated capacity in kBtu/h: UPRA036DAVK -> 36,
+ *  AE041FCYDCG/AA -> 41, WUZ-SA24NMZ -> 24. Read it off the outdoor model so the
+ *  list stays correct if the sheet gains models. */
+function a2wCapacity(model: string | null): number[] | null {
+  if (!model) return null;
+  const m = model.match(/(\d{2,3})/);
+  if (!m) return null;
+  const kbtu = Number(m[1]);
+  return kbtu >= 12 && kbtu <= 200 ? [kbtu] : null;
+}
+
 function buildA2WProducts(): Product[] {
+  // Every capacity offered by a brand in this sheet, so a single selected model can
+  // still show the range its family is listed in.
+  const capacitiesByBrand = new Map<string, number[]>();
+  for (const p of A2W.products) {
+    const caps = a2wCapacity(p.model);
+    if (!caps) continue;
+    const list = capacitiesByBrand.get(p.brand) ?? [];
+    for (const c of caps) if (!list.includes(c)) list.push(c);
+    capacitiesByBrand.set(p.brand, list.sort((a, b) => a - b));
+  }
+
   return A2W.products.map((p, idx) => {
     const isDaikin = p.brand === "Daikin";
     const attributes: Record<string, AttributeValue> = {};
@@ -386,6 +409,7 @@ function buildA2WProducts(): Product[] {
       image: chassisImage(null, isDaikin, true),
       imageIsRepresentative: true,
       tonnages: null,
+      capacities: capacitiesByBrand.get(p.brand) ?? a2wCapacity(p.model),
       documentId: DOC_A2W,
       sourceHeader: p.sourceHeader,
       attributes,
@@ -432,8 +456,12 @@ export function isColdClimate(product: Product): boolean {
   if (cchp?.status === "verified" && cchp.boolean === true) return true;
   const heat = product.attributes.heating_range;
   if (heat?.status === "verified" && heat.numeric !== null && heat.numeric <= 0) return true;
-  const minLwt = product.attributes.min_lwt;
-  if (minLwt?.status === "verified" && minLwt.numeric !== null && minLwt.numeric <= 0) return true;
+  // Hydronic products record the outdoor-air envelope instead. The leaving-water
+  // minimum is a water temperature and says nothing about cold-weather capability.
+  const minAmbient = product.attributes.min_ambient_heating;
+  if (minAmbient?.status === "verified" && minAmbient.numeric !== null && minAmbient.numeric <= 0) {
+    return true;
+  }
   return false;
 }
 

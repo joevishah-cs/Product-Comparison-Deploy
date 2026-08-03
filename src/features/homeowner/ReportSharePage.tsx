@@ -4,7 +4,7 @@ import { Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PRODUCT_BY_ID } from "@/data/catalog";
 import { buildComparison } from "@/features/compare/engine";
-import { useReviewSource } from "@/features/reviews/useReviewSource";
+import { useMergedReviewSource } from "@/features/reviews/useMergedReviewSource";
 import { buildReviewNarrative, summarizeSelection } from "@/features/reviews/reviewEngine";
 import {
   alignPriorities,
@@ -12,6 +12,7 @@ import {
 } from "./homeownerEngine";
 import {
   ComfortBenefitsSection,
+  BrochureCapabilitiesSection,
   Disclaimers,
   FaqSection,
   FinalRecommendationSection,
@@ -43,7 +44,7 @@ import { REPORT_SECTIONS } from "./HomeownerProvider";
  */
 export function ReportSharePage() {
   const [params] = useSearchParams();
-  const { source: reviewSource, loading } = useReviewSource();
+  const { source: reviewSource, loading } = useMergedReviewSource();
 
   const productIds = (params.get("products") ?? "").split(",").filter(Boolean);
   const products = productIds.map((id) => PRODUCT_BY_ID[id]).filter(Boolean);
@@ -155,6 +156,7 @@ export function ReportSharePage() {
           <>
             <ComfortBenefitsSection daikin={recommended} />
             <ComfortBenefitsOverview products={reportProducts} />
+            <BrochureCapabilitiesSection daikin={recommended} />
           </>
         )}
         {on("comparison") && competitors.length > 0 && (

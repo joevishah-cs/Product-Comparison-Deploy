@@ -12,12 +12,20 @@ import {
   PRODUCT_BY_ID,
   SOURCE_DOCUMENTS,
   ATTRIBUTE_DEFINITIONS,
+  ATTRIBUTE_KEYS_BY_EQUIPMENT,
   coverageFor,
   EXCLUDED_CELLS,
 } from "@/data/catalog";
+import type { EquipmentType } from "@/data/types";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { listRows, type SavedComparison } from "@/lib/store";
 import { formatDate } from "@/lib/utils";
+
+/** Mirrors the Product Explorer's equipment tabs so the two pages agree on naming. */
+const EQUIPMENT_BREAKDOWN: { key: EquipmentType; label: string; short: string }[] = [
+  { key: "ducted_split_hp", label: "Air-to-Air (ducted split)", short: "A2A" },
+  { key: "air_to_water_hp", label: "Air-to-Water (hydronic)", short: "A2W" },
+];
 
 export function DashboardPage() {
   const { selected, recentComparisons, replaceAll, recordComparison } = useSelection();
@@ -52,6 +60,25 @@ export function DashboardPage() {
     const total = totals.reduce((s, c) => s + c.total, 0);
     return { verified, total, pct: Math.round((verified / total) * 100) };
   }, []);
+
+  /** Coverage split by equipment type, so air-to-air and air-to-water read as the
+   *  two distinct catalogues they are — the same split the Product Explorer uses. */
+  const byEquipment = React.useMemo(
+    () =>
+      EQUIPMENT_BREAKDOWN.map((row) => {
+        const products = PRODUCTS.filter((p) => p.equipmentType === row.key);
+        const totals = products.map((p) => coverageFor(p));
+        const verified = totals.reduce((s, c) => s + c.verified, 0);
+        const total = totals.reduce((s, c) => s + c.total, 0);
+        return {
+          ...row,
+          count: products.length,
+          attributes: ATTRIBUTE_KEYS_BY_EQUIPMENT[row.key].length,
+          pct: total ? Math.round((verified / total) * 100) : 0,
+        };
+      }),
+    [],
+  );
 
   return (
     <div className="space-y-8">
@@ -238,6 +265,38 @@ export function DashboardPage() {
               source value. The rest display “Information unavailable”.
             </p>
           </div>
+
+          <ul className="mt-4 space-y-2.5 border-t border-edge pt-4">
+            {byEquipment.map((row) => (
+              <li key={row.key}>
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="flex items-center gap-1.5 text-sm font-medium text-navy-700">
+                    <Badge variant="outline" size="sm">
+                      {row.short}
+                    </Badge>
+                    {row.label}
+                  </span>
+                  <span className="text-sm font-bold text-navy-900">{row.pct}%</span>
+                </div>
+                <div
+                  className="mt-1.5 h-2 overflow-hidden rounded-full bg-navy-100"
+                  role="progressbar"
+                  aria-valuenow={row.pct}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={`${row.label} — share of attributes carrying a verified source value`}
+                >
+                  <div
+                    className="h-full rounded-full bg-daikin-500"
+                    style={{ width: `${row.pct}%` }}
+                  />
+                </div>
+                <p className="mt-1 text-xs text-navy-400">
+                  {row.count} products · {row.attributes} attributes
+                </p>
+              </li>
+            ))}
+          </ul>
 
           <ul className="mt-4 space-y-2 border-t border-edge pt-4">
             {SOURCE_DOCUMENTS.map((doc) => (

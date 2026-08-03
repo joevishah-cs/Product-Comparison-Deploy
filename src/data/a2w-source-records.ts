@@ -31,7 +31,7 @@ export const A2W: HydronicSource = {
       "sourceHeader": "AE041FCYDCG/AA + AE055FEYMCG/AA",
       "brand": "Samsung",
       "model": "AE041FCYDCG/AA",
-      "family": "A2W"
+      "family": "A2WHP"
     },
     {
       "rowRefs": [
@@ -40,7 +40,7 @@ export const A2W: HydronicSource = {
       "sourceHeader": "AE055FCYDCG/AA + AE055FEYMCG/AA",
       "brand": "Samsung",
       "model": "AE055FCYDCG/AA",
-      "family": "A2W"
+      "family": "A2WHP"
     },
     {
       "rowRefs": [
@@ -49,7 +49,7 @@ export const A2W: HydronicSource = {
       "sourceHeader": "WUZ-SA24NMZ + ERSF-NM6E",
       "brand": "Mitsubishi",
       "model": "WUZ-SA24NMZ",
-      "family": "A2W"
+      "family": "A2WHP"
     },
     {
       "rowRefs": [
@@ -58,7 +58,7 @@ export const A2W: HydronicSource = {
       "sourceHeader": "WUZ-SA36NMZ + ERSF-NM6E",
       "brand": "Mitsubishi",
       "model": "WUZ-SA36NMZ",
-      "family": "A2W"
+      "family": "A2WHP"
     },
     {
       "rowRefs": [
@@ -67,16 +67,16 @@ export const A2W: HydronicSource = {
       "sourceHeader": "WUZ-SA48NMZ + ERSF-NM6E",
       "brand": "Mitsubishi",
       "model": "WUZ-SA48NMZ",
-      "family": "A2W"
+      "family": "A2WHP"
     }
   ],
   "rows": [
     {
       "key": "heat_cap_a446w158",
       "label": "Heating capacity @ A44.6°F/W158°F",
-      "sourceLabel": "A44.6°F / W158°F",
+      "sourceLabel": "A44.6°F / W158°F Heating capacity",
       "group": "Efficiency",
-      "unit": "kBtu/h",
+      "unit": "Btu/h",
       "direction": "higher",
       "kind": "measure",
       "headerRef": "A3",
@@ -128,7 +128,7 @@ export const A2W: HydronicSource = {
     {
       "key": "cop_a446w158",
       "label": "COP @ A44.6°F/W158°F",
-      "sourceLabel": "COP @ A44.6°F/W158°F",
+      "sourceLabel": "COP",
       "group": "Efficiency",
       "unit": "W/W",
       "direction": "higher",
@@ -182,9 +182,9 @@ export const A2W: HydronicSource = {
     {
       "key": "heat_cap_a446w131",
       "label": "Heating capacity @ A44.6°F/W131°F",
-      "sourceLabel": "A44.6°F / W131°F",
+      "sourceLabel": "A44.6°F / W131°F Heating capacity",
       "group": "Efficiency",
-      "unit": "kBtu/h",
+      "unit": "Btu/h",
       "direction": "higher",
       "kind": "measure",
       "headerRef": "A5",
@@ -236,7 +236,7 @@ export const A2W: HydronicSource = {
     {
       "key": "cop_a446w131",
       "label": "COP @ A44.6°F/W131°F",
-      "sourceLabel": "COP @ A44.6°F/W131°F",
+      "sourceLabel": "COP",
       "group": "Efficiency",
       "unit": "W/W",
       "direction": "higher",
@@ -290,9 +290,9 @@ export const A2W: HydronicSource = {
     {
       "key": "heat_cap_a446w110",
       "label": "Heating capacity @ A44.6°F/W110°F",
-      "sourceLabel": "A44.6°F / W110°F",
+      "sourceLabel": "A44.6°F / W110°F Heating capacity",
       "group": "Efficiency",
-      "unit": "kBtu/h",
+      "unit": "Btu/h",
       "direction": "higher",
       "kind": "measure",
       "headerRef": "A7",
@@ -344,7 +344,7 @@ export const A2W: HydronicSource = {
     {
       "key": "cop_a446w110",
       "label": "COP @ A44.6°F/W110°F",
-      "sourceLabel": "COP @ A44.6°F/W110°F",
+      "sourceLabel": "COP",
       "group": "Efficiency",
       "unit": "W/W",
       "direction": "higher",
@@ -398,9 +398,9 @@ export const A2W: HydronicSource = {
     {
       "key": "heat_cap_a446w95",
       "label": "Heating capacity @ A44.6°F/W95°F",
-      "sourceLabel": "A44.6°F / W95°F",
+      "sourceLabel": "A44.6°F / W95°F Heating capacity",
       "group": "Efficiency",
-      "unit": "kBtu/h",
+      "unit": "Btu/h",
       "direction": "higher",
       "kind": "measure",
       "headerRef": "A9",
@@ -452,7 +452,7 @@ export const A2W: HydronicSource = {
     {
       "key": "cop_a446w95",
       "label": "COP @ A44.6°F/W95°F",
-      "sourceLabel": "COP @ A44.6°F/W95°F",
+      "sourceLabel": "COP",
       "group": "Efficiency",
       "unit": "W/W",
       "direction": "higher",
@@ -506,9 +506,9 @@ export const A2W: HydronicSource = {
     {
       "key": "heat_cap_a5w158",
       "label": "Heating capacity @ A5°F/W158°F",
-      "sourceLabel": "A5°F / W158°F",
+      "sourceLabel": "A5°F / W158°F Heating capacity",
       "group": "Efficiency",
-      "unit": "kBtu/h",
+      "unit": "Btu/h",
       "direction": "higher",
       "kind": "measure",
       "headerRef": "A11",
@@ -560,7 +560,7 @@ export const A2W: HydronicSource = {
     {
       "key": "cop_a5w158",
       "label": "COP @ A5°F/W158°F",
-      "sourceLabel": "COP @ A5°F/W158°F",
+      "sourceLabel": "COP",
       "group": "Efficiency",
       "unit": "W/W",
       "direction": "higher",
@@ -614,9 +614,9 @@ export const A2W: HydronicSource = {
     {
       "key": "heat_cap_a5w131",
       "label": "Heating capacity @ A5°F/W131°F",
-      "sourceLabel": "A5°F / W131°F",
+      "sourceLabel": "A5°F / W131°F Heating capacity",
       "group": "Efficiency",
-      "unit": "kBtu/h",
+      "unit": "Btu/h",
       "direction": "higher",
       "kind": "measure",
       "headerRef": "A13",
@@ -668,7 +668,7 @@ export const A2W: HydronicSource = {
     {
       "key": "cop_a5w131",
       "label": "COP @ A5°F/W131°F",
-      "sourceLabel": "COP @ A5°F/W131°F",
+      "sourceLabel": "COP",
       "group": "Efficiency",
       "unit": "W/W",
       "direction": "higher",
@@ -722,9 +722,9 @@ export const A2W: HydronicSource = {
     {
       "key": "heat_cap_a5w110",
       "label": "Heating capacity @ A5°F/W110°F",
-      "sourceLabel": "A5°F / W110°F",
+      "sourceLabel": "A5°F / W110°F Heating capacity",
       "group": "Efficiency",
-      "unit": "kBtu/h",
+      "unit": "Btu/h",
       "direction": "higher",
       "kind": "measure",
       "headerRef": "A15",
@@ -776,7 +776,7 @@ export const A2W: HydronicSource = {
     {
       "key": "cop_a5w110",
       "label": "COP @ A5°F/W110°F",
-      "sourceLabel": "COP @ A5°F/W110°F",
+      "sourceLabel": "COP",
       "group": "Efficiency",
       "unit": "W/W",
       "direction": "higher",
@@ -830,9 +830,9 @@ export const A2W: HydronicSource = {
     {
       "key": "heat_cap_a5w95",
       "label": "Heating capacity @ A5°F/W95°F",
-      "sourceLabel": "A5°F / W95°F",
+      "sourceLabel": "A5°F / W95°F Heating capacity",
       "group": "Efficiency",
-      "unit": "kBtu/h",
+      "unit": "Btu/h",
       "direction": "higher",
       "kind": "measure",
       "headerRef": "A17",
@@ -884,7 +884,7 @@ export const A2W: HydronicSource = {
     {
       "key": "cop_a5w95",
       "label": "COP @ A5°F/W95°F",
-      "sourceLabel": "COP @ A5°F/W95°F",
+      "sourceLabel": "COP",
       "group": "Efficiency",
       "unit": "W/W",
       "direction": "higher",
@@ -938,9 +938,9 @@ export const A2W: HydronicSource = {
     {
       "key": "cool_cap_a95w716",
       "label": "Cooling capacity @ A95°F/W71.6°F",
-      "sourceLabel": "A95°F / W71.6°F",
+      "sourceLabel": "A95°F / W71.6°F Cooling capacity",
       "group": "Efficiency",
-      "unit": "kBtu/h",
+      "unit": "Btu/h",
       "direction": "higher",
       "kind": "measure",
       "headerRef": "A19",
@@ -992,7 +992,7 @@ export const A2W: HydronicSource = {
     {
       "key": "eer_a95w716",
       "label": "EER @ A95°F/W71.6°F",
-      "sourceLabel": "EER @ A95°F/W71.6°F",
+      "sourceLabel": "EER",
       "group": "Efficiency",
       "unit": "Btu/Wh",
       "direction": "higher",
@@ -1046,9 +1046,9 @@ export const A2W: HydronicSource = {
     {
       "key": "cool_cap_a95w644",
       "label": "Cooling capacity @ A95°F/W64.4°F",
-      "sourceLabel": "A95°F / W64.4°F",
+      "sourceLabel": "A95°F / W64.4°F Cooling capacity",
       "group": "Efficiency",
-      "unit": "kBtu/h",
+      "unit": "Btu/h",
       "direction": "higher",
       "kind": "measure",
       "headerRef": "A21",
@@ -1100,7 +1100,7 @@ export const A2W: HydronicSource = {
     {
       "key": "eer_a95w644",
       "label": "EER @ A95°F/W64.4°F",
-      "sourceLabel": "EER @ A95°F/W64.4°F",
+      "sourceLabel": "EER",
       "group": "Efficiency",
       "unit": "Btu/Wh",
       "direction": "higher",
@@ -1154,9 +1154,9 @@ export const A2W: HydronicSource = {
     {
       "key": "cool_cap_a95w446",
       "label": "Cooling capacity @ A95°F/W44.6°F",
-      "sourceLabel": "A95°F / W44.6°F",
+      "sourceLabel": "A95°F / W44.6°F Cooling capacity",
       "group": "Efficiency",
-      "unit": "kBtu/h",
+      "unit": "Btu/h",
       "direction": "higher",
       "kind": "measure",
       "headerRef": "A23",
@@ -1208,7 +1208,7 @@ export const A2W: HydronicSource = {
     {
       "key": "eer_a95w446",
       "label": "EER @ A95°F/W44.6°F",
-      "sourceLabel": "EER @ A95°F/W44.6°F",
+      "sourceLabel": "EER",
       "group": "Efficiency",
       "unit": "Btu/Wh",
       "direction": "higher",
@@ -1260,13 +1260,13 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "indoor_height",
-      "label": "Height (indoor unit)",
-      "sourceLabel": "Dimensions",
+      "key": "indoor_dimensions",
+      "label": "Dimensions (indoor unit)",
+      "sourceLabel": "Dimensions Height x Width x Depth",
       "group": "Indoor Unit",
       "unit": "in",
       "direction": "none",
-      "kind": "measure",
+      "kind": "text",
       "headerRef": "A26",
       "cells": [
         {
@@ -1314,11 +1314,11 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "indoor_width",
-      "label": "Width (indoor unit)",
+      "key": "indoor_weight",
+      "label": "Weight (indoor unit)",
       "sourceLabel": "Weight",
       "group": "Indoor Unit",
-      "unit": "in",
+      "unit": "lbs",
       "direction": "none",
       "kind": "measure",
       "headerRef": "A27",
@@ -1368,12 +1368,12 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "indoor_depth",
-      "label": "Depth (indoor unit)",
-      "sourceLabel": "Sound Pressure level",
+      "key": "indoor_sound",
+      "label": "Sound pressure level (indoor)",
+      "sourceLabel": "Sound Pressure level Nom.",
       "group": "Indoor Unit",
-      "unit": "in",
-      "direction": "none",
+      "unit": "dBA",
+      "direction": "lower",
       "kind": "measure",
       "headerRef": "A28",
       "cells": [
@@ -1422,12 +1422,12 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "indoor_weight",
-      "label": "Weight (indoor unit)",
+      "key": "indoor_power_amps",
+      "label": "Power supply amperage (indoor)",
       "sourceLabel": "Power supply (unit)",
       "group": "Indoor Unit",
-      "unit": "lbs",
-      "direction": "none",
+      "unit": "A",
+      "direction": "lower",
       "kind": "measure",
       "headerRef": "A29",
       "cells": [
@@ -1476,13 +1476,13 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "indoor_sound",
-      "label": "Sound pressure level (indoor)",
-      "sourceLabel": "Power supply\n(Backup heater)",
+      "key": "backup_heater_cap",
+      "label": "Backup heater capacity",
+      "sourceLabel": "Power supply (Backup heater) Capacity",
       "group": "Indoor Unit",
-      "unit": "dBA",
-      "direction": "lower",
-      "kind": "measure",
+      "unit": "kW",
+      "direction": "none",
+      "kind": "text",
       "headerRef": "A30",
       "cells": [
         {
@@ -1530,12 +1530,66 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "indoor_power_amps",
-      "label": "Power supply amperage",
-      "sourceLabel": "Power supply amperage",
+      "key": "backup_heater_phase",
+      "label": "Backup heater phase",
+      "sourceLabel": "Phase",
       "group": "Indoor Unit",
-      "unit": "A",
-      "direction": "lower",
+      "unit": "",
+      "direction": "none",
+      "kind": "text",
+      "headerRef": "A31",
+      "cells": [
+        {
+          "ref": "F31",
+          "raw": "1~",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "G31",
+          "raw": "1~",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "H31",
+          "raw": "1~",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "I31",
+          "raw": "1~",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "J31",
+          "raw": "1~",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "K31",
+          "raw": "1~",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "L31",
+          "raw": "1~",
+          "formula": null,
+          "error": false
+        }
+      ]
+    },
+    {
+      "key": "backup_heater_freq",
+      "label": "Backup heater frequency",
+      "sourceLabel": "Frequency",
+      "group": "Indoor Unit",
+      "unit": "Hz",
+      "direction": "none",
       "kind": "measure",
       "headerRef": "A32",
       "cells": [
@@ -1584,13 +1638,13 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "backup_heater_cap",
-      "label": "Backup heater capacity",
-      "sourceLabel": "Backup heater capacity",
+      "key": "backup_heater_voltage",
+      "label": "Backup heater voltage",
+      "sourceLabel": "Voltage",
       "group": "Indoor Unit",
-      "unit": "kW",
+      "unit": "V",
       "direction": "none",
-      "kind": "measure",
+      "kind": "text",
       "headerRef": "A33",
       "cells": [
         {
@@ -1638,13 +1692,13 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "backup_heater_phase",
-      "label": "Backup heater phase",
-      "sourceLabel": "Backup heater phase",
+      "key": "backup_heater_mop",
+      "label": "Backup heater MOP",
+      "sourceLabel": "MOP",
       "group": "Indoor Unit",
-      "unit": "",
+      "unit": "A",
       "direction": "none",
-      "kind": "text",
+      "kind": "measure",
       "headerRef": "A34",
       "cells": [
         {
@@ -1692,11 +1746,11 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "backup_heater_freq",
-      "label": "Backup heater frequency",
-      "sourceLabel": "Backup heater frequency",
+      "key": "backup_heater_mca",
+      "label": "Backup heater MCA",
+      "sourceLabel": "MCA",
       "group": "Indoor Unit",
-      "unit": "Hz",
+      "unit": "A",
       "direction": "none",
       "kind": "measure",
       "headerRef": "A35",
@@ -1746,67 +1800,13 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "backup_heater_voltage",
-      "label": "Backup heater voltage",
-      "sourceLabel": "Outdoor Unit",
-      "group": "Indoor Unit",
-      "unit": "V",
+      "key": "outdoor_dimensions",
+      "label": "Dimensions (outdoor unit)",
+      "sourceLabel": "Dimensions Height x Width x Depth",
+      "group": "Outdoor Unit",
+      "unit": "in",
       "direction": "none",
-      "kind": "measure",
-      "headerRef": "A36",
-      "cells": [
-        {
-          "ref": "F36",
-          "raw": "UPRA036DAVK",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "G36",
-          "raw": "UPRA043DAVK",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "H36",
-          "raw": "AE041FCYDCG/AA",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "I36",
-          "raw": "AE055FCYDCG/AA",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "J36",
-          "raw": "WUZ-SA24NMZ",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "K36",
-          "raw": "WUZ-SA36NMZ",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "L36",
-          "raw": "WUZ-SA48NMZ",
-          "formula": null,
-          "error": false
-        }
-      ]
-    },
-    {
-      "key": "backup_heater_mop",
-      "label": "Backup heater MOP",
-      "sourceLabel": "Dimensions",
-      "group": "Indoor Unit",
-      "unit": "A",
-      "direction": "none",
-      "kind": "measure",
+      "kind": "text",
       "headerRef": "A37",
       "cells": [
         {
@@ -1854,11 +1854,11 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "backup_heater_mca",
-      "label": "Backup heater MCA",
+      "key": "outdoor_weight",
+      "label": "Weight (outdoor unit)",
       "sourceLabel": "Weight",
-      "group": "Indoor Unit",
-      "unit": "A",
+      "group": "Outdoor Unit",
+      "unit": "lbs",
       "direction": "none",
       "kind": "measure",
       "headerRef": "A38",
@@ -1908,13 +1908,13 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "outdoor_height",
-      "label": "Height (outdoor unit)",
+      "key": "refrigerant",
+      "label": "Refrigerant",
       "sourceLabel": "Refrigerant",
       "group": "Outdoor Unit",
-      "unit": "in",
+      "unit": "",
       "direction": "none",
-      "kind": "measure",
+      "kind": "text",
       "headerRef": "A39",
       "cells": [
         {
@@ -1962,13 +1962,13 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "outdoor_width",
-      "label": "Width (outdoor unit)",
+      "key": "compressor_type",
+      "label": "Compressor type",
       "sourceLabel": "Compressor type",
       "group": "Outdoor Unit",
-      "unit": "in",
+      "unit": "",
       "direction": "none",
-      "kind": "measure",
+      "kind": "text",
       "headerRef": "A40",
       "cells": [
         {
@@ -2016,13 +2016,13 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "outdoor_depth",
-      "label": "Depth (outdoor unit)",
-      "sourceLabel": "Operation Range",
-      "group": "Outdoor Unit",
-      "unit": "in",
-      "direction": "none",
-      "kind": "measure",
+      "key": "heating_ambient_range",
+      "label": "Outdoor ambient range (heating)",
+      "sourceLabel": "Operation Range Heating Ambient Min ~ Max",
+      "group": "Operation Range",
+      "unit": "°F",
+      "direction": "range",
+      "kind": "range",
       "headerRef": "A41",
       "cells": [
         {
@@ -2070,13 +2070,13 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "outdoor_weight",
-      "label": "Weight (outdoor unit)",
-      "sourceLabel": "Weight (outdoor unit)",
-      "group": "Outdoor Unit",
-      "unit": "lbs",
-      "direction": "none",
-      "kind": "measure",
+      "key": "heating_water_range",
+      "label": "Leaving water range (heating)",
+      "sourceLabel": "Water side Min ~ Max",
+      "group": "Operation Range",
+      "unit": "°F",
+      "direction": "range",
+      "kind": "range",
       "headerRef": "A42",
       "cells": [
         {
@@ -2124,13 +2124,13 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "refrigerant",
-      "label": "Refrigerant type",
-      "sourceLabel": "Refrigerant type",
-      "group": "Outdoor Unit",
-      "unit": "",
-      "direction": "none",
-      "kind": "text",
+      "key": "cooling_ambient_range",
+      "label": "Outdoor ambient range (cooling)",
+      "sourceLabel": "Cooling Ambient Min ~ Max",
+      "group": "Operation Range",
+      "unit": "°F",
+      "direction": "range",
+      "kind": "range",
       "headerRef": "A43",
       "cells": [
         {
@@ -2178,13 +2178,13 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "compressor_type",
-      "label": "Compressor type",
-      "sourceLabel": "Compressor type",
-      "group": "Outdoor Unit",
-      "unit": "",
-      "direction": "none",
-      "kind": "text",
+      "key": "cooling_water_range",
+      "label": "Leaving water range (cooling)",
+      "sourceLabel": "Water side Min ~ Max",
+      "group": "Operation Range",
+      "unit": "°F",
+      "direction": "range",
+      "kind": "range",
       "headerRef": "A44",
       "cells": [
         {
@@ -2232,9 +2232,117 @@ export const A2W: HydronicSource = {
       ]
     },
     {
+      "key": "dhw_ambient_range",
+      "label": "Outdoor ambient range (DHW)",
+      "sourceLabel": "Domestic hot water Ambient Min ~ Max",
+      "group": "Operation Range",
+      "unit": "°F",
+      "direction": "range",
+      "kind": "range",
+      "headerRef": "A45",
+      "cells": [
+        {
+          "ref": "F45",
+          "raw": "-18.4 ~ 95",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "G45",
+          "raw": "-18.4 ~ 95",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "H45",
+          "raw": "-22 ~ 109.4",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "I45",
+          "raw": "-22 ~ 109.4",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "J45",
+          "raw": "-22 ~ 107",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "K45",
+          "raw": "-22 ~ 107",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "L45",
+          "raw": "-22 ~ 107",
+          "formula": null,
+          "error": false
+        }
+      ]
+    },
+    {
+      "key": "dhw_water_range",
+      "label": "Leaving water range (DHW)",
+      "sourceLabel": "Water side Min ~ Max",
+      "group": "Operation Range",
+      "unit": "°F",
+      "direction": "range",
+      "kind": "range",
+      "headerRef": "A46",
+      "cells": [
+        {
+          "ref": "F46",
+          "raw": "50 ~ 145.4",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "G46",
+          "raw": "50 ~ 145.4",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "H46",
+          "raw": "77 ~ 158",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "I46",
+          "raw": "77 ~ 158",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "J46",
+          "raw": "77 ~ 158",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "K46",
+          "raw": "77 ~ 158",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "L46",
+          "raw": "77 ~ 158",
+          "formula": null,
+          "error": false
+        }
+      ]
+    },
+    {
       "key": "outdoor_sound",
       "label": "Sound pressure level (outdoor)",
-      "sourceLabel": "Sound Pressure level",
+      "sourceLabel": "Sound Pressure level Nom. (1 meter)",
       "group": "Outdoor Unit",
       "unit": "dBA",
       "direction": "lower",
@@ -2286,12 +2394,66 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "outdoor_power_amps",
-      "label": "Power supply amperage",
-      "sourceLabel": "Power supply amperage",
+      "key": "outdoor_phase",
+      "label": "Outdoor unit phase",
+      "sourceLabel": "Power supply Phase",
       "group": "Outdoor Unit",
-      "unit": "A",
-      "direction": "lower",
+      "unit": "",
+      "direction": "none",
+      "kind": "text",
+      "headerRef": "A48",
+      "cells": [
+        {
+          "ref": "F48",
+          "raw": "1~",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "G48",
+          "raw": "1~",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "H48",
+          "raw": "1~",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "I48",
+          "raw": "1~",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "J48",
+          "raw": "1~",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "K48",
+          "raw": "1~",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "L48",
+          "raw": "1~",
+          "formula": null,
+          "error": false
+        }
+      ]
+    },
+    {
+      "key": "outdoor_power_amps",
+      "label": "Power supply frequency (outdoor)",
+      "sourceLabel": "Frequency",
+      "group": "Outdoor Unit",
+      "unit": "Hz",
+      "direction": "none",
       "kind": "measure",
       "headerRef": "A49",
       "cells": [
@@ -2340,121 +2502,13 @@ export const A2W: HydronicSource = {
       ]
     },
     {
-      "key": "max_lwt",
-      "label": "Max leaving water temp",
-      "sourceLabel": "Max leaving water temp",
-      "group": "Outdoor Unit",
-      "unit": "°F",
-      "direction": "higher",
-      "kind": "measure",
-      "headerRef": "A45",
-      "cells": [
-        {
-          "ref": "F45",
-          "raw": "-18.4 ~ 95",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "G45",
-          "raw": "-18.4 ~ 95",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "H45",
-          "raw": "-22 ~ 109.4",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "I45",
-          "raw": "-22 ~ 109.4",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "J45",
-          "raw": "-22 ~ 107",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "K45",
-          "raw": "-22 ~ 107",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "L45",
-          "raw": "-22 ~ 107",
-          "formula": null,
-          "error": false
-        }
-      ]
-    },
-    {
-      "key": "min_lwt",
-      "label": "Min leaving water temp",
-      "sourceLabel": "Min leaving water temp",
-      "group": "Outdoor Unit",
-      "unit": "°F",
-      "direction": "higher",
-      "kind": "measure",
-      "headerRef": "A46",
-      "cells": [
-        {
-          "ref": "F46",
-          "raw": "50 ~ 145.4",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "G46",
-          "raw": "50 ~ 145.4",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "H46",
-          "raw": "77 ~ 158",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "I46",
-          "raw": "77 ~ 158",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "J46",
-          "raw": "77 ~ 158",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "K46",
-          "raw": "77 ~ 158",
-          "formula": null,
-          "error": false
-        },
-        {
-          "ref": "L46",
-          "raw": "77 ~ 158",
-          "formula": null,
-          "error": false
-        }
-      ]
-    },
-    {
       "key": "outdoor_voltage",
       "label": "Outdoor unit voltage",
-      "sourceLabel": "Outdoor unit voltage",
+      "sourceLabel": "Voltage",
       "group": "Outdoor Unit",
       "unit": "V",
       "direction": "none",
-      "kind": "measure",
+      "kind": "text",
       "headerRef": "A50",
       "cells": [
         {
@@ -2504,7 +2558,7 @@ export const A2W: HydronicSource = {
     {
       "key": "outdoor_mop",
       "label": "Outdoor unit MOP",
-      "sourceLabel": "Outdoor unit MOP",
+      "sourceLabel": "MOP",
       "group": "Outdoor Unit",
       "unit": "A",
       "direction": "none",
@@ -2558,7 +2612,7 @@ export const A2W: HydronicSource = {
     {
       "key": "outdoor_mca",
       "label": "Outdoor unit MCA",
-      "sourceLabel": "Outdoor unit MCA",
+      "sourceLabel": "MCA",
       "group": "Outdoor Unit",
       "unit": "A",
       "direction": "none",
@@ -2604,6 +2658,330 @@ export const A2W: HydronicSource = {
         {
           "ref": "L52",
           "raw": "37",
+          "formula": null,
+          "error": false
+        }
+      ]
+    },
+    {
+      "key": "max_lwt",
+      "label": "Max leaving water temp",
+      "sourceLabel": "Max leaving water temp",
+      "group": "Operation Range",
+      "unit": "°F",
+      "direction": "higher",
+      "kind": "measure",
+      "headerRef": "A42",
+      "cells": [
+        {
+          "ref": "F42",
+          "raw": "158",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "G42",
+          "raw": "158",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "H42",
+          "raw": "158",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "I42",
+          "raw": "158",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "J42",
+          "raw": "158",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "K42",
+          "raw": "158",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "L42",
+          "raw": "158",
+          "formula": null,
+          "error": false
+        }
+      ]
+    },
+    {
+      "key": "min_lwt",
+      "label": "Min leaving water temp",
+      "sourceLabel": "Min leaving water temp",
+      "group": "Operation Range",
+      "unit": "°F",
+      "direction": "lower",
+      "kind": "measure",
+      "headerRef": "A42",
+      "cells": [
+        {
+          "ref": "F42",
+          "raw": "64.4",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "G42",
+          "raw": "64.4",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "H42",
+          "raw": "77",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "I42",
+          "raw": "77",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "J42",
+          "raw": "77",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "K42",
+          "raw": "77",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "L42",
+          "raw": "77",
+          "formula": null,
+          "error": false
+        }
+      ]
+    },
+    {
+      "key": "min_ambient_heating",
+      "label": "Min outdoor ambient (heating)",
+      "sourceLabel": "Min outdoor ambient (heating)",
+      "group": "Operation Range",
+      "unit": "°F",
+      "direction": "lower",
+      "kind": "measure",
+      "headerRef": "A41",
+      "cells": [
+        {
+          "ref": "F41",
+          "raw": "-18.4",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "G41",
+          "raw": "-18.4",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "H41",
+          "raw": "-22",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "I41",
+          "raw": "-22",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "J41",
+          "raw": "-22",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "K41",
+          "raw": "-22",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "L41",
+          "raw": "-22",
+          "formula": null,
+          "error": false
+        }
+      ]
+    },
+    {
+      "key": "max_ambient_heating",
+      "label": "Max outdoor ambient (heating)",
+      "sourceLabel": "Max outdoor ambient (heating)",
+      "group": "Operation Range",
+      "unit": "°F",
+      "direction": "higher",
+      "kind": "measure",
+      "headerRef": "A41",
+      "cells": [
+        {
+          "ref": "F41",
+          "raw": "95",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "G41",
+          "raw": "95",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "H41",
+          "raw": "109.4",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "I41",
+          "raw": "109.4",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "J41",
+          "raw": "75",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "K41",
+          "raw": "75",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "L41",
+          "raw": "75",
+          "formula": null,
+          "error": false
+        }
+      ]
+    },
+    {
+      "key": "min_ambient_cooling",
+      "label": "Min outdoor ambient (cooling)",
+      "sourceLabel": "Min outdoor ambient (cooling)",
+      "group": "Operation Range",
+      "unit": "°F",
+      "direction": "lower",
+      "kind": "measure",
+      "headerRef": "A43",
+      "cells": [
+        {
+          "ref": "F43",
+          "raw": "50",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "G43",
+          "raw": "50",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "H43",
+          "raw": "-50",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "I43",
+          "raw": "-50",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "J43",
+          "raw": "50",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "K43",
+          "raw": "50",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "L43",
+          "raw": "50",
+          "formula": null,
+          "error": false
+        }
+      ]
+    },
+    {
+      "key": "max_ambient_cooling",
+      "label": "Max outdoor ambient (cooling)",
+      "sourceLabel": "Max outdoor ambient (cooling)",
+      "group": "Operation Range",
+      "unit": "°F",
+      "direction": "higher",
+      "kind": "measure",
+      "headerRef": "A43",
+      "cells": [
+        {
+          "ref": "F43",
+          "raw": "109.4",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "G43",
+          "raw": "109.4",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "H43",
+          "raw": "114.8",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "I43",
+          "raw": "114.8",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "J43",
+          "raw": "114",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "K43",
+          "raw": "114",
+          "formula": null,
+          "error": false
+        },
+        {
+          "ref": "L43",
+          "raw": "114",
           "formula": null,
           "error": false
         }

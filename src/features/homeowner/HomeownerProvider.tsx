@@ -22,7 +22,7 @@ export const REPORT_SECTIONS = [
   { key: "differences", label: "Important differences to consider" },
   { key: "technical", label: "Technical details" },
   { key: "faq", label: "Frequently asked questions" },
-  { key: "plainEnglish", label: "Your comparison in plain English" },
+  { key: "plainEnglish", label: "Why this recommendation" },
   { key: "reviewDisclaimer", label: "Review disclaimer" },
 ] as const;
 

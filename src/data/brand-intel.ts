@@ -109,7 +109,7 @@ export const INTEL_METRICS: IntelMetric[] = [
     ingestion: "Manual - licensed market report (annual refresh)",
     suggestedSource: "Market research (Mordor Intelligence, BSRIA, IEA); investor decks",
     values: {
-      daikin: "EU A2W TAM EUR 14.2bn (2025); SAM EUR 6.1bn; 5yr CAGR 11.4%",
+      daikin: "EU heat pump TAM EUR 14.2bn (2025); SAM EUR 6.1bn; 5yr CAGR 11.4%",
       mitsubishi: "TAM share addressed EUR 4.8bn SAM; CAGR 10.2%",
       panasonic: "SAM EUR 3.6bn; CAGR 9.8%",
       vaillant: "SAM EUR 3.9bn; CAGR 12.1% (DACH-weighted)",
@@ -126,7 +126,7 @@ export const INTEL_METRICS: IntelMetric[] = [
     ingestion: "Manual - licensed market report (annual refresh)",
     suggestedSource: "Market research reports; company annual reports",
     values: {
-      daikin: "EU A2W unit share 21.3% (No.1); revenue share 22.8%",
+      daikin: "EU heat pump unit share 21.3% (No.1); revenue share 22.8%",
       mitsubishi: "14.6% unit / 15.1% revenue",
       panasonic: "11.2% unit / 10.4% revenue",
       vaillant: "12.8% unit / 13.5% revenue",
@@ -177,9 +177,9 @@ export const INTEL_METRICS: IntelMetric[] = [
     ingestion: "Manual - annual reports and press releases (annual refresh)",
     suggestedSource: "Annual reports, press releases",
     values: {
-      daikin: "Plants: BE, CZ, DE, IT, TR; announced Poland A2W capacity expansion 2026",
+      daikin: "Plants: BE, CZ, DE, IT, TR; announced Poland heat pump capacity expansion 2026",
       mitsubishi: "Plants: UK (Livingston), SE; Scotland capacity uplift announced",
-      panasonic: "Plants: CZ (Pilsen), MY; Pilsen A2W line expansion 2025",
+      panasonic: "Plants: CZ (Pilsen), MY; Pilsen heat pump line expansion 2025",
       vaillant: "Plants: DE, SK, UK; Slovakia propane HP line commissioned 2025",
       viessmann: "Plants: DE (Allendorf), PL, FR; Allendorf HP capacity doubling",
       bosch: "Plants: DE, PT, SE; Portugal hydronic line expansion",
@@ -313,7 +313,7 @@ export const INTEL_METRICS: IntelMetric[] = [
     ingestion: "Manual - annual reports and segment disclosures (annual)",
     suggestedSource: "Annual reports, segment disclosures",
     values: {
-      daikin: "EMEA A2W revenue EUR 1.39bn; ~412k units",
+      daikin: "EMEA heat pump revenue EUR 1.39bn; ~412k units",
       mitsubishi: "EUR 0.92bn; ~268k units",
       panasonic: "EUR 0.63bn; ~205k units",
       vaillant: "EUR 0.82bn; ~235k units",
@@ -891,7 +891,7 @@ export const INTEL_METRICS: IntelMetric[] = [
     ingestion: "Manual - annual reports + analyst estimates (annual)",
     suggestedSource: "Annual reports, analyst estimates",
     values: {
-      daikin: "A2W gross margin ~32%; operating ~11.4%",
+      daikin: "Heat pump gross margin ~32%; operating ~11.4%",
       mitsubishi: "~30%; operating ~10.1%",
       panasonic: "~26%; operating ~7.8%",
       vaillant: "~33%; operating ~11.9%",
@@ -1180,7 +1180,7 @@ export const INTEL_METRICS: IntelMetric[] = [
     ingestion: "Manual - licensed market forecasts (Mordor, BSRIA, Fortune) (annual)",
     suggestedSource: "Market research reports (Mordor Intelligence, BSRIA, Fortune Business Insights)",
     values: {
-      daikin: "EU A2W units 2.4m (2025) -> 4.1m (2030); 11.4% CAGR base case",
+      daikin: "EU heat pump units 2.4m (2025) -> 4.1m (2030); 11.4% CAGR base case",
       mitsubishi: "CAGR 10.2%; share drift -0.4pp",
       panasonic: "CAGR 9.8%; share drift -0.6pp",
       vaillant: "CAGR 12.1%; share gain +0.5pp",

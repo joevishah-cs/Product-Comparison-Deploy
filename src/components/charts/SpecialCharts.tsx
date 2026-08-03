@@ -482,6 +482,56 @@ export function DataCompletenessChart({ products, height = 300 }: { products: Pr
 }
 
 /* ------------------------------------------------------------------ */
+/* Capacity availability (air-to-water)                                */
+/* ------------------------------------------------------------------ */
+
+/** Air-to-water models are listed by rated capacity in kBtu/h rather than tonnage. */
+export function CapacityAvailabilityChart({
+  products,
+  height = 300,
+}: {
+  products: Product[];
+  height?: number;
+}) {
+  const withCaps = products.filter((p) => p.capacities && p.capacities.length);
+  if (!withCaps.length) {
+    return (
+      <EmptyState
+        label="No selected product lists rated capacities in the imported sources."
+        height={height}
+      />
+    );
+  }
+  const colors = buildColorMap(products);
+
+  return (
+    <ul className="space-y-2.5">
+      {withCaps.map((p) => (
+        <li key={p.id} className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span
+            className={`w-44 shrink-0 text-sm ${p.isDaikin ? "font-semibold text-navy-900" : "font-medium text-navy-800"}`}
+          >
+            {p.brand} {p.model}
+            {p.isDaikin && " ★"}
+          </span>
+          <span className="flex flex-wrap gap-1.5">
+            {p.capacities!.map((c) => (
+              <span
+                key={c}
+                className="rounded-md px-2.5 py-1 text-sm font-bold text-white"
+                style={{ backgroundColor: colors[p.id] }}
+              >
+                {c} kBtu/h
+              </span>
+            ))}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* Tonnage availability                                                */
 /* ------------------------------------------------------------------ */
 

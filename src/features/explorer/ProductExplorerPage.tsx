@@ -421,9 +421,12 @@ const SPEC_ROWS: { key: string; label: string }[] = [
   { key: "warranty", label: "Warranty" },
 ];
 
+/* The W158°F condition is blank for the Mitsubishi column in the source sheet, so
+   the card leads with the A44.6°F/W95°F condition, which every model records. */
 const A2W_SPEC_ROWS: { key: string; label: string }[] = [
-  { key: "cop_a446w158", label: "COP (A44.6°F/W158°F)" },
-  { key: "heat_cap_a446w158", label: "Heating capacity" },
+  { key: "refrigerant", label: "Refrigerant" },
+  { key: "cop_a446w95", label: "COP (A44.6°F/W95°F)" },
+  { key: "heat_cap_a446w95", label: "Heating capacity" },
   { key: "max_lwt", label: "Max. leaving water temp" },
   { key: "outdoor_sound", label: "Outdoor sound level" },
 ];

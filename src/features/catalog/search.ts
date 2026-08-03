@@ -90,12 +90,17 @@ export interface SearchHit {
 function headlineMetric(product: Product): { metricLabel: string; metricValue: string } {
   const seer = product.attributes.seer2;
   if (seer?.status === "verified") return { metricLabel: "SEER2", metricValue: seer.display };
-  const cop = product.attributes.cop_5f ?? product.attributes.cop_a446w158;
+  // W158°F is blank for some hydronic models; W95°F is recorded for all of them.
+  const cop =
+    product.attributes.cop_5f ??
+    product.attributes.cop_a446w95 ??
+    product.attributes.cop_a446w158;
   if (cop?.status === "verified") return { metricLabel: "COP", metricValue: cop.display };
   const sound = product.attributes.sound_level ?? product.attributes.outdoor_sound;
   if (sound?.status === "verified") return { metricLabel: "Sound", metricValue: sound.display };
   const lwt = product.attributes.max_lwt;
-  if (lwt?.status === "verified") return { metricLabel: "Max LWT", metricValue: `${lwt.display}°F` };
+  // `display` already carries the unit, so it must not be suffixed again.
+  if (lwt?.status === "verified") return { metricLabel: "Max LWT", metricValue: lwt.display };
   return { metricLabel: "Data", metricValue: "Information unavailable" };
 }
 

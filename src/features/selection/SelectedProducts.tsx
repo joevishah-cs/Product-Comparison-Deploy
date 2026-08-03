@@ -134,10 +134,24 @@ export function SelectedProducts({ compact = false }: { compact?: boolean }) {
                     ? p.attributes.refrigerant.display
                     : UNAVAILABLE}
                 </dd>
-                <dt className="text-navy-500">SEER2</dt>
-                <dd className="text-right font-medium text-navy-800">
-                  {p.attributes.seer2?.status === "verified" ? p.attributes.seer2.display : UNAVAILABLE}
-                </dd>
+                {/* The hydronic sheet records COP at rated conditions, not SEER2. */}
+                {p.equipmentType === "air_to_water_hp" ? (
+                  <>
+                    <dt className="text-navy-500">COP</dt>
+                    <dd className="text-right font-medium text-navy-800">
+                      {p.attributes.cop_a446w95?.status === "verified"
+                        ? p.attributes.cop_a446w95.display
+                        : UNAVAILABLE}
+                    </dd>
+                  </>
+                ) : (
+                  <>
+                    <dt className="text-navy-500">SEER2</dt>
+                    <dd className="text-right font-medium text-navy-800">
+                      {p.attributes.seer2?.status === "verified" ? p.attributes.seer2.display : UNAVAILABLE}
+                    </dd>
+                  </>
+                )}
               </dl>
             </li>
           ))}
