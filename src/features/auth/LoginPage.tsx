@@ -50,30 +50,34 @@ export function LoginPage() {
     <div className="relative grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
       <AmbientScene />
       {/* Brand panel — deliberately minimal: logo, product name, one line. */}
-      <section className="relative z-10 hidden overflow-hidden bg-navy-900 lg:flex lg:flex-col lg:justify-between lg:p-10">
+      <section className="relative z-10 hidden overflow-hidden bg-navy-900 lg:flex lg:flex-col lg:items-center lg:justify-between lg:p-10">
         <LoginBackdrop />
 
         <div className="relative z-10 flex animate-fade-up items-center gap-3">
-          <span className="inline-flex items-center rounded-lg bg-white px-3 py-2 shadow-sm">
-            <img src="/brand/daikin-logo.png" alt="Daikin" className="h-6 w-auto" />
+          <span className="inline-flex items-center rounded-xl bg-white px-4 py-2.5 shadow-lg">
+            <img src="/brand/daikin-logo.png" alt="Daikin" className="h-7 w-auto" />
           </span>
         </div>
 
-        <div className="relative z-10 max-w-md">
-          <p className="animate-fade-up text-xs font-bold uppercase tracking-[0.2em] text-white [animation-delay:80ms] [text-shadow:0_1px_12px_rgba(0,0,0,0.45)]">
+        {/* Centred hero. Type is a step larger than the form side so the panel
+            leads the page rather than competing with it. */}
+        <div className="relative z-10 flex max-w-2xl flex-col items-center px-4 text-center">
+          <p className="animate-fade-up text-xs font-bold uppercase tracking-[0.22em] text-white [animation-delay:80ms] [text-shadow:0_1px_14px_rgba(0,0,0,0.5)]">
             Competitive Marketing Intelligence
           </p>
-          <h1 className="mt-4 animate-fade-up text-balance text-3xl font-bold leading-tight text-white [animation-delay:180ms] [text-shadow:0_2px_18px_rgba(0,0,0,0.5)]">
+          <h1 className="mt-4 animate-fade-up text-balance text-3xl font-bold leading-[1.15] text-white [animation-delay:180ms] [text-shadow:0_2px_20px_rgba(0,0,0,0.55)] xl:text-4xl">
             Turn verified product intelligence into market momentum.
           </h1>
-          <p className="mt-3 animate-fade-up text-lg font-medium text-white [animation-delay:300ms] [text-shadow:0_1px_12px_rgba(0,0,0,0.45)]">
+          <p className="mt-4 animate-fade-up text-xl font-medium text-white/95 [animation-delay:300ms] [text-shadow:0_1px_14px_rgba(0,0,0,0.5)]">
             Compare. Position. Win.
           </p>
-          {/* Accent rule wipes in beneath the tagline */}
-          <div className="mt-6 h-px w-40 origin-left animate-[scale-in_0.6s_cubic-bezier(0.16,1,0.3,1)_420ms_backwards] bg-gradient-to-r from-daikin-300 to-transparent" />
+          {/* Accent rule expands out from the centre */}
+          <div className="mt-7 h-px w-40 animate-[scale-in_0.7s_cubic-bezier(0.16,1,0.3,1)_440ms_backwards] bg-gradient-to-r from-transparent via-daikin-200 to-transparent" />
         </div>
 
-        <p className="relative z-10 animate-fade-up text-xs text-white/80 [animation-delay:520ms]">© Daikin — internal sales enablement</p>
+        <p className="relative z-10 animate-fade-up text-center text-xs text-white/80 [animation-delay:520ms]">
+          © Daikin — internal sales enablement
+        </p>
       </section>
 
       {/* Form panel */}
