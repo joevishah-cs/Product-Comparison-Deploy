@@ -102,6 +102,29 @@ export default {
           from: { transform: "translate3d(0,0,0)" },
           to: { transform: "translate3d(0,22px,0)" },
         },
+        /* Login backdrop: oversized soft shapes breathing very slowly. Transform
+           only, so the whole scene stays on the compositor. */
+        "float-slow": {
+          "0%, 100%": { transform: "translate3d(0,0,0) scale(1)" },
+          "50%": { transform: "translate3d(-2.5%,-3.5%,0) scale(1.08)" },
+        },
+        "float-slower": {
+          "0%, 100%": { transform: "translate3d(0,0,0) scale(1.05)" },
+          "50%": { transform: "translate3d(3%,2.5%,0) scale(1)" },
+        },
+        /* A light bloom easing around the panel — the "aurora" layer. */
+        aurora: {
+          "0%, 100%": { transform: "translate3d(0,0,0) scale(1)", opacity: "0.55" },
+          "33%": { transform: "translate3d(-6%,4%,0) scale(1.15)", opacity: "0.8" },
+          "66%": { transform: "translate3d(5%,-3%,0) scale(1.05)", opacity: "0.65" },
+        },
+        /* Slow rising motes. */
+        rise: {
+          "0%": { transform: "translate3d(0,0,0)", opacity: "0" },
+          "12%": { opacity: "0.55" },
+          "80%": { opacity: "0.35" },
+          "100%": { transform: "translate3d(0,-58vh,0)", opacity: "0" },
+        },
       },
       animation: {
         /* `backwards` (not `both`) so the finished animation releases `transform`
@@ -110,6 +133,10 @@ export default {
         "scale-in": "scale-in 0.18s cubic-bezier(0.16,1,0.3,1) backwards",
         shimmer: "shimmer 1.8s ease-in-out infinite",
         drift: "drift 14s ease-in-out infinite alternate",
+        "float-slow": "float-slow 24s ease-in-out infinite",
+        "float-slower": "float-slower 32s ease-in-out infinite",
+        aurora: "aurora 28s ease-in-out infinite",
+        rise: "rise 18s linear infinite",
       },
       maxWidth: { content: "1600px" },
     },
